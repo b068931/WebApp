@@ -1,0 +1,33 @@
+﻿@model (string categoriesTree, string result)
+
+<div class="container border-bottom border-top">
+	<div class="row border-bottom">
+		<span class="text-info">Status: <span id="statusField" class="text-black">@Model.result</span></span>
+	</div>
+	<div class="row">
+		<div class="col border-end overflow-auto m-1">
+			@Html.Raw(Model.categoriesTree)
+		</div>
+		<div class="col d-flex flex-column m-1 mb-2 mt-2">
+			<button id="create" class="btn btn-lg btn-outline-primary mb-2">Create</button>
+			<button id="rename" class="btn btn-lg btn-outline-primary mb-2">Rename</button>
+			<button id="move" class="btn btn-lg btn-outline-primary mb-2">Move</button>
+			<button id="salvage" class="btn btn-lg btn-outline-warning mb-2">Salvage</button>
+			<button id="remove" class="btn btn-lg btn-outline-danger mb-2">Remove</button>
+			<form action="#" method="post" id="confirmationForm">
+				<input id="id" name="categoryId" type="hidden" />
+				<input id="parentId" name="parentId" type="hidden" />
+				<div id="newNameRequestField" class="mb-3">
+					<label for="requestQuery" class="form-label">Category name:</label>
+					<input name="categoryName" type="text" class="form-control" id="requestQuery">
+				</div>
+				<input id="confirm" type="submit" value="Confirm" class="btn btn-success w-100 mb-2" />
+			</form>
+			<button id="abort" type="submit" class="btn btn-danger w-100 d-none">Abort</button>
+		</div>
+	</div>
+</div>
+
+@section scripts {
+	<script type="text/javascript" src="~/js/admin/categoriesAdminPage.js"></script>
+}
