@@ -19,12 +19,6 @@ namespace WebApp.Controllers
 			return View();
 		}
 
-		[HttpGet("/categories/category/{categoryId}/products")]
-		public IActionResult showProductsTest([FromRoute(Name = "categoryId")] int categoryId)
-		{
-			return View("ProductsView", _database.Products.Include(e => e.Category).Where(e => e.CategoryId == categoryId).ToList());
-		}
-
 		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
 		public IActionResult Error()
 		{

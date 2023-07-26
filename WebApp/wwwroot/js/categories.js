@@ -59,7 +59,7 @@ $(function () {
 
             function childCategoryOnClick() {
                 var myId = $(this).data("id");
-                window.location.href = "/categories/category/" + myId + "/products";
+                window.location.href = "/products?category=" + myId;
             }
             function parentCategoryOnClick() {
                 var myId = $(this).data("id");
