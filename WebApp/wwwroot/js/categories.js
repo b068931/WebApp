@@ -81,7 +81,14 @@ $(function () {
             }
 
             if (status === "success") {
-                data.forEach(element => appendSubcategory(element, "#baseCategories", 0, parentCategoryOnClick));
+                data.forEach(
+                    element => appendSubcategory(
+                        element,
+                        "#baseCategories",
+                        0,
+                        (element.isLast) ? childCategoryOnClick : parentCategoryOnClick
+                    )
+                );
             }
         },
         "json"
