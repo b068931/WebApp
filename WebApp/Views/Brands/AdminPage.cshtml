@@ -1,6 +1,7 @@
 ﻿@model List<WebApp.Database.Models.Brand>
 
 <form id="confirmationForm" action="#" method="post">
+	@Html.AntiForgeryToken()
 	<input id="id" name="brandId" type="hidden" />
 	<div id="inputsContainer" class="input-group">
 		<label id="textLabel" for="requestQuery" class="input-group-text">Name:</label>

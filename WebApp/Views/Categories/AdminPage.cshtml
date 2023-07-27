@@ -15,6 +15,7 @@
 			<button id="salvage" class="btn btn-lg btn-outline-warning mb-2">Salvage</button>
 			<button id="remove" class="btn btn-lg btn-outline-danger mb-2">Remove</button>
 			<form action="#" method="post" id="confirmationForm">
+				@Html.AntiForgeryToken()
 				<input id="id" name="categoryId" type="hidden" />
 				<input id="parentId" name="parentId" type="hidden" />
 				<div id="newNameRequestField" class="mb-3">

@@ -17,7 +17,11 @@ $(function () {
         categoryOnClickCallback = null;
 
         $("#confirmationForm").attr("action", "#");
-        $("#confirmationForm").children().remove();
+
+        $("#id").remove();
+        $("#parentId").remove();
+        $("#newNameRequestField").remove();
+        $("#confirm").remove();
 
         $("#abort").addClass("d-none");
     }

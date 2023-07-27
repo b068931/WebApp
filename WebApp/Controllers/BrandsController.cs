@@ -71,6 +71,7 @@ namespace WebApp.Controllers
 		}
 
 		[HttpPost("action/create")]
+		[ValidateAntiForgeryToken]
 		public IActionResult Create(
 			[FromForm(Name = "brandName")] string newBrandName)
 		{
@@ -78,6 +79,7 @@ namespace WebApp.Controllers
 		}
 
 		[HttpPost("action/rename")]
+		[ValidateAntiForgeryToken]
 		public IActionResult Rename(
 			[FromForm(Name = "brandId")] int idToRename,
 			[FromForm(Name = "brandName")] string newName)
@@ -86,6 +88,7 @@ namespace WebApp.Controllers
 		}
 
 		[HttpPost("action/delete")]
+		[ValidateAntiForgeryToken]
 		public IActionResult Delete(
 			[FromForm(Name = "brandId")] int idToDelete)
 		{

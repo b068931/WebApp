@@ -230,6 +230,7 @@ namespace WebApp.Controllers
 		}
 
 		[HttpPost("action/create")]
+		[ValidateAntiForgeryToken]
 		public IActionResult Create(
 			[FromForm(Name = "categoryName")] string newCategoryName,
 			[FromForm(Name = "parentId")] int parentId)
@@ -241,6 +242,7 @@ namespace WebApp.Controllers
 		}
 
 		[HttpPost("action/rename")]
+		[ValidateAntiForgeryToken]
 		public IActionResult Rename(
 			[FromForm(Name = "categoryId")] int categoryId,
 			[FromForm(Name = "categoryName")] string newName)
@@ -249,6 +251,7 @@ namespace WebApp.Controllers
 		}
 
 		[HttpPost("action/move")]
+		[ValidateAntiForgeryToken]
 		public IActionResult Rename(
 			[FromForm(Name = "categoryId")] int categoryId,
 			[FromForm(Name = "parentId")] int parentId)
@@ -257,6 +260,7 @@ namespace WebApp.Controllers
 		}
 
 		[HttpPost("action/salvage")]
+		[ValidateAntiForgeryToken]
 		public IActionResult Salvage(
 			[FromForm(Name = "categoryId")] int categoryId,
 			[FromForm(Name = "parentId")] int destinationId)
@@ -265,6 +269,7 @@ namespace WebApp.Controllers
 		}
 
 		[HttpPost("action/delete")]
+		[ValidateAntiForgeryToken]
 		public IActionResult Delete(
 			[FromForm(Name = "categoryId")] int categoryId)
 		{
