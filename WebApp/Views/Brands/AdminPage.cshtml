@@ -1,0 +1,28 @@
+﻿@model List<WebApp.Database.Models.Brand>
+
+<form id="confirmationForm" action="#" method="post">
+	<input id="id" name="brandId" type="hidden" />
+	<div id="inputsContainer" class="input-group">
+		<label id="textLabel" for="requestQuery" class="input-group-text">Name:</label>
+		<input id="requestQuery" name="brandName" type="text" class="form-control">
+
+		<input id="confirm" type="submit" value="Confirm" class="btn btn-success d-none" />
+		<input id="abort" type="button" value="Abort" class="btn btn-danger d-none" />
+	</div>
+</form>
+<div class="mt-2 w-100" id="createButtonContainer">
+	<button id="create" class="btn btn-success w-100">Create</button>
+</div>
+<hr />
+<ul id="brandsList" class="list-group">
+	@foreach(var brand in Model)
+	{
+		<li data-myid="@brand.Id" class="brand-list-element d-flex list-group-item list-group-item-action list-group-item-light">
+			<div class="my-auto me-auto">@brand.Name</div>
+		</li>
+	}
+</ul>
+
+@section scripts {
+	<script type="text/javascript" src="~/js/admin/brandsAdminPage.js"></script>
+}

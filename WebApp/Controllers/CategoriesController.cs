@@ -45,13 +45,13 @@ namespace WebApp.Controllers
 		private Category FindCategory(int categoryId)
 		{
 			return _database.Categories.Find(categoryId) ?? 
-				throw new ArgumentOutOfRangeException("Invalid category id provided.");
+				throw new ArgumentOutOfRangeException(string.Format("Category with id {0} does not exist.", categoryId));
 		}
 		private Category FindChildWithParentCategory(int categoryId)
 		{
 			return _database.Categories
 				.Include(e => e.Parent)
-				.FirstOrDefault(e => e.Id == categoryId) ?? throw new ArgumentOutOfRangeException("Invalid category id provided.");
+				.FirstOrDefault(e => e.Id == categoryId) ?? throw new ArgumentOutOfRangeException(string.Format("Category with id {0} does not exist.", categoryId));
 		}
 
 		private IActionResult PerformAction(Action callback, string operationName)
