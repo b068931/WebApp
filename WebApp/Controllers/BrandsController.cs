@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using WebApp.Database;
@@ -15,6 +16,7 @@ namespace WebApp.Controllers
 		private List<Database.Models.Brand> GetAllBrands()
 		{
 			return _database.Brands
+					.AsNoTracking()
 					.Select(e => new Database.Models.Brand() { Id = e.Id, Name = e.Name })
 					.ToList();
 		}

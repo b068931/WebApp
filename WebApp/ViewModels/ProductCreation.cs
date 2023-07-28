@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
 namespace WebApp.ViewModels
@@ -25,7 +27,10 @@ namespace WebApp.ViewModels
 
 		public List<IFormFile>? ProductImages { get; set; }
 
+		[ValidateNever]
 		public List<SelectListItem> AvailableCategories { get; set; } = default!;
+
+		[ValidateNever]
 		public List<SelectListItem> AvailableBrands { get; set; } = default!;
 	}
 }

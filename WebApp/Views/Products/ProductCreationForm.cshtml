@@ -1,44 +1,51 @@
 ﻿@model WebApp.ViewModels.ProductCreation;
 
-<form asp-controller="ProductsController" asp-action="Create" method="post" enctype="multipart/form-data">
+@if(ViewBag.InternalError != "")
+{
+	<span class="text-danger">Server internal error: @ViewBag.InternalError</span>
+}
+
+<form action="/products/action/create" method="post" enctype="multipart/form-data">
+	@Html.AntiForgeryToken()
 	<div class="mb-3">
 		<label for="productName" class="form-label">Назва товару:</label>
 		<input asp-for=Name class="form-control" id="productName">
-		<span asp-validation-for=Name class="form-text"></span>
+		<span asp-validation-for=Name class="form-text text-danger"></span>
 	</div>
 	<div class="mb-3">
 		<label for="productDescription" class="form-label">Опис товару:</label>
 		<textarea asp-for=Description class="form-control" id="productDescription"></textarea>
-		<span asp-validation-for=Description class="form-text"></span>
+		<span asp-validation-for=Description class="form-text text-danger"></span>
 	</div>
 	<div class="mb-3">
 		<label for="productPrice" class="form-label">Ціна:</label>
 		<input asp-for=Price class="form-control" id="productPrice">
-		<span asp-validation-for=Price class="form-text"></span>
+		<span asp-validation-for=Price class="form-text text-danger"></span>
 	</div>
 	<div class="mb-3">
 		<label for="productDiscount" class="form-label">Знижка:</label>
 		<input asp-for=Discount class="form-control" id="productDiscount">
-		<span asp-validation-for=Discount class="form-text"></span>
+		<span asp-validation-for=Discount class="form-text text-danger"></span>
 	</div>
 	<div class="mb-3">
 		<label for="productCategory" class="form-label">Оберіть категорію, до якої відноситься цей товар:</label>
 		<select asp-for=CategoryId asp-items=@Model.AvailableCategories class="form-control" id="productCategory"></select>
-		<span asp-validation-for=CategoryId class="form-text"></span>
+		<span asp-validation-for=CategoryId class="form-text text-danger"></span>
 	</div>
 	<div class="mb-3">
 		<label for="productBrand" class="form-label">Оберіть бренд цього товару:</label>
 		<select asp-for=BrandId asp-items=@Model.AvailableBrands class="form-control" id="productBrand">
 			<option value="0">Немає</option>
 		</select>
-		<span asp-validation-for=BrandId class="form-text"></span>
+		<span asp-validation-for=BrandId class="form-text text-danger"></span>
 	</div>
 	<div class="mb-3">
 		<label for="productImages" class="form-label">Кнопка загрузки фотографий с очень крутым дизайном</label>
 		<span id="filenames"></span>
 		<input asp-for=ProductImages id="productImages" class="d-none" accept="image/*" />
-		<span asp-validation-for=ProductImages class="form-text"></span>
+		<span asp-validation-for=ProductImages class="form-text text-danger"></span>
 	</div>
+	<input type="submit" class="btn btn-success" value="Створити" />
 </form>
 
 <div id="largeImage" class="modal fade" tabindex="-1" aria-labelledby="largeImageLabel" aria-hidden="true">

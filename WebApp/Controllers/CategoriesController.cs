@@ -38,6 +38,7 @@ namespace WebApp.Controllers
 		private List<CategoryJson> RequestCategoriesOnParent(int? parentId)
 		{
 			return _database.Categories
+				.AsNoTracking()
 				.Where(e => e.ParentId == parentId)
 				.Select(e => new CategoryJson() { Id = e.Id, Name = e.Name, IsLast = e.IsLast })
 				.ToList();
@@ -83,7 +84,7 @@ namespace WebApp.Controllers
 
 		private void RecursiveSalvageCategory(Category category, int destinationId)
 		{
-			if(!category.IsLast) //We are not particularly interested in parent categories that is, in categories that can not contain any products
+			if(!category.IsLast) //We are not particularly interested in parent categories. That is, in categories that can not contain any products
 			{
 				LoadCategoryChildren(category);
 				foreach(Category child in category.Children)
