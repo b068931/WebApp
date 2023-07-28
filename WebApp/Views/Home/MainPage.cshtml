@@ -1,0 +1,30 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+@using WebApp.Database.Entities
+@model List<Product>
+
+<partial name="_CategoryChooser" />
+
+<div class="text-center">
+    @foreach(var product in Model)
+    {
+        <p>Name: @product.Name</p>
+        <p>Description: @product.Description</p>
+        <p>Price: @product.Price</p>
+        <p>Discount: @product.Discount</p>
+        <p>Viewscount: @product.ViewsCount</p>
+        <p>Stars count: @product.StarsCount</p>
+        <p>Ratings count: @product.RatingsCount</p>
+        <p>Main image: <img src="/images/image/@product.MainImageId" width="50" height="50"> </p>
+        <p>My brand id: @product.BrandId</p>
+        <a href="/products/product/@product.Id">Show product page</a>
+
+        <hr />
+    }
+</div>
+
+@section scripts {
+	<script type="text/javascript" src="~/js/categories.js"></script>
+}

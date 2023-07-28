@@ -51,6 +51,13 @@ namespace WebApp.Controllers.Products
 			_logger = logger;
 		}
 
+        [HttpGet("product/{productId}")]
+        public IActionResult Show(
+            [FromRoute(Name = "productId")] int productId)
+        {
+            return View("ShowProduct", )
+        }
+
 		[HttpGet("action/create")]
         public IActionResult Create()
         {

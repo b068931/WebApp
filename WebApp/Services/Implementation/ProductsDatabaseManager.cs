@@ -35,12 +35,17 @@ namespace WebApp.Services.Implementation
 			_images = images;
 		}
 
+		public ProductShow GetProductShowVM(int productId)
+		{
+
+		}
 		public Product FindProduct(int productId)
 		{
 			return _database.Products.Find(productId) ??
 				throw new ProductInteractionException(
 					string.Format("Product with id {0} does not exist.", productId));
 		}
+
 		public void CreateProduct(ProductCreate vm)
 		{
 			using (var transaction = _database.Database.BeginTransaction())
