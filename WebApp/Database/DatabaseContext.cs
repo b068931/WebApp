@@ -57,6 +57,12 @@ namespace WebApp.Database
 				.WithMany(e => e.Products)
 				.HasForeignKey(e => e.CategoryId)
 				.OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<Product>()
+				.HasOne(e => e.MainImage)
+				.WithMany()
+				.HasForeignKey(e => e.MainImageId)
+				.OnDelete(DeleteBehavior.ClientSetNull);
 		}
 	}
 }

@@ -16,7 +16,8 @@
 		public int? BrandId { get; set; }
 		public Brand? Brand { get; set; }
 
-		public string MainImagePath { get; set; } = default!;
+		public int? MainImageId { get; set; }
+		public Image? MainImage { get; set; }
 		public List<Image> Images { get; set; } = default!;
 
 		public int CategoryId { get; set; }

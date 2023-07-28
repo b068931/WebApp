@@ -1,12 +1,8 @@
-﻿@model WebApp.ViewModels.ProductCreation;
-
-@if(ViewBag.InternalError != "")
-{
-	<span class="text-danger">Server internal error: @ViewBag.InternalError</span>
-}
+﻿@model WebApp.ViewModels.Product.ProductCreate;
 
 <form action="/products/action/create" method="post" enctype="multipart/form-data">
 	@Html.AntiForgeryToken()
+	<div asp-validation-summary="ModelOnly"></div>
 	<div class="mb-3">
 		<label for="productName" class="form-label">Назва товару:</label>
 		<input asp-for=Name class="form-control" id="productName">
