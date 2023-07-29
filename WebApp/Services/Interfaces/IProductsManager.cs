@@ -7,7 +7,11 @@ namespace WebApp.Services.Interfaces
 	{
 		Product FindProduct(int productId);
 		ProductShow GetProductShowVM(int productId);
+		ProductUpdate GetProductUpdateVM(int productId);
+		ProductCreate GetProductCreateVM();
 
-		void CreateProduct(ProductCreate vm);
+		Product CreateProduct(ProductCreate vm);
+		void UpdateProduct(ProductUpdate vm);
+		void DeleteProduct(int productId);
 	}
 }

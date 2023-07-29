@@ -1,6 +1,6 @@
 ﻿using WebApp.Database;
 using WebApp.Database.Entities;
-using WebApp.Helpers.Exceptions;
+using WebApp.Helpers;
 using WebApp.Services.Interfaces;
 
 namespace WebApp.Services.Implementation
@@ -16,7 +16,7 @@ namespace WebApp.Services.Implementation
 			{
 				if (imageFile.Length > MaxFileSize)
 				{
-					throw new ProductInteractionException(
+					throw new UserInteractionException(
 						string.Format(
 							"Файл {0} занадто великий. Максимальний розмір файлу - {1} байт.",
 							imageFile.FileName, MaxFileSize
@@ -63,11 +63,19 @@ namespace WebApp.Services.Implementation
 
 			return loadedImages;
 		}
-		public Image FindImage(int imageId)
+        public List<int> GetProductImages(int productId)
+        {
+            return _database.Images
+				.Where(e => e.ProductId == productId)
+				.Select(e => e.Id)
+				.ToList();
+        }
+
+        public async Task<Image> FindImage(int imageId)
 		{
-			return _database.Images.Find(imageId) ??
-				throw new ProductInteractionException(
+			return await _database.Images.FindAsync(imageId) ??
+				throw new UserInteractionException(
 					string.Format("Image with id {0} does not exist.", imageId));
 		}
-	}
+    }
 }

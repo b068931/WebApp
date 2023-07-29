@@ -9,6 +9,7 @@ namespace WebApp.Services.Interfaces
 	{
 		CategoriesDrawer GetBrush();
 		List<SelectListItem> GetSelectList();
+		List<SelectListItem> GetSelectListWithSelectedId(int categoryId);
 
 		List<CategoryJson> GetCategoriesOnParent(int? parentId);
 		Category GetBaseCategory();

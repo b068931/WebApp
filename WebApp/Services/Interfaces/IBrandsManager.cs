@@ -6,6 +6,7 @@ namespace WebApp.Services.Interfaces
 	{
 		List<Database.Models.Brand> GetAllBrands();
 		List<SelectListItem> GetSelectList();
+		List<SelectListItem> GetSelectListWithSelectedId(int brandId);
 
 		void CreateBrand(string newBrandName);
 		void RenameBrand(int id, string newName);

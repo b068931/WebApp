@@ -2,24 +2,24 @@
 using WebApp.Controllers.Grouping;
 using WebApp.Database;
 using WebApp.Database.Entities;
-using WebApp.Helpers.Exceptions;
+using WebApp.Helpers;
 using WebApp.Services.Interfaces;
 
 namespace WebApp.Controllers.Products
 {
-	[Route("/images")]
+    [Route("/images")]
 	public class ProductImagesController : Controller
 	{
 		private readonly IProductImagesManager _images;
 		private readonly ILogger<CategoriesController> _logger;
 
-		private IActionResult PerformAction(Func<IActionResult> action)
+		private async Task<IActionResult> PerformAction(Func<Task<IActionResult>> action)
 		{
 			try
 			{
-				return action();
+				return await action();
 			}
-			catch(ProductInteractionException ex)
+			catch(UserInteractionException ex)
 			{
 				return BadRequest(ex.Message);
 			}
@@ -29,9 +29,9 @@ namespace WebApp.Controllers.Products
 				return StatusCode(StatusCodes.Status500InternalServerError, "Oops.");
 			}
 		}
-		private FileResult GetImageFileResult(int imageToReturn)
+		private async Task<IActionResult> GetImageFileResult(int imageToReturn)
 		{
-			Image foundImage = _images.FindImage(imageToReturn);
+			Image foundImage = await _images.FindImage(imageToReturn);
 			return new FileStreamResult(new MemoryStream(foundImage.Data), foundImage.ContentType);
 		}
 
@@ -44,10 +44,10 @@ namespace WebApp.Controllers.Products
 		}
 
 		[HttpGet("image/{imageId}")]
-		public IActionResult GetImage(
+		public async Task<IActionResult> GetImage(
 			[FromRoute(Name = "imageId")] int imageToReturn)
 		{
-			return PerformAction(() => GetImageFileResult(imageToReturn));
+			return await PerformAction(() => GetImageFileResult(imageToReturn));
 		}
 	}
 }

@@ -33,6 +33,20 @@ namespace WebApp.Services.Implementation
 				.Select(e => new SelectListItem() { Value = e.Id.ToString(), Text = e.Name })
 				.ToList();
 		}
+		public List<SelectListItem> GetSelectListWithSelectedId(int brandId)
+		{
+			List<SelectListItem> brands = GetSelectList();
+			foreach (var brand in brands)
+			{
+				if(brand.Value == brandId.ToString())
+				{
+					brand.Selected = true;
+					break;
+				}
+			}
+
+			return brands;
+		}
 
 		public void CreateBrand(string newBrandName)
 		{

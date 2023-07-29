@@ -82,6 +82,20 @@ namespace WebApp.Services.Implementation
 				.Select(e => new SelectListItem() { Value = e.Id.ToString(), Text = e.Name })
 				.ToList();
 		}
+		public List<SelectListItem> GetSelectListWithSelectedId(int categoryId)
+		{
+			List<SelectListItem> categories = GetSelectList();
+			foreach (var category in categories)
+			{
+				if (category.Value == categoryId.ToString())
+				{
+					category.Selected = true;
+					break;
+				}
+			}
+
+			return categories;
+		}
 
 		public List<CategoryJson> GetCategoriesOnParent(int? parentId)
 		{

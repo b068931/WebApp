@@ -14,9 +14,13 @@ namespace WebApp.ViewModels.Product
         public decimal Price { get; set; }
         public int Discount { get; set; }
 
-        public int CategoryId { get; set; }
-        public int? BrandId { get; set; }
+        public int ViewsCount { get; set; }
+        public int Rating { get; set; }
+        public int ReviewsCount { get; set; }
 
+        public string? BrandName { get; set; }
+
+        public int MainImageId { get; set; }
         public List<int> ProductImagesIds { get; set; } = default!;
     }
 }

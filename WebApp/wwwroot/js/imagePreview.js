@@ -1,7 +1,6 @@
 $(function () {
     $("#productImages").on("change", function () {
-        var imageMaxWidth = 300;
-        var imageMaxHeight = 300;
+        var imageMaxSide = 300;
         var imageUpscaleFactor = 4;
 
         $("#selectedImagesContainer").children().remove();
@@ -9,24 +8,13 @@ $(function () {
         var filesList = $(this)[0].files;
         for (var index = 0; index < filesList.length; ++index) {
             var newImage = $("<img>", {
-                src: URL.createObjectURL(filesList[index]),
-                class: "rounded img-thumbnail m-2"
+                src: URL.createObjectURL(filesList[index])
             })
                 .data("myname", filesList[index].name)
                 .data("myurl", URL.createObjectURL(filesList[index]));
 
             newImage.on("load", function () {
-                var bestCoefficient = Math.max(
-                    $(this).prop("naturalWidth") / imageMaxWidth,
-                    $(this).prop("naturalHeight") / imageMaxHeight
-                );
-
-                var bestWidth = Math.round($(this).prop("naturalWidth") / bestCoefficient);
-                var bestHeight = Math.round($(this).prop("naturalHeight") / bestCoefficient);
-
-                $(this).attr("width", bestWidth);
-                $(this).attr("height", bestHeight);
-
+                $(this).makeImageFitBox(imageMaxSide, imageMaxSide);
                 $(this).on("click", function () {
                     $("#largeImageBody").children().remove();
                     $("#largeImageTitle").html(
@@ -37,15 +25,20 @@ $(function () {
                         $("<img>", {
                             src: $(this).data("myurl")
                         })
-                            .attr("width", bestWidth * imageUpscaleFactor)
-                            .attr("height", bestHeight * imageUpscaleFactor)
+                            .attr("width", $(this).attr("width") * imageUpscaleFactor)
+                            .attr("height", $(this).attr("height") * imageUpscaleFactor)
                     );
 
                     $("#largeImage").modal("show");
                 });
             });
 
-            $("#selectedImagesContainer").append(newImage);
+            var imageContainer = $("<div>", {
+                class: "border border-1 rounded m-2 p-1 d-inline-block"
+            });
+
+            imageContainer.append(newImage);
+            $("#selectedImagesContainer").append(imageContainer);
         }
     });
 });
