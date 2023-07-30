@@ -71,6 +71,15 @@ namespace WebApp.Services.Implementation
 				throw new UserInteractionException(
 					string.Format("Product with id {0} does not exist.", productId));
 		}
+		public int GetProductMainImage(int productId)
+		{
+			return _database.Products
+				.Where(e => e.Id == productId)
+				.Select(e => e.MainImageId)
+				.First() ?? throw new UserInteractionException(
+					string.Format("Product with id {0} does not exist.", productId));
+		}
+
 		public ProductShow GetProductShowVM(int productId)
 		{
 			Product foundProduct = FindProduct(productId);
@@ -145,6 +154,13 @@ namespace WebApp.Services.Implementation
 		{
 			Product foundProduct = FindProduct(productId);
 			_database.Products.Remove(foundProduct);
+
+			_database.SaveChanges();
+		}
+		public void ChangeMainImage(int productId, int newMainImageId)
+		{
+			Product foundProduct = FindProduct(productId);
+			foundProduct.MainImageId = newMainImageId;
 
 			_database.SaveChanges();
 		}

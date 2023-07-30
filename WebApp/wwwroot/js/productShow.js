@@ -1,7 +1,7 @@
 ﻿$(function () {
     var imageMaxSide = 40;
-    var shownImageWidth = 450;
-    var shownImageHeight = 300;
+    var shownImageWidth = 470;
+    var shownImageHeight = 420;
 
     $(".min-image").each(function (index, element) {
         if ($(this).prop("complete") === true) {
@@ -18,7 +18,7 @@
     });
 
     var isZoomed = false;
-    var zoomFactor = 4;
+    var zoomFactor = 2;
     function toggleZoom(image) {
         if (isZoomed) {
             image.makeImageFitBox(shownImageWidth, shownImageHeight);

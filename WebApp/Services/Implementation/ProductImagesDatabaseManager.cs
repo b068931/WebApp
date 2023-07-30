@@ -63,19 +63,27 @@ namespace WebApp.Services.Implementation
 
 			return loadedImages;
 		}
-        public List<int> GetProductImages(int productId)
+		public void DeleteImages(List<int> imagesToDeleteIds)
+		{
+			_database.Images.RemoveRange(
+				_database.Images.Where(e => imagesToDeleteIds.Contains(e.Id))
+			);
+
+			_database.SaveChanges();
+		}
+
+		public List<int> GetProductImages(int productId)
         {
             return _database.Images
 				.Where(e => e.ProductId == productId)
 				.Select(e => e.Id)
 				.ToList();
         }
-
         public async Task<Image> FindImage(int imageId)
 		{
 			return await _database.Images.FindAsync(imageId) ??
 				throw new UserInteractionException(
 					string.Format("Image with id {0} does not exist.", imageId));
 		}
-    }
+	}
 }

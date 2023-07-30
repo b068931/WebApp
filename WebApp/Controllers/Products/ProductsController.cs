@@ -10,6 +10,7 @@ namespace WebApp.Controllers.Products
     [Route("/products")]
     public class ProductsController : Controller
     {
+        private readonly IProductImagesManager _images;
         private readonly IProductsManager _products;
         private readonly ILogger<ProductsController> _logger;
 
@@ -47,9 +48,11 @@ namespace WebApp.Controllers.Products
         }
         
 		public ProductsController(
+            IProductImagesManager images,
 			IProductsManager products,
 			ILogger<ProductsController> logger)
 		{
+            _images = images;
             _products = products;
 			_logger = logger;
 		}
@@ -124,6 +127,39 @@ namespace WebApp.Controllers.Products
                 (ex) => ModelState.AddModelError(string.Empty, ex.Message),
                 () => GetProductCreateView()
 			);
+		}
+
+		[HttpGet("images/action/update")]
+		public IActionResult UpdateImages(
+	        [FromQuery(Name = "id")] int productId)
+		{
+            return View("ProductImagesUpdateForm", (_images.GetProductImages(productId), productId));
+		}
+
+		[HttpPost("images/action/update")]
+        [ValidateAntiForgeryToken]
+		public IActionResult UpdateImages(
+			[FromForm(Name = "newMainImageId")] int mainImageId,
+            [FromForm(Name = "productId")] int productId,
+            [FromForm(Name = "deleteImages")] List<int> imagesToDelete)
+		{
+            return PerformAction(
+                () =>
+                {
+                    Product associatedProduct = _products.FindProduct(productId);
+                    if (mainImageId != 0)
+                        _products.ChangeMainImage(productId, mainImageId);
+
+                    if (imagesToDelete.Contains(_products.GetProductMainImage(productId)))
+                        throw new UserInteractionException("You can not delete a main image of your product.");
+                    else
+                        _images.DeleteImages(imagesToDelete);
+
+                    return Redirect("/products/product/" + productId);
+                },
+                (ex) => ModelState.AddModelError("", ex.Message),
+                () => View("ProductImagesUpdateForm", (_images.GetProductImages(productId), productId))
+            );
 		}
 
 		[HttpPost("action/delete")]
