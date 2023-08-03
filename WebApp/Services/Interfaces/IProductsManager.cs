@@ -1,4 +1,6 @@
 ﻿using WebApp.Database.Entities;
+using WebApp.Database.Models;
+using WebApp.Helpers;
 using WebApp.ViewModels.Product;
 
 namespace WebApp.Services.Interfaces
@@ -7,6 +9,11 @@ namespace WebApp.Services.Interfaces
 	{
 		Product FindProduct(int productId);
 		int GetProductMainImage(int productId);
+
+		List<ProductShowLightWeightJson> Search(
+			List<IFilter<Product>> filters,
+			int currentMaxId
+		);
 
 		ProductShow GetProductShowVM(int productId);
 		ProductUpdate GetProductUpdateVM(int productId);

@@ -10,7 +10,6 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<DatabaseContext>(options =>
 	options.UseSqlServer(builder.Configuration.GetConnectionString("Database") ?? throw new InvalidOperationException("Unable to find database connection string.")));
 
-//These services have the same lifetime as Database context.
 builder.Services.AddScoped<IBrandsManager, BrandsDatabaseManager>();
 builder.Services.AddScoped<ICategoriesManager, CategoriesDatabaseManager>();
 builder.Services.AddScoped<IProductImagesManager, ProductImagesDatabaseManager>();

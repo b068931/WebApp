@@ -94,23 +94,5 @@ $(function () {
         "json"
     );
 
-    $("#categoriesList").css("opacity", 0);
-    $("#categoriesToggler").on("click", function () {
-        var resultOpacity = $("#categoriesList").hasClass("d-none") ? 1 : 0;
-        if (resultOpacity == 1) {
-            $("#categoriesList").removeClass("d-none");
-        }
-
-        $("#categoriesList").animate(
-            {
-                opacity: resultOpacity
-            },
-            "fast",
-            function () {
-                if (resultOpacity == 0) {
-                    $("#categoriesList").addClass("d-none");
-                }
-            }
-        );
-    });
+    $("#categoriesToggler").animatedToggle($("#categoriesList"));
 });

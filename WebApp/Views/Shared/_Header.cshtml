@@ -1,0 +1,58 @@
+﻿@model (List<SelectListItem> categories, List<SelectListItem> brands, bool isSearchEnabled)
+
+<div class="position-relative">
+	<div class="d-flex justify-content-start">
+		<div id="categoriesToggler" class="link_color me-2" role="button">
+			Каталог
+		</div>
+		@if (Model.isSearchEnabled)
+		{
+			<div id="searchToggler" class="link_color" role="button">
+				Пошук
+			</div>
+		}
+	</div>
+	<div id="categoriesList" class="bg-white position-absolute w-100 d-flex justify-content-start d-none">
+		<div id="baseCategories" class="overflow-auto w-25 border-end"></div>
+	</div>
+	@if (Model.isSearchEnabled)
+	{
+		<div id="searchInputsContainer" class="position-absolute container-fluid bg-white w-100 d-none">
+			<div class="row border-bottom">
+			<div class="col border-end p-2">
+				<label for="category" class="form-label">Категорія для пошуку:</label>
+				<select asp-items="@Model.categories" class="form-control" id="category">
+					<option value="0">Не вказано</option>
+				</select>
+			</div>
+			<div class="col p-2">
+				<label for="brand" class="form-label">Бренд товарів:</label>
+				<select asp-items="@Model.brands" class="form-control" id="brand">
+					<option value="0">Не вказано</option>
+				</select>
+			</div>
+		</div>
+		<div class="row border-bottom">
+			<div class="col border-end p-2">
+				<label for="maxPrice" class="form-label">Макс. ціна:</label>
+				<input type="number" class="form-control" id="maxPrice" />
+			</div>
+			<div class="col p-2">
+				<label for="minPrice" class="form-label">Макс. ціна:</label>
+				<input type="number" class="form-control" id="minPrice" />
+			</div>
+		</div>
+		<div class="row border-bottom">
+			<div class="col p-2">
+				<label for="query" class="form-label">Пошук за назвою:</label>
+				<input type="text" class="form-control" id="query" />
+			</div>
+		</div>
+		<div class="row">
+			<div class="col p-2">
+				<button class="btn btn-outline-primary w-25">Пошук</button>
+			</div>
+		</div>
+	</div>
+	}
+</div>

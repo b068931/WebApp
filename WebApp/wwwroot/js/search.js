@@ -1,0 +1,3 @@
+﻿$(function () {
+	$("#searchToggler").animatedToggle($("#searchInputsContainer"));
+});

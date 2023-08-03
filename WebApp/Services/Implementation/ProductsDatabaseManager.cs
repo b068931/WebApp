@@ -1,13 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using WebApp.Database;
 using WebApp.Database.Entities;
+using WebApp.Database.Models;
 using WebApp.Helpers;
 using WebApp.Services.Interfaces;
 using WebApp.ViewModels.Product;
 
 namespace WebApp.Services.Implementation
 {
-	public class ProductsDatabaseManager : IProductsManager
+    public class ProductsDatabaseManager : IProductsManager
 	{
 		private readonly DatabaseContext _database;
 		private readonly IProductImagesManager _images;
@@ -51,6 +55,37 @@ namespace WebApp.Services.Implementation
 				.IsModified = false;
 
 			_database.SaveChanges();
+		}
+
+		private List<ProductShowLightWeightJson> PerformSearch(
+			List<IFilter<Product>> filters,
+			int searchId,
+			int pageSize)
+		{
+			IEnumerable<Product> request = _database.Products
+				.AsNoTracking()
+				.Include(e => e.Brand)
+				.OrderBy(e => e.Id)
+				.Where(e => e.Id > searchId);
+
+			foreach (IFilter<Product> filter in filters)
+			{
+				request = filter.Apply(request);
+			}
+
+			return request
+			   .Select(e => new ProductShowLightWeightJson()
+			   {
+				   Id = e.Id,
+				   Name = e.Name,
+				   Description = e.Description,
+				   Price = e.Price,
+				   Discount = e.Discount,
+				   BrandName = (e.Brand == null) ? "Без бренду" : e.Brand.Name,
+				   MainImageId = e.MainImageId ?? 0
+			   })
+			   .Take(pageSize)
+			   .ToList();
 		}
 
 		public ProductsDatabaseManager(
@@ -120,6 +155,13 @@ namespace WebApp.Services.Implementation
 				AvailableCategories = _categories.GetSelectList(),
 				AvailableBrands = _brands.GetSelectList()
 			};
+		}
+
+		public List<ProductShowLightWeightJson> Search(
+			List<IFilter<Product>> filters,
+			int currentMaxId)
+		{
+			return PerformSearch(filters, currentMaxId, Page.DefaultPageSize);
 		}
 
 		public Product CreateProduct(ProductCreate vm)

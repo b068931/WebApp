@@ -5,7 +5,7 @@
 @using WebApp.Database.Entities
 @model List<Product>
 
-<partial name="_CategoryChooser" />
+<partial name="_Header" model="(new List<SelectListItem>(), new List<SelectListItem>(), false)" />
 
 <div class="text-center">
     @foreach(var product in Model)

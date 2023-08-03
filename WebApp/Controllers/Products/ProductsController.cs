@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
+using System.Text.Json;
 using WebApp.Database.Entities;
 using WebApp.Helpers;
+using WebApp.Helpers.Products.Filtering;
+using WebApp.Helpers.Products.Filtering.Filters;
 using WebApp.Services.Interfaces;
 using WebApp.ViewModels.Product;
 
@@ -10,6 +13,9 @@ namespace WebApp.Controllers.Products
     [Route("/products")]
     public class ProductsController : Controller
     {
+        private readonly ProductFiltersFactory _filtersFactory;
+        private readonly IBrandsManager _brands;
+        private readonly ICategoriesManager _categories;
         private readonly IProductImagesManager _images;
         private readonly IProductsManager _products;
         private readonly ILogger<ProductsController> _logger;
@@ -48,16 +54,53 @@ namespace WebApp.Controllers.Products
         }
         
 		public ProductsController(
+            IBrandsManager brands,
+            ICategoriesManager categories,
             IProductImagesManager images,
 			IProductsManager products,
 			ILogger<ProductsController> logger)
 		{
+            _brands = brands;
+            _categories = categories;
             _images = images;
             _products = products;
 			_logger = logger;
+
+            _filtersFactory = new ProductFiltersFactory(
+                new Dictionary<string, Func<string, IFilter<Product>>>()
+                {
+                    {"brand", BelongsToBrand.CreateInstance},
+                    {"category", BelongsToCategory.CreateInstance},
+                    {"maxprice", MaxPrice.CreateInstance},
+                    {"minprice", MinPrice.CreateInstance},
+                    {"namecontains", NameContains.CreateInstance}
+                }
+            );
 		}
 
-        [HttpGet("product/{productId}")]
+		[HttpGet("search")]
+		public IActionResult Search([FromQuery(Name = "maxId")] int page)
+		{
+            return PerformAction(
+                () =>
+                {
+                    List<IFilter<Product>> filters = _filtersFactory.ParseFilters(
+                        Request.Query
+                            .Where(e => e.Key != "maxId")
+                            .ToDictionary(e => e.Key, e => e.Value.ToString())
+                    );
+
+                    return Json(
+                        _products.Search(filters, page),
+						new JsonSerializerOptions(JsonSerializerDefaults.Web)
+					);
+                },
+                null,
+                () => BadRequest()
+            );
+		}
+
+		[HttpGet("product/{productId}")]
         public IActionResult Show(
             [FromRoute(Name = "productId")] int productId)
         {
@@ -178,9 +221,17 @@ namespace WebApp.Controllers.Products
 			);
         }
 
-        public IActionResult Index()
+        public IActionResult Index(
+            [FromQuery(Name = "category")] int? categoryId)
         {
-            return View();
+            return View(
+                "ShowProductsList",
+                (
+                    _categories.GetSelectListWithSelectedId(categoryId ?? 0), 
+                    _brands.GetSelectList(),
+                    categoryId ?? 0
+                )
+            );
         }
     }
 }
