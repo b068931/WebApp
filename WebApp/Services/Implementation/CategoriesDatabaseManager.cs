@@ -117,6 +117,12 @@ namespace WebApp.Services.Implementation
 
 			return fakeBaseCategoriesCategory;
 		}
+		public bool CheckIfLast(int categoryId)
+		{
+			return _database.Categories
+				.Where(e => (e.Id == categoryId) && e.IsLast)
+				.Count() > 0;
+		}
 
 		public void CreateCategory(int? parentId, string newCategoryName)
 		{

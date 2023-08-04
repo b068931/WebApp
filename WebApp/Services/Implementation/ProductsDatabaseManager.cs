@@ -18,8 +18,17 @@ namespace WebApp.Services.Implementation
 		private readonly IBrandsManager _brands;
 		private readonly ICategoriesManager _categories;
 
+		private void ValidateCategoryId(int categoryId)
+		{
+			if (!_categories.CheckIfLast(categoryId))
+			{
+				throw new UserInteractionException("Invalid category provided. Reload the page.");
+			}
+		}
+
 		private Product AddNewProduct(ProductCreate vm)
 		{
+			ValidateCategoryId(vm.CategoryId);
 			Product newProduct = new Product()
 			{
 				Name = vm.Name,
@@ -37,6 +46,7 @@ namespace WebApp.Services.Implementation
 		}
 		private void ChangeProduct(ProductUpdate vm)
 		{
+			ValidateCategoryId(vm.CategoryId);
 			Product updateProduct = new Product()
 			{
 				Id = vm.Id,

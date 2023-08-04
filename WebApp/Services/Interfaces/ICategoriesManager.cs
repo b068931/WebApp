@@ -13,6 +13,7 @@ namespace WebApp.Services.Interfaces
 
 		List<CategoryJson> GetCategoriesOnParent(int? parentId);
 		Category GetBaseCategory();
+		bool CheckIfLast(int categoryId);
 
 		void SalvageCategory(int categoryId, int destinationId);
 		void CreateCategory(int? parentId, string newCategoryName);
