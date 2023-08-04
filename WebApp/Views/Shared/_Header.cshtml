@@ -1,6 +1,6 @@
 ﻿@model (List<SelectListItem> categories, List<SelectListItem> brands, bool isSearchEnabled)
 
-<div class="position-relative">
+<div class="position-relative" style="z-index:2">
 	<div class="d-flex justify-content-start">
 		<div id="categoriesToggler" class="link_color me-2" role="button">
 			Каталог
@@ -38,7 +38,7 @@
 				<input type="number" class="form-control" id="maxPrice" />
 			</div>
 			<div class="col p-2">
-				<label for="minPrice" class="form-label">Макс. ціна:</label>
+				<label for="minPrice" class="form-label">Мін. ціна:</label>
 				<input type="number" class="form-control" id="minPrice" />
 			</div>
 		</div>
@@ -50,7 +50,7 @@
 		</div>
 		<div class="row">
 			<div class="col p-2">
-				<button class="btn btn-outline-primary w-25">Пошук</button>
+				<button id="searchButton" class="btn btn-outline-primary w-25">Пошук</button>
 			</div>
 		</div>
 	</div>

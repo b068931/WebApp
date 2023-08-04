@@ -16,7 +16,9 @@ namespace WebApp.Helpers.Products.Filtering
             {
                 try
                 {
-                    _factories[filterInformation.Key].Invoke(filterInformation.Value);
+                    filtersList.Add(
+                        _factories[filterInformation.Key].Invoke(filterInformation.Value)
+                    );
                 }
                 catch (Exception)
                 {

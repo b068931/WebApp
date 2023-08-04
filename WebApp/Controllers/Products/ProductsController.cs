@@ -79,14 +79,14 @@ namespace WebApp.Controllers.Products
 		}
 
 		[HttpGet("search")]
-		public IActionResult Search([FromQuery(Name = "maxId")] int page)
+		public IActionResult Search([FromQuery(Name = "maxid")] int page)
 		{
             return PerformAction(
                 () =>
                 {
                     List<IFilter<Product>> filters = _filtersFactory.ParseFilters(
                         Request.Query
-                            .Where(e => e.Key != "maxId")
+                            .Where(e => e.Key != "maxid")
                             .ToDictionary(e => e.Key, e => e.Value.ToString())
                     );
 
