@@ -14,7 +14,7 @@ $(function () {
                 .data("myurl", URL.createObjectURL(filesList[index]));
 
             newImage.on("load", function () {
-                $(this).makeImageFitBox(imageMaxSide, imageMaxSide);
+                $(this).makeImageFitBox(imageMaxSide, 0);
                 $(this).on("click", function () {
                     $("#largeImageBody").children().remove();
                     $("#largeImageTitle").html(
