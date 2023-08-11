@@ -1,6 +1,6 @@
 ﻿namespace WebApp.Database.Entities
 {
-	public class Image
+	public class ProductImage
 	{
 		public int Id { get; set; }
 		public byte[] Data { get; set; } = default!;

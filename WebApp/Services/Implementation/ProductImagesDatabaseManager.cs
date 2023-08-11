@@ -25,12 +25,12 @@ namespace WebApp.Services.Implementation
 				}
 			}
 		}
-		private List<Image> CreateImageEntities(int productId, List<IFormFile> images)
+		private List<ProductImage> CreateImageEntities(int productId, List<IFormFile> images)
 		{
-			List<Image> newImages = new List<Image>();
+			List<ProductImage> newImages = new List<ProductImage>();
 			foreach (var imageFile in images)
 			{
-				Image newImage = new Image()
+				ProductImage newImage = new ProductImage()
 				{
 					ProductId = productId,
 					ContentType = imageFile.ContentType
@@ -53,20 +53,20 @@ namespace WebApp.Services.Implementation
 			_database = database;
 		}
 
-		public List<Image> AddImagesToProduct(int productId, List<IFormFile> images)
+		public List<ProductImage> AddImagesToProduct(int productId, List<IFormFile> images)
 		{
 			ValidateImages(images);
-			List<Image> loadedImages = CreateImageEntities(productId, images);
+			List<ProductImage> loadedImages = CreateImageEntities(productId, images);
 
-			_database.Images.AddRange(loadedImages);
+			_database.ProductImages.AddRange(loadedImages);
 			_database.SaveChanges();
 
 			return loadedImages;
 		}
 		public void DeleteImages(List<int> imagesToDeleteIds)
 		{
-			_database.Images.RemoveRange(
-				_database.Images.Where(e => imagesToDeleteIds.Contains(e.Id))
+			_database.ProductImages.RemoveRange(
+				_database.ProductImages.Where(e => imagesToDeleteIds.Contains(e.Id))
 			);
 
 			_database.SaveChanges();
@@ -74,16 +74,16 @@ namespace WebApp.Services.Implementation
 
 		public List<int> GetProductImages(int productId)
         {
-            return _database.Images
+            return _database.ProductImages
 				.Where(e => e.ProductId == productId)
 				.Select(e => e.Id)
 				.ToList();
         }
-        public async Task<Image> FindImage(int imageId)
+        public async Task<ProductImage> FindImage(int imageId)
 		{
-			return await _database.Images.FindAsync(imageId) ??
-				throw new UserInteractionException(
-					string.Format("Image with id {0} does not exist.", imageId));
+			return await _database.ProductImages.FindAsync(imageId) ??
+				throw new ArgumentOutOfRangeException(
+					string.Format("Image with id {0} does not exist. (ProductImage)", imageId));
 		}
 	}
 }

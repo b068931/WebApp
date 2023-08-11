@@ -3,7 +3,8 @@ $(function () {
     var dynamicElements = {
         id: $("#id").remove(),
         label: $("#textLabel").remove(),
-        nameRequestField: $("#requestQuery").remove()
+        nameRequestField: $("#requestQuery").remove(),
+        fileInput: $("#fileInputContainer").remove()
     };
 
     function setFormAction(action) {
@@ -13,6 +14,7 @@ $(function () {
         $("#id").remove();
         $("#textLabel").remove();
         $("#requestQuery").remove();
+        $("#fileInputContainer").remove();
 
         $("#confirm").addClass("d-none");
         $("#abort").addClass("d-none");
@@ -30,6 +32,11 @@ $(function () {
         );
 
         $("#inputsContainer").prepend(dynamicElements["label"]);
+    }
+    function addFileInput() {
+        $("#confirmationForm").append(
+            dynamicElements["fileInput"]
+        );
     }
     function showConfirmation() {
         $("#confirm").removeClass("d-none");
@@ -76,18 +83,20 @@ $(function () {
         setFormAction("/brands/action/create");
 
         addNameQuery("New brand");
+        addFileInput();
         $("#create").addClass("d-none");
 
         showConfirmation();
     }
-    function renameBrand(brand) {
+    function updateBrand(brand) {
         startSelectBrandAction(
             brand,
             function (brand) {
                 addMyId(brand.data("myid"));
                 addNameQuery(brand.children().first().html());
+                addFileInput();
             },
-            "/brands/action/rename"
+            "/brands/action/update"
         );
     }
     function deleteBrand(brand) {
@@ -113,7 +122,7 @@ $(function () {
             me.append(newElement);
         }
 
-        addButton("Rename", "btn btn-warning me-2", function () { renameBrand(me); });
+        addButton("Update", "btn btn-warning me-2", function () { updateBrand(me); });
         addButton("Delete", "btn btn-danger", function () { deleteBrand(me); });
     });
 

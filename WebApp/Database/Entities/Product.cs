@@ -17,8 +17,8 @@
 		public Brand? Brand { get; set; }
 
 		public int? MainImageId { get; set; }
-		public Image? MainImage { get; set; }
-		public List<Image> Images { get; set; } = default!;
+		public ProductImage? MainImage { get; set; }
+		public List<ProductImage> Images { get; set; } = default!;
 
 		public int CategoryId { get; set; }
 		public Category Category { get; set; } = default!;

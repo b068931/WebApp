@@ -1,6 +1,6 @@
 ﻿@model List<WebApp.Database.Models.Brand>
 
-<form id="confirmationForm" action="#" method="post">
+<form id="confirmationForm" action="#" method="post" enctype="multipart/form-data">
 	@Html.AntiForgeryToken()
 	<input id="id" name="brandId" type="hidden" />
 	<div id="inputsContainer" class="input-group">
@@ -9,6 +9,10 @@
 
 		<input id="confirm" type="submit" value="Confirm" class="btn btn-success d-none" />
 		<input id="abort" type="button" value="Abort" class="btn btn-danger d-none" />
+	</div>
+	<div id="fileInputContainer" class="input-group">
+		<label for="brandImage" class="form-label">Кнопка загрузки с очень крутым дизайном</label>
+		<input id="brandImage" type="file" name="brandImage" class="d-none" accept="image/*"/>
 	</div>
 </form>
 <div class="mt-2 w-100" id="createButtonContainer">

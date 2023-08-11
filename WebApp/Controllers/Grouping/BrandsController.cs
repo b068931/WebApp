@@ -42,18 +42,20 @@ namespace WebApp.Controllers.Grouping
         [HttpPost("action/create")]
         [ValidateAntiForgeryToken]
         public IActionResult Create(
-            [FromForm(Name = "brandName")] string newBrandName)
+            [FromForm(Name = "brandName")] string newBrandName,
+            [FromForm(Name = "brandImage")] IFormFile brandImage)
         {
-            return PerformAction(() => _brands.CreateBrand(newBrandName));
+            return PerformAction(() => _brands.CreateBrand(newBrandName, brandImage));
         }
 
-        [HttpPost("action/rename")]
+        [HttpPost("action/update")]
         [ValidateAntiForgeryToken]
-        public IActionResult Rename(
+        public IActionResult Update(
             [FromForm(Name = "brandId")] int idToRename,
-            [FromForm(Name = "brandName")] string newName)
+            [FromForm(Name = "brandName")] string newName,
+            [FromForm(Name = "brandImage")] IFormFile? brandImage)
         {
-            return PerformAction(() => _brands.RenameBrand(idToRename, newName));
+            return PerformAction(() => _brands.UpdateBrand(idToRename, newName, brandImage));
         }
 
         [HttpPost("action/delete")]

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using WebApp.Database.Entities;
 
 namespace WebApp.Services.Interfaces
 {
@@ -8,8 +9,9 @@ namespace WebApp.Services.Interfaces
 		List<SelectListItem> GetSelectList();
 		List<SelectListItem> GetSelectListWithSelectedId(int brandId);
 
-		void CreateBrand(string newBrandName);
-		void RenameBrand(int id, string newName);
+		void CreateBrand(string newBrandName, IFormFile brandImage);
+		void UpdateBrand(int id, string newName, IFormFile? brandImage);
 		void DeleteBrand(int id);
+		Task<BrandImage> GetBrandImage(int brandImageId);
 	}
 }

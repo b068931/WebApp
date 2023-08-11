@@ -181,7 +181,7 @@ namespace WebApp.Services.Implementation
 				Product createdProduct = AddNewProduct(vm);
 				if (vm.ProductImages != null)
 				{
-					List<Image> loadedImages = _images.AddImagesToProduct(createdProduct.Id, vm.ProductImages);
+					List<ProductImage> loadedImages = _images.AddImagesToProduct(createdProduct.Id, vm.ProductImages);
 					createdProduct.MainImageId = loadedImages[0].Id;
 
 					_database.SaveChanges();

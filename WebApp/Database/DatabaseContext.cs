@@ -12,9 +12,12 @@ namespace WebApp.Database
 		}
 
 		public DbSet<Category> Categories { get; set; }
+
 		public DbSet<Product> Products { get; set; }
+		public DbSet<ProductImage> ProductImages { get; set; }
+
 		public DbSet<Brand> Brands { get; set; }
-		public DbSet<Image> Images { get; set; }
+		public DbSet<BrandImage> BrandImages { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
@@ -32,11 +35,21 @@ namespace WebApp.Database
 				.ToTable("Brands")
 				.HasKey(c => c.Id);
 
-			modelBuilder.Entity<Image>()
-				.ToTable("Images")
+			modelBuilder.Entity<BrandImage>()
+				.ToTable("BrandImages")
 				.HasKey(c => c.Id);
 
-			modelBuilder.Entity<Image>()
+			modelBuilder.Entity<Brand>()
+				.HasOne(e => e.Image)
+				.WithOne(e => e.Brand)
+				.HasForeignKey<Brand>(e => e.ImageId)
+				.OnDelete(DeleteBehavior.ClientSetNull);
+
+			modelBuilder.Entity<ProductImage>()
+				.ToTable("ProductImages")
+				.HasKey(c => c.Id);
+
+			modelBuilder.Entity<ProductImage>()
 				.HasOne(e => e.Product)
 				.WithMany(e => e.Images)
 				.HasForeignKey(e => e.ProductId)

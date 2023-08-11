@@ -2,16 +2,43 @@
 using Microsoft.EntityFrameworkCore;
 using WebApp.Database;
 using WebApp.Database.Entities;
+using WebApp.Helpers;
 using WebApp.Services.Interfaces;
 
 namespace WebApp.Services.Implementation
 {
 	public class BrandsDatabaseManager : IBrandsManager
 	{
+		private static readonly int MaxImageSize = 10485760;
+
 		private readonly DatabaseContext _database;
+		
 		private Brand FindBrand(int id)
 		{
 			return _database.Brands.Find(id) ?? throw new ArgumentOutOfRangeException(string.Format("Brand with id {0} does not exist.", id));
+		}
+		private BrandImage FindBrandImage(int id)
+		{
+			return _database.BrandImages.Find(id) ?? throw new ArgumentOutOfRangeException(string.Format("Brand image with id {0} does not exist.", id));
+		}
+		private BrandImage GenerateBrandImageFromFile(IFormFile brandImageFile)
+		{
+			if (brandImageFile.Length > MaxImageSize)
+			{
+				throw new UserInteractionException(
+					string.Format("Файл {0} занадто великий. Максимальний розмір файлу - {1}.", brandImageFile.FileName, MaxImageSize)
+				);
+			}
+
+			BrandImage brandImage = new BrandImage();
+			brandImage.ContentType = brandImageFile.ContentType;
+			using (var memory = new MemoryStream())
+			{
+				brandImageFile.CopyTo(memory);
+				brandImage.Data = memory.ToArray();
+			}
+
+			return brandImage;
 		}
 
 		public BrandsDatabaseManager(DatabaseContext database)
@@ -48,22 +75,48 @@ namespace WebApp.Services.Implementation
 			return brands;
 		}
 
-		public void CreateBrand(string newBrandName)
+		public void CreateBrand(string newBrandName, IFormFile brandImageFile)
 		{
-			_database.Brands.Add(new Brand { Name = newBrandName });
+			Brand newBrand = new Brand { Name = newBrandName };
+			newBrand.Image = GenerateBrandImageFromFile(brandImageFile);
+
+			_database.Brands.Add(newBrand);
 			_database.SaveChanges();
+		}
+		public void UpdateBrand(int id, string newName, IFormFile? brandImage)
+		{
+			Brand foundBrand = FindBrand(id);
+			using (var transaction = _database.Database.BeginTransaction()) {
+				if (brandImage != null)
+				{
+					BrandImage newImage = GenerateBrandImageFromFile(brandImage);
+					_database.BrandImages.Add(newImage);
+					_database.SaveChanges();
+
+					BrandImage previousImage = new BrandImage() { Id = foundBrand.ImageId ?? throw new ArgumentNullException("This should not happen.") };
+					_database.BrandImages.Attach(previousImage);
+					_database.BrandImages.Remove(previousImage);
+					_database.SaveChanges();
+
+					foundBrand.ImageId = newImage.Id;
+				}
+
+				foundBrand.Name = newName;
+				_database.SaveChanges();
+
+				transaction.Commit();
+			}
 		}
 		public void DeleteBrand(int id)
 		{
 			_database.Brands.Remove(FindBrand(id));
 			_database.SaveChanges();
 		}
-		public void RenameBrand(int id, string newName)
+		public async Task<BrandImage> GetBrandImage(int brandImageId)
 		{
-			Brand foundBrand = FindBrand(id);
-
-			foundBrand.Name = newName;
-			_database.SaveChanges();
+			return await _database.BrandImages.FindAsync(brandImageId) ??
+				throw new ArgumentOutOfRangeException(
+					string.Format("Image with id {0} does not exist. (BrandImage)", brandImageId));
 		}
 	}
 }
