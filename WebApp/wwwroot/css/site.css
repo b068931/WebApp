@@ -1,33 +1,123 @@
-html {
-    font-size: 14px;
+@media(max-width: 1920px){
+	html {
+		font-size: 20px;
+	}
 }
 
-@media (min-width: 768px) {
-    html {
-        font-size: 16px;
-    }
+@media(max-width: 1280px) {
+	html {
+		font-size: 16px;
+	}
+}
+
+@media(max-width: 640px) {
+	html {
+		font-size: 12px;
+	}
+}
+
+@font-face {
+	font-family: Gilroy;
+	src: url(/resources/gilroy.ttf);
 }
 
 html {
-    position: relative;
-    min-height: 100%;
+	position: relative;
+	min-height: 100%;
 }
 
 body {
-    margin-bottom: 60px;
+	margin-bottom: 60px;
 
-    line-height: 1.6;
-    font-family: sans-serif;
-    font-size: 17px;
-    color: #444;
+	line-height: 1.6;
+	font-family: Gilroy, sans-serif;
+	font-size: 1.3rem;
+	color: #444;
 }
 
 .link_color {
-    color: #414141;
-    text-decoration: none;
-    transition:color 0.3s ease;
+	color: #000000 !important;
+
+	text-decoration: none;
+	transition: color 0.3s ease;
 }
 
 .link_color:hover {
-    color: #48d597;
+	color: #759242 !important;
+}
+
+.language-blob {
+	font-size: 1rem;
+	border-radius: 0.6rem;
+	padding-left: 0.4rem;
+	padding-right: 0.4rem;
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
+
+	transition: color 0.3s ease;
+	transition: background 0.3s ease;
+}
+
+.language-blob:hover {
+	color:#ffffff;
+	background:#000000;
+}
+
+.header {
+	background: #DED3A6;
+
+	padding-top:2.2rem;
+	padding-left:0.5rem;
+}
+
+.header .contents {
+	margin-left: 2.8rem;
+	margin-top: 0.2rem;
+}
+
+.header form input {
+	border-radius: 1.3rem;
+	height: 3.2rem;
+}
+
+.header button {
+	border-radius: 1.3rem;
+	height: 3.2rem;
+}
+
+.header #addProduct {
+	border-radius: 1.1rem;
+	margin-left: 2.1rem;
+}
+
+.header #searchIcon {
+	width: 1.9rem;
+	height: 1.9rem;
+}
+
+.header #brand {
+	width: 4.25rem;
+	height: 3.15rem;
+	margin-left: 0.3rem;
+}
+
+.header #languageSwitch {
+	border-radius: 1.2rem;
+	margin-left: 1.2rem;
+	margin-right: 1.5rem;
+}
+
+.header #shoppingCart {
+	height:1.5rem;
+	width:1.5rem;
+
+	margin-left:3.5rem;
+}
+
+#categoriesSelector {
+	background: #DED3A6;
+}
+
+#categoriesList {
+	background: #F2F2EF;
 }

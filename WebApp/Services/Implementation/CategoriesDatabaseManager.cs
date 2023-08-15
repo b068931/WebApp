@@ -97,14 +97,6 @@ namespace WebApp.Services.Implementation
 			return categories;
 		}
 
-		public List<CategoryJson> GetCategoriesOnParent(int? parentId)
-		{
-			return _database.Categories
-				.AsNoTracking()
-				.Where(e => e.ParentId == parentId)
-				.Select(e => new CategoryJson() { Id = e.Id, Name = e.Name, IsLast = e.IsLast })
-				.ToList();
-		}
 		public Category GetBaseCategory()
 		{
 			Category fakeBaseCategoriesCategory = new Category()
@@ -117,6 +109,31 @@ namespace WebApp.Services.Implementation
 
 			return fakeBaseCategoriesCategory;
 		}
+		public List<CategoryJson> GetCategoriesOnParent(int? parentId)
+		{
+			return _database.Categories
+				.AsNoTracking()
+				.Where(e => e.ParentId == parentId)
+				.Select(e => new CategoryJson() { Id = e.Id, Name = e.Name, IsLast = e.IsLast })
+				.ToList();
+		}
+		public List<CategoryJson> GetRandomCategories(int count)
+		{
+			return _database.Categories
+				.AsNoTracking()
+				.Select(e => 
+					new CategoryJson() { 
+						Id = e.Id,
+						IsLast = e.IsLast, 
+						Name = e.Name 
+					}
+				)
+				.Where(e => e.IsLast)
+				.OrderBy(e => Guid.NewGuid())
+				.Take(count)
+				.ToList();
+		}
+
 		public bool CheckIfLast(int categoryId)
 		{
 			return _database.Categories

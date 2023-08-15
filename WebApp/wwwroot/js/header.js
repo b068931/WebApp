@@ -1,4 +1,20 @@
 $(function () {
+    $.get("/categories/random?count=5",
+        function (data, status) {
+            if (status === "success") {
+                data.forEach(element => {
+                    $("#randomCategories").append(
+                        $(
+                            "<a>",
+                            { href: "/products?category=" + element.id, class: "link_color my-3" }
+                        ).html(element.name)
+                    )
+                });
+            }
+        },
+        "json"
+    )
+
     $.get("/categories/base",
         function (data, status) {
             var loadedSubcategories = {};
@@ -95,4 +111,7 @@ $(function () {
     );
 
     $("#categoriesToggler").animatedToggle($("#categoriesList"));
+    $("#addProduct").on("click", function () {
+        window.location = "/products/action/create";
+    });
 });

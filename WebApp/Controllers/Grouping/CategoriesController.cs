@@ -52,6 +52,16 @@ namespace WebApp.Controllers.Grouping
 			);
 		}
 
+		[HttpGet("random")]
+		public JsonResult GetRandomCategories(
+			[FromQuery(Name = "count")] int count)
+		{
+			return Json(
+				_categories.GetRandomCategories(count),
+				new JsonSerializerOptions(JsonSerializerDefaults.Web)
+			);
+		}
+
 		[HttpGet("category/{parentId}/children")]
 		public JsonResult GetChildren(
 			[FromRoute(Name = "parentId")] int parentId)

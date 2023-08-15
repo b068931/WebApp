@@ -11,8 +11,10 @@ namespace WebApp.Services.Interfaces
 		List<SelectListItem> GetSelectList();
 		List<SelectListItem> GetSelectListWithSelectedId(int categoryId);
 
-		List<CategoryJson> GetCategoriesOnParent(int? parentId);
 		Category GetBaseCategory();
+		List<CategoryJson> GetCategoriesOnParent(int? parentId);
+		List<CategoryJson> GetRandomCategories(int count);
+
 		bool CheckIfLast(int categoryId);
 
 		void SalvageCategory(int categoryId, int destinationId);
