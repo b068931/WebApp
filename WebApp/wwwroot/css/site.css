@@ -63,6 +63,12 @@ body {
 	background:#000000;
 }
 
+.prevent-select {
+	-webkit-user-select: none; /* Safari */
+	-ms-user-select: none; /* IE 10 and IE 11 */
+	user-select: none; /* Standard syntax */
+}
+
 .header {
 	background: #DED3A6;
 
@@ -119,5 +125,14 @@ body {
 }
 
 #categoriesList {
+	background: #F2F2EF;
+}
+
+#showSearch {
+	width: 3rem;
+	height: 3.2rem;
+}
+
+#searchInputsContainer {
 	background: #F2F2EF;
 }

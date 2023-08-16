@@ -73,7 +73,8 @@ namespace WebApp.Controllers.Products
 					{"category", BelongsToCategory.CreateInstance},
 					{"maxprice", MaxPrice.CreateInstance},
 					{"minprice", MinPrice.CreateInstance},
-					{"namecontains", NameContains.CreateInstance}
+					{"namecontains", NameContains.CreateInstance},
+					{"minrating", MinRating.CreateInstance}
 				}
 			);
 		}
@@ -222,12 +223,14 @@ namespace WebApp.Controllers.Products
 		}
 
 		public IActionResult Index(
+			[FromQuery(Name = "query")] string? query,
 			[FromQuery(Name = "brand")] int? brandId,
 			[FromQuery(Name = "category")] int? categoryId)
 		{
 			return View(
 				"ShowProductsList",
 				(
+					query ?? string.Empty,
 					_categories.GetSelectListWithSelectedId(categoryId ?? 0), 
 					_brands.GetSelectListWithSelectedId(brandId ?? 0)
 				)

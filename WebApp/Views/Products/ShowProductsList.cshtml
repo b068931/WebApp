@@ -1,50 +1,46 @@
-﻿@model (List<SelectListItem> categories, List<SelectListItem> brands)
+﻿@model (string query, List<SelectListItem> categories, List<SelectListItem> brands)
 
-<div class="container">
-	<div class="row d-flex">
-		<div class="col">
-			<div id="searchInputsContainer" class="container w-25 bg-white border-end mx-0">
-				<div class="row border-bottom">
-					<div class="col border-end p-2">
-						<label for="category" class="form-label">Категорія для пошуку:</label>
-						<select asp-items="@Model.categories" class="form-control" id="category">
-							<option value="0">Не вказано</option>
-						</select>
-					</div>
-					<div class="col p-2">
-						<label for="brand" class="form-label">Бренд товарів:</label>
-						<select asp-items="@Model.brands" class="form-control" id="brand">
-							<option value="0">Не вказано</option>
-						</select>
-					</div>
-				</div>
-				<div class="row border-bottom">
-					<div class="col border-end p-2">
-						<label for="maxPrice" class="form-label">Макс. ціна:</label>
-						<input type="number" class="form-control" id="maxPrice" />
-					</div>
-					<div class="col p-2">
-						<label for="minPrice" class="form-label">Мін. ціна:</label>
-						<input type="number" class="form-control" id="minPrice" />
-					</div>
-				</div>
-				<div class="row border-bottom">
-					<div class="col p-2">
-						<label for="query" class="form-label">Пошук за назвою:</label>
-						<input type="text" class="form-control" id="query" />
-					</div>
-				</div>
-				<div class="row">
-					<div class="col p-2">
-						<button id="searchButton" class="btn btn-outline-primary w-25">Пошук</button>
-					</div>
-				</div>
-			</div>
+<button id="searchToggler" class="position-fixed bottom-0 end-0 border border-3 rounded-pill mb-2 me-2" style="z-index:2001">
+	<img id="showSearch" class="p-2" src="/resources/lookup.svg"/>
+</button>
+
+<div id="searchInputsContainer" class="position-fixed top-0 start-0 vh-100 border-end overflow-auto d-none" style="z-index:2001">
+	<div class="d-flex flex-column">
+		<div class="p-2 border-bottom">
+			<label for="query" class="form-label prevent-select">Пошук за назвою:</label>
+			<input value="@Model.query" type="text" class="form-control" id="query" />
 		</div>
-		<div class="col-12" id="productsContainer"></div>
+		<div class="p-2 border-bottom">
+			<label for="category" class="form-label prevent-select">Категорія для пошуку:</label>
+			<select asp-items="@Model.categories" class="form-control" id="category">
+				<option value="0">Не вказано</option>
+			</select>
+		</div>
+		<div class="p-2 border-bottom">
+			<label for="brand" class="form-label prevent-select">Бренд товарів:</label>
+			<select asp-items="@Model.brands" class="form-control" id="brand">
+				<option value="0">Не вказано</option>
+			</select>
+		</div>
+		<div class="p-2 border-bottom">
+			<label for="maxPrice" class="form-label prevent-select">Макс. ціна:</label>
+			<input type="number" class="form-control" id="maxPrice" />
+		</div>
+		<div class="p-2 border-bottom">
+			<label for="minPrice" class="form-label prevent-select">Мін. ціна:</label>
+			<input type="number" class="form-control" id="minPrice" />
+		</div>
+		<div class="p-2 border-bottom">
+			<label for="minRating" class="form-label prevent-select">Мін. рейтинг (від 0 до 10):</label>
+			<input type="number" class="form-control" id="minRating" />
+		</div>
+		<div class="p-2">
+			<button id="searchButton" class="btn btn-outline-primary w-100">Пошук</button>
+		</div>
 	</div>
 </div>
 
+<div class="col-12" id="productsContainer"></div>
 <button id="loadMore" class="btn btn-outline-secondary w-100">Завантажити ще</button>
 
 @section scripts {

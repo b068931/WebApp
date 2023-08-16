@@ -1,5 +1,5 @@
 $(function () {
-    $.get("/categories/random?count=5",
+    $.get("/categories/random?count=3",
         function (data, status) {
             if (status === "success") {
                 data.forEach(element => {

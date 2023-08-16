@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>@ViewData["Title"] - WebApp</title>
+	<title>EkoBrand</title>
 	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/WebApp.styles.css" asp-append-version="true" />
@@ -17,9 +17,9 @@
 				</a>
 				<div class="contents collapse navbar-collapse">
 					<div class="d-flex flex-row justify-content-between w-100">
-						<form id="headerSearchBar" class="flex-grow-1">
+						<form method="get" action="/products" id="headerSearchBar" class="flex-grow-1">
 							<div class="input-group">
-								<input class="form-control border-0" type="search" placeholder="Я хочу купити на EKO..." aria-label="Search">
+								<input name="query" class="form-control border-0" type="search" placeholder="Я хочу купити на EKO..." aria-label="Search">
 								<button class="btn bg-white" type="submit">
 									<img id="searchIcon" class="mx-auto my-auto" src="/resources/lookup.svg"/>
 								</button>
@@ -51,11 +51,11 @@
 		</nav>
 		<div id="categoriesSelector" class="position-relative">
 			<div id="randomCategories" class="d-flex justify-content-around">
-				<div id="categoriesToggler" class="link_color my-3" role="button">
+				<div id="categoriesToggler" class="link_color prevent-select my-3" role="button">
 					Каталог
 				</div>
 			</div>
-			<div id="categoriesList" class="position-absolute w-100 d-flex justify-content-start d-none">
+			<div id="categoriesList" class="position-absolute w-100 d-flex justify-content-start d-none prevent-select" style="z-index:2000">
 				<div id="baseCategories" class="overflow-auto w-25 border-end"></div>
 			</div>
 		</div>

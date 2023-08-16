@@ -84,6 +84,11 @@
 			newSearchQuery["namecontains"] = queryText;
 		}
 
+		var minRating = $("#minRating").val();
+		if (minRating != "") {
+			newSearchQuery["minrating"] = minRating;
+		}
+
 		searchQuery = newSearchQuery;
 		serveNewPortion();
 	}
