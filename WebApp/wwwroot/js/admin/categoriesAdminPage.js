@@ -143,4 +143,17 @@ $(function () {
             addConfirmationToForm(category, null);
         }
     });
+
+    $("#switch").on("click", function () {
+        clearForm();
+        changeStatus("Categories that are marked as 'popular' will be displayed on the 'About Us' page (and maybe on some other pages too).");
+        setFormAction("/categories/action/switch");
+
+        categoryOnClickCallback = function (category) {
+            changeStatus("Finish this operation by confirming/aborting it.");
+
+            appendInputToForm("id", category.data("myid"));
+            addConfirmationToForm(category, null);
+        }
+    });
 });

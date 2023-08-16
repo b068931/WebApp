@@ -114,7 +114,15 @@ namespace WebApp.Services.Implementation
 			return _database.Categories
 				.AsNoTracking()
 				.Where(e => e.ParentId == parentId)
-				.Select(e => new CategoryJson() { Id = e.Id, Name = e.Name, IsLast = e.IsLast })
+				.Select(e => 
+					new CategoryJson() 
+					{ 
+						Id = e.Id, 
+						Name = e.Name,
+						IsLast = e.IsLast,
+						IsPopular = e.IsPopular
+					}
+				)
 				.ToList();
 		}
 		public List<CategoryJson> GetRandomCategories(int count)
@@ -122,10 +130,12 @@ namespace WebApp.Services.Implementation
 			return _database.Categories
 				.AsNoTracking()
 				.Select(e => 
-					new CategoryJson() { 
+					new CategoryJson() 
+					{ 
 						Id = e.Id,
-						IsLast = e.IsLast, 
-						Name = e.Name 
+						Name = e.Name,
+						IsLast = e.IsLast,
+						IsPopular = e.IsPopular
 					}
 				)
 				.Where(e => e.IsLast)
@@ -139,6 +149,13 @@ namespace WebApp.Services.Implementation
 			return _database.Categories
 				.Where(e => (e.Id == categoryId) && e.IsLast)
 				.Count() > 0;
+		}
+		public void SwitchPopularity(int categoryId)
+		{
+			Category foundCategory = FindCategory(categoryId);
+			foundCategory.IsPopular ^= true;
+
+			_database.SaveChanges();
 		}
 
 		public void CreateCategory(int? parentId, string newCategoryName)

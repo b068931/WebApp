@@ -6,6 +6,7 @@
 		public string Name { get; set; } = default!;
 
 		public bool IsLast { get; set; }
+		public bool IsPopular { get; set; }
 
 		public int? ParentId { get; set; }
 		public Category? Parent { get; set; }

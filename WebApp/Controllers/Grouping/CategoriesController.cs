@@ -72,6 +72,14 @@ namespace WebApp.Controllers.Grouping
 			);
 		}
 
+		[HttpPost("action/switch")]
+		[ValidateAntiForgeryToken]
+		public IActionResult SwitchPopularity(
+			[FromForm(Name = "categoryId")] int categoryId)
+		{
+			return PerformAction(() => _categories.SwitchPopularity(categoryId), "switch popularity");
+		}
+
 		[HttpPost("action/create")]
 		[ValidateAntiForgeryToken]
 		public IActionResult Create(

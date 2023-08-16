@@ -33,7 +33,12 @@ namespace WebApp.Helpers
 			AddLines(builder, _specifiedDepth - currentDepth);
 
 			builder.Append(
-				string.Format("<span class='category' data-myid='{0}' role='button'>{1}</span>", category.Id, category.Name)
+				string.Format(
+					"<span class='category' data-myid='{0}' role='button'{2}>{1}</span>", 
+					category.Id, 
+					category.Name,
+					category.IsPopular ? " style='color:#d68100'" : ""
+				)
 			);
 
 			builder.Append(_newLine);

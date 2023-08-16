@@ -76,6 +76,10 @@ namespace WebApp.Database
 				.WithMany()
 				.HasForeignKey(e => e.MainImageId)
 				.OnDelete(DeleteBehavior.ClientSetNull);
+
+			modelBuilder.Entity<Product>()
+				.Property(e => e.Created)
+				.HasDefaultValueSql("getdate()");
 		}
 	}
 }

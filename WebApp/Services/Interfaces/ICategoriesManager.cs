@@ -16,6 +16,7 @@ namespace WebApp.Services.Interfaces
 		List<CategoryJson> GetRandomCategories(int count);
 
 		bool CheckIfLast(int categoryId);
+		void SwitchPopularity(int categoryId);
 
 		void SalvageCategory(int categoryId, int destinationId);
 		void CreateCategory(int? parentId, string newCategoryName);
