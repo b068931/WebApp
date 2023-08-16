@@ -46,6 +46,15 @@ body {
 	color: #759242 !important;
 }
 
+.link_underline {
+	color: #ffffff !important;
+	text-decoration:none;
+}
+
+.link_underline:hover {
+	text-decoration:underline;
+}
+
 .language-blob {
 	font-size: 1rem;
 	border-radius: 0.6rem;
@@ -126,6 +135,30 @@ body {
 
 #categoriesList {
 	background: #F2F2EF;
+}
+
+.myfooter {
+	font-size: 0.8rem;
+	background: #212517;
+	line-height: 1;
+}
+
+.myfooter span {
+	color: #ffffff;
+}
+
+.myfooter #brand {
+	width: 4.25rem;
+	height: 3.15rem;
+}
+
+.small-block {
+	width:10rem;
+}
+
+.social-network {
+	height: 2.5rem;
+	width: 2.5rem;
 }
 
 #showSearch {
