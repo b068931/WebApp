@@ -8,7 +8,7 @@ namespace WebApp.Helpers.Products.Filtering.Filters
         private readonly int _minPrice;
         public MinPrice(int minPrice) => _minPrice = minPrice;
 
-        public IEnumerable<Product> Apply(IEnumerable<Product> request)
+        public IQueryable<Product> Apply(IQueryable<Product> request)
             => request.Where(e => e.Price >= _minPrice);
 
         public static IFilter<Product> CreateInstance(string value)

@@ -7,7 +7,7 @@ namespace WebApp.Helpers.Products.Filtering.Filters
 		private readonly int _minRating;
 		public MinRating(int minRating) => _minRating = minRating;
 
-		public IEnumerable<Product> Apply(IEnumerable<Product> request)
+		public IQueryable<Product> Apply(IQueryable<Product> request)
 			=> request.Where(e => 
 				(e.StarsCount / ((e.RatingsCount == 0) ? 1 : e.RatingsCount)) >= _minRating
 			);

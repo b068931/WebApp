@@ -72,7 +72,7 @@ namespace WebApp.Services.Implementation
 			int searchId,
 			int pageSize)
 		{
-			IEnumerable<Product> request = _database.Products
+			IQueryable<Product> request = _database.Products
 				.AsNoTracking()
 				.Include(e => e.Brand)
 				.OrderBy(e => e.Id)

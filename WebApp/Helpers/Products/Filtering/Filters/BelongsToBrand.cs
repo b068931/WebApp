@@ -8,7 +8,7 @@ namespace WebApp.Helpers.Products.Filtering.Filters
         private readonly int _brandId;
         public BelongsToBrand(int brandId) => _brandId = brandId;
 
-        public IEnumerable<Product> Apply(IEnumerable<Product> request)
+        public IQueryable<Product> Apply(IQueryable<Product> request)
             => request.Where(e => e.BrandId == _brandId);
 
         public static IFilter<Product> CreateInstance(string value)

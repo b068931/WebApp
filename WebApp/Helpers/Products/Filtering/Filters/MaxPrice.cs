@@ -8,7 +8,7 @@ namespace WebApp.Helpers.Products.Filtering.Filters
         private readonly int _maxPrice;
         public MaxPrice(int maxPrice) => _maxPrice = maxPrice;
 
-        public IEnumerable<Product> Apply(IEnumerable<Product> request)
+        public IQueryable<Product> Apply(IQueryable<Product> request)
             => request.Where(e => e.Price <= _maxPrice);
 
         public static IFilter<Product> CreateInstance(string value) 

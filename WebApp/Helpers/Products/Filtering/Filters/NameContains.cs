@@ -8,7 +8,7 @@ namespace WebApp.Helpers.Products.Filtering.Filters
         private readonly string _substring;
         public NameContains(string substring) => _substring = substring;
 
-        public IEnumerable<Product> Apply(IEnumerable<Product> request)
+        public IQueryable<Product> Apply(IQueryable<Product> request)
             => request.Where(e => e.Name.Contains(_substring));
 
         public static IFilter<Product> CreateInstance(string value) 

@@ -8,7 +8,7 @@ namespace WebApp.Helpers.Products.Filtering.Filters
 		private readonly int _categoryId;
 		public BelongsToCategory(int categoryId) => _categoryId = categoryId;
 
-		public IEnumerable<Product> Apply(IEnumerable<Product> request)
+		public IQueryable<Product> Apply(IQueryable<Product> request)
 			=> request.Where(e => e.CategoryId == _categoryId);
 
 		public static IFilter<Product> CreateInstance(string value)
