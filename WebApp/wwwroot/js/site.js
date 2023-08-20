@@ -18,6 +18,29 @@
 }(jQuery));
 
 (function ($) {
+    $.fn.animatedSlideDown = function (target, maximizer) {
+        return this.each(function () {
+            target.hide();
+            $(this).on("click", function () {
+                if (target.is(":hidden")) {
+                    target.slideDown(
+                        "fast",
+                        () => maximizer.html("-")
+                    );
+                }
+                else {
+                    maximizer.html("+");
+                    target.slideUp(
+                        "fast",
+                        () => maximizer.html("+")
+                    );
+                }
+            });
+        });
+    };
+}(jQuery));
+
+(function ($) {
     $.fn.animatedToggle = function (target) {
         return this.each(function () {
             target.css("opacity", 0);

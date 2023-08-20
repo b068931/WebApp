@@ -4,37 +4,77 @@
 	<img id="showSearch" class="p-2" src="/resources/lookup.svg"/>
 </button>
 
-<div id="searchInputsContainer" class="position-fixed top-0 start-0 vh-100 w-25 border-end overflow-auto d-none" style="z-index:2001">
+<div id="searchInputsContainer" class="search-bar position-fixed top-0 start-0 vh-100 border-end overflow-auto d-none" style="z-index:2001">
 	<div class="d-flex flex-column">
-		<div class="p-2 border-bottom">
-			<label for="query" class="form-label prevent-select">Пошук за назвою:</label>
-			<input value="@Model.query" type="text" class="form-control" id="query" />
+		<div class="d-flex flex-column search-element">
+			<div class="d-flex flex-row mx-2 prevent-select search-toggler" role="button">
+				<span class="me-auto my-auto">Назва</span>
+				<h2 class="my-auto maximizer">+</h2>
+			</div>
+			<div class="search-target">
+				<div class="p-2">
+					<label for="query" class="form-label">Пошук за назвою:</label>
+					<input value="@Model.query" type="text" class="form-control" id="query" />
+				</div>
+			</div>
 		</div>
-		<div class="p-2 border-bottom">
-			<label for="category" class="form-label prevent-select">Категорія для пошуку:</label>
-			<select asp-items="@Model.categories" class="form-control" id="category">
-				<option value="0">Не вказано</option>
-			</select>
+		<div class="d-flex flex-column search-element">
+			<div class="d-flex flex-row mx-2 prevent-select search-toggler" role="button">
+				<span class="me-auto my-auto">Категорія</span>
+				<h2 class="maximizer my-auto maximizer">+</h2>
+			</div>
+			<div class="search-target">
+				<div class="p-2">
+					<label for="category" class="form-label">Категорія для пошуку:</label>
+					<select asp-items="@Model.categories" class="form-control" id="category">
+						<option value="0">Не вказано</option>
+					</select>
+				</div>
+			</div>
 		</div>
-		<div class="p-2 border-bottom">
-			<label for="brand" class="form-label prevent-select">Бренд товарів:</label>
-			<select asp-items="@Model.brands" class="form-control" id="brand">
-				<option value="0">Не вказано</option>
-			</select>
+		<div class="d-flex flex-column search-element">
+			<div class="d-flex flex-row mx-2 prevent-select search-toggler" role="button">
+				<span class="me-auto my-auto">Бренд</span>
+				<h2 class="maximizer my-auto maximizer">+</h2>
+			</div>
+			<div class="search-target">
+				<div class="p-2">
+					<label for="brandSearch" class="form-label">Бренд товарів:</label>
+					<select asp-items="@Model.brands" id="brandSearch" class="form-control">
+						<option value="0">Не вказано</option>
+					</select>
+				</div>
+			</div>
 		</div>
-		<div class="p-2 border-bottom">
-			<label for="maxPrice" class="form-label prevent-select">Макс. ціна:</label>
-			<input type="number" class="form-control" id="maxPrice" />
+		<div class="d-flex flex-column search-element">
+			<div class="d-flex flex-row mx-2 prevent-select search-toggler" role="button">
+				<span class="me-auto my-auto">Ціна</span>
+				<h2 class="maximizer my-auto maximizer">+</h2>
+			</div>
+			<div class="search-target">
+				<div class="p-2 border-bottom">
+					<label for="maxPrice" class="form-label">Макс. ціна:</label>
+					<input type="number" class="form-control" id="maxPrice" />
+				</div>
+				<div class="p-2">
+					<label for="minPrice" class="form-label">Мін. ціна:</label>
+					<input type="number" class="form-control" id="minPrice" />
+				</div>
+			</div>
 		</div>
-		<div class="p-2 border-bottom">
-			<label for="minPrice" class="form-label prevent-select">Мін. ціна:</label>
-			<input type="number" class="form-control" id="minPrice" />
+		<div class="d-flex flex-column search-element">
+			<div class="d-flex flex-row mx-2 prevent-select search-toggler" role="button">
+				<span class="me-auto my-auto">Рейтинг</span>
+				<h2 class="maximizer my-auto maximizer">+</h2>
+			</div>
+			<div class="search-target">
+				<div class="p-2">
+					<label for="minRating" class="form-label">Мін. рейтинг (від 0 до 10):</label>
+					<input type="number" class="form-control" id="minRating" />
+				</div>
+			</div>
 		</div>
-		<div class="p-2 border-bottom">
-			<label for="minRating" class="form-label prevent-select">Мін. рейтинг (від 0 до 10):</label>
-			<input type="number" class="form-control" id="minRating" />
-		</div>
-		<div class="p-2">
+		<div class="p-2 mt-auto">
 			<button id="searchButton" class="btn btn-outline-primary w-100">Пошук</button>
 		</div>
 	</div>

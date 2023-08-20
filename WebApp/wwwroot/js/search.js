@@ -58,7 +58,7 @@
 			maxid: 0
 		};
 
-		var brand = $("#brand").val();
+		var brand = $("#brandSearch").val();
 		if (brand != 0) {
 			newSearchQuery["brand"] = brand;
 		}
@@ -102,4 +102,13 @@
 	});
 
 	readSearchAndServe();
+
+	$(".search-element").each(function () {
+		$(this)
+			.find(".search-toggler")
+			.animatedSlideDown(
+				$(this).find(".search-target"),
+				$(this).find(".maximizer")
+			);
+	});
 });

@@ -177,3 +177,7 @@ body {
 .gallery {
 	background: #A0A0A0;
 }
+
+.search-bar {
+	width: 25rem;
+}
