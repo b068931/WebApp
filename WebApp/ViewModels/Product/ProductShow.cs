@@ -18,7 +18,7 @@ namespace WebApp.ViewModels.Product
         public int Rating { get; set; }
         public int ReviewsCount { get; set; }
 
-        public string? BrandName { get; set; }
+        public (string Name, int ImageId)? BrandInfo { get; set; }
 
         public int MainImageId { get; set; }
         public List<int> ProductImagesIds { get; set; } = default!;

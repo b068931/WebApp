@@ -76,10 +76,13 @@ namespace WebApp.Services.Implementation
 		}
 		public List<SelectListItem> GetSelectList()
 		{
-			return _database.Categories
+			List<Category> categories = _database.Categories
 				.AsNoTracking()
 				.Where(e => e.IsLast)
-				.Select(e => new SelectListItem() { Value = e.Id.ToString(), Text = e.Name })
+				.ToList();
+			
+			return categories
+				.Select(e => new SelectListItem() { Value = e.Id.ToString(), Text = BackTrackCategory(e.Id) })
 				.ToList();
 		}
 		public List<SelectListItem> GetSelectListWithSelectedId(int categoryId)
@@ -156,6 +159,24 @@ namespace WebApp.Services.Implementation
 			foundCategory.IsPopular ^= true;
 
 			_database.SaveChanges();
+		}
+		public string BackTrackCategory(int categoryId)
+		{
+			string fullCategoryName = "";
+			Category? foundCategory = FindCategory(categoryId);
+
+			do
+			{
+				fullCategoryName = foundCategory.Name + "/" + fullCategoryName;
+
+				_database.Entry(foundCategory)
+					.Reference(e => e.Parent)
+					.Load();
+
+				foundCategory = foundCategory.Parent;
+			} while(foundCategory != null);
+
+			return fullCategoryName;
 		}
 
 		public void CreateCategory(int? parentId, string newCategoryName)

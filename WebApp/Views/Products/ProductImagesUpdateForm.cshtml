@@ -16,7 +16,7 @@ else
 						<img src="/images/image/@Model.images[index]" class="card-img-top border-bottom" alt="Product image">
 						<div class="card-body d-flex">
 							<div class="border-top pt-2 mt-auto w-100">
-								<button data-myid="@Model.images[index]" class="main-image-btn btn btn-success me-1">Set As Main Image</button><button data-myid="@Model.images[index]" class="delete-image-btn btn btn-danger">Delete</button>
+								<button data-myid="@Model.images[index]" class="main-image-btn w-100 btn btn-outline-secondary me-1">Зробити головним зображенням</button><button data-myid="@Model.images[index]" class="delete-image-btn w-100 mt-3 btn btn-outline-danger">Видалити</button>
 							</div>
 						</div>
 					</div>
@@ -38,7 +38,7 @@ else
 		<div class="text-danger" asp-validation-summary="ModelOnly"></div>
 		<input name="newMainImageId" id="mainImage" type="hidden" value="0"/>
 		<input name="productId" type="hidden" value="@Model.productId"/>
-		<input type="submit" value="Confirm" class="btn btn-success w-100"/>
+		<input type="submit" value="Підтвердити" class="btn btn-success w-100"/>
 	</form>
 }
 

@@ -17,6 +17,7 @@ namespace WebApp.Services.Interfaces
 
 		bool CheckIfLast(int categoryId);
 		void SwitchPopularity(int categoryId);
+		string BackTrackCategory(int categoryId);
 
 		void SalvageCategory(int categoryId, int destinationId);
 		void CreateCategory(int? parentId, string newCategoryName);

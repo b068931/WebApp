@@ -1,53 +1,67 @@
 ﻿@model WebApp.ViewModels.Product.ProductShow
 
-<form action="/products/action/delete" method="post">
-	@Html.AntiForgeryToken()
-	<input type="hidden" value="@Model.Id" name="id" />
-	<input type="submit" class="btn btn-danger" value="delete" />
-</form>
+<div class="d-flex flex-row w-100">
+	<form action="/products/action/delete" method="post" class="me-auto">
+		@Html.AntiForgeryToken()
+		<input type="hidden" value="@Model.Id" name="id" />
+		<input type="submit" class="btn btn-outline-danger ms-3" value="Видалити" />
+	</form>
 
-<form action="/products/action/update" method="get">
-	<input type="hidden" value="@Model.Id" name="id" />
-	<input type="submit" class="btn btn-warning" value="update" />
-</form>
+	<form action="/products/action/update" method="get">
+		<input type="hidden" value="@Model.Id" name="id" />
+		<input type="submit" class="btn btn-outline-dark me-3" value="Змінити" />
+	</form>
 
-<form action="/products/images/action/update" method="get">
-	<input type="hidden" value="@Model.Id" name="id" />
-	<input type="submit" class="btn btn-warning" value="update images" />
-</form>
+	<form action="/products/images/action/update" method="get">
+		<input type="hidden" value="@Model.Id" name="id" />
+		<input type="submit" class="btn btn-outline-dark mx-3" value="Керувати Зображеннями" />
+	</form>
+</div>
 
-<br />
-
-<div class="d-flex w-50">
-	<div class="align-self-center">
-		<div class="d-flex justify-content-center align-content-center flex-column p-1" style="max-width:125px;">
-			@foreach(var imageId in Model.ProductImagesIds)
-			{
-				<img tabindex="0" width="40" height="40" src="/images/image/@imageId" class="border border-1 p-1 min-image m-2" role="button"/>
-			}
+<div class="d-flex flex-row mt-5">
+	<div class="d-flex ms-3 w-50">
+		<div class="align-self-center">
+			<div class="d-flex justify-content-center align-content-center flex-column p-1 pt-0" style="max-width:125px;">
+				@for(int index = 0; (index < 3) && (index < Model.ProductImagesIds.Count); ++index)
+				{
+					<img tabindex="0" width="40" height="40" src="/images/image/@Model.ProductImagesIds[index]" class="rounded-1 min-image m-2" role="button"/>
+				}
+			</div>
 		</div>
-	</div>
-	<div class="flex-fill align-self-center">
-		<div class="col d-flex border-start border-end">
-			<div id="shownImageScrollContainer" class="my-2 mx-auto" style="max-width:470px;max-height:420px;">
-				<img id="shownImage" width="450" height="300" src="/images/image/@Model.MainImageId" style="cursor:zoom-in;"/>
+		<div class="flex-fill align-self-start">
+			<div class="col d-flex">
+				<div id="shownImageScrollContainer" class="my-2 mx-auto" style="max-width:448px;max-height:665px;">
+					<img id="shownImage" class="rounded-1" width="448" height="665" src="/images/image/@Model.MainImageId" style="cursor:zoom-in;"/>
+				</div>
 			</div>
 		</div>
 	</div>
+	<div>
+		<p>Name: @Model.Name</p>
+		<p>Description: @Model.Description</p>
+		<p>Price: @Model.Price</p>
+		<p>Discount: @Model.Discount</p>
+		<p>Viewscount: @Model.ViewsCount</p>
+		<p>Stars count: @Model.Rating</p>
+		<p>Ratings count: @Model.ReviewsCount</p>
+	</div>
+	@if(Model.BrandInfo != null)
+	{
+		<div class="d-flex flex-column ms-auto">
+			<img id="brandImage" width="200" height="80" src="/images/brandImage/@Model.BrandInfo.Value.ImageId" alt="@Model.BrandInfo.Value.Name"/>
+		</div>
+	}
 </div>
 
-<br />
-
-<p>Name: @Model.Name</p>
-<p>Description: @Model.Description</p>
-<p>Price: @Model.Price</p>
-<p>Discount: @Model.Discount</p>
-<p>Viewscount: @Model.ViewsCount</p>
-<p>Stars count: @Model.Rating</p>
-<p>Ratings count: @Model.ReviewsCount</p>
-<p>My brand name: @(
-	(Model.BrandName != null) ? Model.BrandName : ""
-)</p>
+<div class="mt-5">
+	<h3>Вся галерея зображень:</h3>
+	<div class="gallery d-flex flex-row flex-wrap justify-content-center w-100 p-4 rounded-1">
+		@for(int index = 0; index < Model.ProductImagesIds.Count; ++index)
+		{
+			<img tabindex="0" width="40" height="40" src="/images/image/@Model.ProductImagesIds[index]" class="rounded-1 min-image m-2" role="button"/>
+		}
+	</div>
+</div>
 
 @section scripts {
 	<script type="text/javascript" src="~/js/productShow.js"></script>

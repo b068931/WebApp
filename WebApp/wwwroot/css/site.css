@@ -169,3 +169,11 @@ body {
 #searchInputsContainer {
 	background: #F2F2EF;
 }
+
+.btn-outline-dark:hover {
+	background: #374709 !important;
+}
+
+.gallery {
+	background: #A0A0A0;
+}

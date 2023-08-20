@@ -137,7 +137,9 @@ namespace WebApp.Services.Implementation
 				Description = foundProduct.Description,
 				Price = foundProduct.Price,
 				Discount = foundProduct.Discount,
-				BrandName = (foundProduct.Brand == null) ? null : foundProduct.Brand.Name,
+				BrandInfo = (foundProduct.Brand == null) 
+					? null 
+					: (foundProduct.Brand.Name, foundProduct.Brand.ImageId ?? 0),
 				MainImageId = foundProduct.MainImageId ?? 0,
 				ProductImagesIds = _images.GetProductImages(productId)
 			};

@@ -1,15 +1,20 @@
 ﻿$(function () {
-    var imageMaxSide = 40;
-    var shownImageWidth = 470;
-    var shownImageHeight = 420;
+    var previewImageWidth = 118.5;
+    var previewImageHeight = 218.5;
+
+    var shownImageWidth = 447.5;
+    var shownImageHeight = 665;
+
+    var brandImageWidth = 200;
+    var brandImageHeight = 200;
 
     $(".min-image").each(function (index, element) {
         if ($(this).prop("complete") === true) {
-            $(this).makeImageFitBox(imageMaxSide, imageMaxSide);
+            $(this).makeImageFitBox(previewImageWidth, previewImageHeight);
         }
 
         $(this).on("load", function () {
-            $(this).makeImageFitBox(imageMaxSide, imageMaxSide);
+            $(this).makeImageFitBox(previewImageWidth, previewImageHeight);
         });
 
         $(this).on("click", function () {
@@ -34,6 +39,14 @@
             isZoomed = true;
         }
     }
+
+    if ($("#brandImage").prop("complete") === true) {
+        $("#brandImage").makeImageFitBox(brandImageWidth, brandImageHeight);
+    }
+
+    $("#brandImage").on("load", function () {
+        $(this).makeImageFitBox(brandImageWidth, brandImageHeight);
+    });
 
     if ($("#shownImage").prop("complete") === true) {
         $("#shownImage").makeImageFitBox(shownImageWidth, shownImageHeight);
