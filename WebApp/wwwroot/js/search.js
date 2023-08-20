@@ -21,6 +21,18 @@
 			.html("Більше нічого немає");
 	}
 
+	function updateSearchPage(element) {
+		if (searchQuery["maxdate"] != undefined) {
+			searchQuery["maxdate"] = element.date;
+		}
+		else if (searchQuery["maxviews"] != undefined) {
+			searchQuery["maxviews"] = element.viewsCount;
+		}
+		else if (searchQuery["maxstars"] != undefined) {
+			searchQuery["maxstars"] = element.stars;
+		}
+	}
+
 	function serveNewPortion() {
 		$.get(
 			"/products/search",
@@ -37,6 +49,8 @@
 							addNewProduct(element);
 						}
 					)
+
+					updateSearchPage(data[data.length - 1]);
 				}
 				else {
 					alert("Ooops. Unable to load new products.");
@@ -87,6 +101,33 @@
 		var minRating = $("#minRating").val();
 		if (minRating != "") {
 			newSearchQuery["minrating"] = minRating;
+		}
+
+		var sortType = $("#sortType").val();
+		if (sortType != 0) {
+			newSearchQuery["ordertype"] = $("#orderType").val();
+			switch (sortType) {
+				case "date":
+					newSearchQuery["maxdate"] =
+						(newSearchQuery["ordertype"] == "regular")
+							? "0001-01-01"
+							: "9999-12-31";
+					break;
+
+				case "views":
+					newSearchQuery["maxviews"] = 
+						(newSearchQuery["ordertype"] == "regular")
+							? 0
+							: 2147483647;
+					break;
+
+				case "stars":
+					newSearchQuery["maxstars"] =
+						(newSearchQuery["ordertype"] == "regular")
+							? 0
+							: 2147483647;
+					break;
+			}
 		}
 
 		searchQuery = newSearchQuery;

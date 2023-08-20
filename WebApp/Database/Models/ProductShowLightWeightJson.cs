@@ -10,7 +10,10 @@
         public decimal Price { get; set; }
         public int Discount { get; set; }
 
-        public string? BrandName { get; set; }
+        public int Stars { get; set; }
+        public DateOnly Date { get; set; }
+        public int ViewsCount { get; set; }
+
         public int MainImageId { get; set; }
     }
 }

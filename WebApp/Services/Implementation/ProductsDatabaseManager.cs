@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Runtime.CompilerServices;
+﻿using Microsoft.EntityFrameworkCore;
 using WebApp.Database;
 using WebApp.Database.Entities;
 using WebApp.Database.Models;
@@ -64,20 +61,24 @@ namespace WebApp.Services.Implementation
 				.Property(e => e.MainImageId)
 				.IsModified = false;
 
+			_database.Products
+				.Entry(updateProduct)
+				.Property(e => e.Created)
+				.IsModified = false;
+
 			_database.SaveChanges();
 		}
 
 		private List<ProductShowLightWeightJson> PerformSearch(
 			List<IFilter<Product>> filters,
-			int searchId,
+			IOrdering<Product> paginator,
 			int pageSize)
 		{
 			IQueryable<Product> request = _database.Products
 				.AsNoTracking()
-				.Include(e => e.Brand)
-				.OrderBy(e => e.Id)
-				.Where(e => e.Id > searchId);
+				.Include(e => e.Brand);
 
+			request = paginator.Apply(request);
 			foreach (IFilter<Product> filter in filters)
 			{
 				request = filter.Apply(request);
@@ -91,7 +92,9 @@ namespace WebApp.Services.Implementation
 				   Description = e.Description,
 				   Price = e.Price,
 				   Discount = e.Discount,
-				   BrandName = (e.Brand == null) ? "Без бренду" : e.Brand.Name,
+				   Stars = e.Stars,
+				   Date = e.Created,
+				   ViewsCount = e.ViewsCount,
 				   MainImageId = e.MainImageId ?? 0
 			   })
 			   .Take(pageSize)
@@ -171,9 +174,9 @@ namespace WebApp.Services.Implementation
 
 		public List<ProductShowLightWeightJson> Search(
 			List<IFilter<Product>> filters,
-			int currentMaxId)
+			IOrdering<Product> paginator)
 		{
-			return PerformSearch(filters, currentMaxId, Page.DefaultPageSize);
+			return PerformSearch(filters, paginator, 1);
 		}
 
 		public Product CreateProduct(ProductCreate vm)

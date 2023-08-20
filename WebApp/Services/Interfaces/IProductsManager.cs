@@ -12,7 +12,7 @@ namespace WebApp.Services.Interfaces
 
 		List<ProductShowLightWeightJson> Search(
 			List<IFilter<Product>> filters,
-			int currentMaxId
+			IOrdering<Product> paginator
 		);
 
 		ProductShow GetProductShowVM(int productId);

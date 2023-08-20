@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
-using System.Text.Json;
+using Microsoft.Net.Http.Headers;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using WebApp.Database.Entities;
 using WebApp.Helpers;
 using WebApp.Helpers.Products.Filtering;
 using WebApp.Helpers.Products.Filtering.Filters;
+using WebApp.Helpers.Products.Filtering.OrderTypes;
 using WebApp.Services.Interfaces;
 using WebApp.ViewModels.Product;
 
@@ -14,11 +17,14 @@ namespace WebApp.Controllers.Products
 	public class ProductsController : Controller
 	{
 		private readonly ProductFiltersFactory _filtersFactory;
+		private readonly ProductOrderFactory _ordersFactory;
+
 		private readonly IBrandsManager _brands;
 		private readonly ICategoriesManager _categories;
 		private readonly IProductImagesManager _images;
 		private readonly IProductsManager _products;
 		private readonly ILogger<ProductsController> _logger;
+		private readonly JsonSerializerSettings _jsonSettings;
 
 		private IActionResult GetProductCreateView()
 		{
@@ -65,6 +71,13 @@ namespace WebApp.Controllers.Products
 			_images = images;
 			_products = products;
 			_logger = logger;
+			_jsonSettings = new JsonSerializerSettings()
+			{
+				ContractResolver = new DefaultContractResolver()
+				{
+					NamingStrategy = new CamelCaseNamingStrategy()
+				}
+			};
 
 			_filtersFactory = new ProductFiltersFactory(
 				new Dictionary<string, Func<string, IFilter<Product>>>()
@@ -77,23 +90,40 @@ namespace WebApp.Controllers.Products
 					{"minrating", MinRating.CreateInstance}
 				}
 			);
+
+			_ordersFactory = new ProductOrderFactory(
+				new Dictionary<string, Func<int, string, bool, IOrdering<Product>>>()
+				{
+					{"maxdate", DateOrder.CreateInstance},
+					{"maxviews", ViewsOrder.CreateInstance},
+					{"maxstars", RatingsOrder.CreateInstance}
+				}
+			);
 		}
 
 		[HttpGet("search")]
-		public IActionResult Search([FromQuery(Name = "maxid")] int page)
+		public IActionResult Search(
+			[FromQuery(Name = "maxid")] int maxId)
 		{
 			return PerformAction(
 				() =>
 				{
-					List<IFilter<Product>> filters = _filtersFactory.ParseFilters(
-						Request.Query
-							.Where(e => e.Key != "maxid")
-							.ToDictionary(e => e.Key, e => e.Value.ToString())
-					);
+					Dictionary<string, string> searchParameters =
+						Request.Query.ToDictionary(e => e.Key, e => e.Value.ToString());
 
-					return Json(
-						_products.Search(filters, page),
-						new JsonSerializerOptions(JsonSerializerDefaults.Web)
+					List<IFilter<Product>> filters = 
+						_filtersFactory.ParseFilters(searchParameters);
+
+					IOrdering<Product> paginator =
+						_ordersFactory.CreateOrdering(maxId, searchParameters);
+
+					//System.Text.Json does not support DateOnly objects for some reason. Using Newtonsoft.Json instead
+					return Content(
+						JsonConvert.SerializeObject(
+							_products.Search(filters, paginator),
+							_jsonSettings
+						),
+						"application/json"
 					);
 				},
 				null,

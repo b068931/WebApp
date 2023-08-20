@@ -1,4 +1,6 @@
-﻿namespace WebApp.Database.Entities
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace WebApp.Database.Entities
 {
 	public class Product
 	{
@@ -13,6 +15,15 @@
 
 		public int StarsCount { get; set; }
 		public int RatingsCount { get; set; }
+
+		[NotMapped]
+		public int Stars
+		{
+			get
+			{
+				return StarsCount / ((RatingsCount == 0) ? 1 : RatingsCount);
+			}
+		}
 
 		public int? BrandId { get; set; }
 		public Brand? Brand { get; set; }
