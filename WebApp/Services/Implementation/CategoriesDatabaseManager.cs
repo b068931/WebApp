@@ -5,6 +5,7 @@ using WebApp.Database.Entities;
 using WebApp.Database.Models;
 using WebApp.Helpers;
 using WebApp.Services.Interfaces;
+using WebApp.ViewModels.Categories;
 
 namespace WebApp.Services.Implementation
 {
@@ -30,6 +31,22 @@ namespace WebApp.Services.Implementation
 					.Entry(category)
 					.Collection(e => e.Children)
 					.Load();
+		}
+		private List<CategoryVM> ConvertChildrenToVM(Category category)
+		{
+			if (!category.Children.TrueForAll(e => e.IsLast))
+				throw new ArgumentException("This function is non recursive. All children must have IsLast == true");
+
+			return category.Children
+				.Select(e => new CategoryVM()
+				{
+					Id = e.Id,
+					IsLast = e.IsLast,
+					IsPopular = e.IsPopular,
+					Name = e.Name,
+					SubCategories = new List<CategoryVM>()
+				})
+				.ToList();
 		}
 
 		private void RecursiveRemoveCategory(Category category)
@@ -127,6 +144,29 @@ namespace WebApp.Services.Implementation
 					}
 				)
 				.ToList();
+		}
+		public List<CategoryVM> GetPopularCategories()
+		{
+			List<Category> popularCategories = _database.Categories
+				.AsNoTracking()
+				.Include(e => e.Children)
+				.Where(e => e.IsPopular && !e.IsLast)
+				.ToList();
+
+			List<CategoryVM> result = new List<CategoryVM>();
+			foreach(var category in popularCategories)
+			{
+				result.Add(new CategoryVM()
+				{
+					Id = category.Id,
+					Name = category.Name,
+					IsLast = category.IsLast,
+					IsPopular = category.IsPopular,
+					SubCategories = ConvertChildrenToVM(category)
+				});
+			}
+
+			return result;
 		}
 
 		public bool CheckIfLast(int categoryId)

@@ -50,7 +50,12 @@ namespace WebApp.Services.Implementation
 		{
 			return _database.Brands
 					.AsNoTracking()
-					.Select(e => new Database.Models.Brand() { Id = e.Id, Name = e.Name })
+					.Select(e => new Database.Models.Brand() 
+					{ 
+						Id = e.Id,
+						Name = e.Name,
+						ImageId = e.ImageId ?? 0
+					})
 					.ToList();
 		}
 		public List<SelectListItem> GetSelectList() 

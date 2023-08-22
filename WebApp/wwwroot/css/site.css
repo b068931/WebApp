@@ -181,3 +181,16 @@ body {
 .search-bar {
 	width: 25rem;
 }
+
+.brand-rectangle {
+	width:200px;
+	height:200px;
+
+	border:solid #000000;
+	border-width: 1px;
+	border-radius: 4.25rem;
+}
+
+.brand-rectangle:hover {
+	border:dashed #000000;
+}

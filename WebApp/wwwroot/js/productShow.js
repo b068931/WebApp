@@ -12,10 +12,11 @@
         if ($(this).prop("complete") === true) {
             $(this).makeImageFitBox(previewImageWidth, previewImageHeight);
         }
-
-        $(this).on("load", function () {
-            $(this).makeImageFitBox(previewImageWidth, previewImageHeight);
-        });
+        else {
+            $(this).on("load", function () {
+                $(this).makeImageFitBox(previewImageWidth, previewImageHeight);
+            });
+        }
 
         $(this).on("click", function () {
             $("#shownImage").attr("src", $(this).attr("src"));
@@ -43,24 +44,26 @@
     if ($("#brandImage").prop("complete") === true) {
         $("#brandImage").makeImageFitBox(brandImageWidth, brandImageHeight);
     }
-
-    $("#brandImage").on("load", function () {
-        $(this).makeImageFitBox(brandImageWidth, brandImageHeight);
-    });
+    else {
+        $("#brandImage").on("load", function () {
+            $(this).makeImageFitBox(brandImageWidth, brandImageHeight);
+        });
+    }
 
     if ($("#shownImage").prop("complete") === true) {
         $("#shownImage").makeImageFitBox(shownImageWidth, shownImageHeight);
     }
-
-    $("#shownImage")
-        .on("load", function () {
-            $(this).makeImageFitBox(shownImageWidth, shownImageHeight);
-            if (isZoomed) {
-                $("#shownImageScrollContainer").removeClass("overflow-auto");
-                isZoomed = false;
-            }
-        })
-        .on("click", function () {
-            toggleZoom($(this));
-        });
+    else {
+        $("#shownImage")
+            .on("load", function () {
+                $(this).makeImageFitBox(shownImageWidth, shownImageHeight);
+                if (isZoomed) {
+                    $("#shownImageScrollContainer").removeClass("overflow-auto");
+                    isZoomed = false;
+                }
+            })
+            .on("click", function () {
+                toggleZoom($(this));
+            });
+    }
 });

@@ -2,6 +2,7 @@
 using WebApp.Database.Entities;
 using WebApp.Database.Models;
 using WebApp.Helpers;
+using WebApp.ViewModels.Categories;
 
 namespace WebApp.Services.Interfaces
 {
@@ -13,6 +14,7 @@ namespace WebApp.Services.Interfaces
 
 		Category GetBaseCategory();
 		List<CategoryJson> GetCategoriesOnParent(int? parentId);
+		List<CategoryVM> GetPopularCategories();
 
 		bool CheckIfLast(int categoryId);
 		void SwitchPopularity(int categoryId);

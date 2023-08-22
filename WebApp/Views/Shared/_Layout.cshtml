@@ -9,7 +9,7 @@
 	<link rel="stylesheet" href="~/WebApp.styles.css" asp-append-version="true" />
 </head>
 <body>
-	<header class="mb-3">
+	<header>
 		<nav class="header navbar navbar-expand-sm navbar-light">
 			<div class="container-fluid">
 				<a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
@@ -72,7 +72,7 @@
 			</div>
 		</div>
 	</header>
-	<div class="container-fluid">
+	<div class="container-fluid p-0 m-0">
 		<main role="main">
 			@RenderBody()
 		</main>
@@ -82,7 +82,7 @@
 		<div class="d-flex flex-column">
 			<div class="d-flex flex-row justify-content-end text-wrap">
 				<div class="d-flex flex-column small-block me-5">
-					<a class="link_underline" href="#">Як це працює?</a>
+					<a class="link_underline" href="/about/us">Як це працює?</a>
 					<span class="mt-4">Україна, 02121, місто Київ, Харківське шосе, будинок 201-203, літера 4Г</span>
 				</div>
 				<div class="d-flex flex-column small-block me-5">
