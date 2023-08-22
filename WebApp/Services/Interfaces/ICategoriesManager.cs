@@ -13,7 +13,6 @@ namespace WebApp.Services.Interfaces
 
 		Category GetBaseCategory();
 		List<CategoryJson> GetCategoriesOnParent(int? parentId);
-		List<CategoryJson> GetRandomCategories(int count);
 
 		bool CheckIfLast(int categoryId);
 		void SwitchPopularity(int categoryId);

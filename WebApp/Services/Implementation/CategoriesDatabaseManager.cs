@@ -128,24 +128,6 @@ namespace WebApp.Services.Implementation
 				)
 				.ToList();
 		}
-		public List<CategoryJson> GetRandomCategories(int count)
-		{
-			return _database.Categories
-				.AsNoTracking()
-				.Select(e => 
-					new CategoryJson() 
-					{ 
-						Id = e.Id,
-						Name = e.Name,
-						IsLast = e.IsLast,
-						IsPopular = e.IsPopular
-					}
-				)
-				.Where(e => e.IsLast)
-				.OrderBy(e => Guid.NewGuid())
-				.Take(count)
-				.ToList();
-		}
 
 		public bool CheckIfLast(int categoryId)
 		{

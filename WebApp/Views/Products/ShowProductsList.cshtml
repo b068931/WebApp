@@ -1,4 +1,5 @@
-﻿@model (string query, List<SelectListItem> categories, List<SelectListItem> brands)
+﻿@using WebApp.ViewModels.Product;
+@model ProductsSearchInitializator
 
 <button id="searchToggler" class="position-fixed bottom-0 end-0 border border-3 rounded-pill mb-2 me-2" style="z-index:2001">
 	<img id="showSearch" class="p-2" src="/resources/lookup.svg"/>
@@ -14,7 +15,7 @@
 			<div class="search-target">
 				<div class="p-2">
 					<label for="query" class="form-label">Пошук за назвою:</label>
-					<input value="@Model.query" type="text" class="form-control" id="query" />
+					<input value="@Model.Query" type="text" class="form-control" id="query" />
 				</div>
 			</div>
 		</div>
@@ -26,7 +27,7 @@
 			<div class="search-target">
 				<div class="p-2">
 					<label for="category" class="form-label">Категорія для пошуку:</label>
-					<select asp-items="@Model.categories" class="form-control" id="category">
+					<select asp-items="@Model.Categories" class="form-control" id="category">
 						<option value="0">Не вказано</option>
 					</select>
 				</div>
@@ -40,7 +41,7 @@
 			<div class="search-target">
 				<div class="p-2">
 					<label for="brandSearch" class="form-label">Бренд товарів:</label>
-					<select asp-items="@Model.brands" id="brandSearch" class="form-control">
+					<select asp-items="@Model.Brands" id="brandSearch" class="form-control">
 						<option value="0">Не вказано</option>
 					</select>
 				</div>
@@ -82,19 +83,13 @@
 			<div class="search-target">
 				<div class="p-2 border-bottom">
 					<label for="maxPrice" class="form-label">Тип сортування:</label>
-					<select id="sortType" class="form-control">
+					<select asp-items="@Model.SortTypes" id="sortType" class="form-control">
 						<option value="0">Не вказано</option>
-						<option value="date">Дата створення</option>
-						<option value="views">Кількість переглядів</option>
-						<option value="stars">Оцінки</option>
 					</select>
 				</div>
 				<div class="p-2">
 					<label for="minPrice" class="form-label">Напрямок:</label>
-					<select id="orderType" class="form-control">
-						<option value="regular">Зростання</option>
-						<option value="reversed">Спадання</option>
-					</select>
+					<select asp-items="@Model.Directions" id="orderType" class="form-control"></select>
 				</div>
 			</div>
 		</div>

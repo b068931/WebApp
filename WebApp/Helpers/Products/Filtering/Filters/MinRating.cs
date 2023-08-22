@@ -9,7 +9,7 @@ namespace WebApp.Helpers.Products.Filtering.Filters
 
 		public IQueryable<Product> Apply(IQueryable<Product> request)
 			=> request.Where(e => 
-				e.Stars >= _minRating
+				e.TrueRating >= _minRating
 			);
 
 		public static IFilter<Product> CreateInstance(string value) 

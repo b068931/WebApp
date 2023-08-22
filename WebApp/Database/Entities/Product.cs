@@ -11,19 +11,13 @@ namespace WebApp.Database.Entities
 
 		public decimal Price { get; set; }
 		public int Discount { get; set; }
+		public decimal TruePrice { get; set; }
+
 		public int ViewsCount { get; set; }
 
 		public int StarsCount { get; set; }
 		public int RatingsCount { get; set; }
-
-		[NotMapped]
-		public int Stars
-		{
-			get
-			{
-				return StarsCount / ((RatingsCount == 0) ? 1 : RatingsCount);
-			}
-		}
+		public int TrueRating { get; set; }
 
 		public int? BrandId { get; set; }
 		public Brand? Brand { get; set; }

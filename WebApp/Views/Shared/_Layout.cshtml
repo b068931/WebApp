@@ -50,10 +50,22 @@
 			</div>
 		</nav>
 		<div id="categoriesSelector" class="position-relative">
-			<div id="randomCategories" class="d-flex justify-content-around">
+			<div class="d-flex justify-content-around">
 				<div id="categoriesToggler" class="link_color prevent-select my-3" role="button">
 					Каталог
 				</div>
+				<a href="/products?sort=views&order=reversed" class="link_color prevent-select my-3">
+					Популярне
+				</a>
+				<a href="/products?sort=date&order=regular" class="link_color prevent-select my-3">
+					Новинки
+				</a>
+				<a href="/products?sort=discount&order=reversed" class="link_color prevent-select my-3">
+					Знижки
+				</a>
+				<a href="/products?sort=stars&order=reversed" class="link_color prevent-select my-3">
+					Високі оцінки
+				</a>
 			</div>
 			<div id="categoriesList" class="position-absolute w-100 d-flex justify-content-start d-none prevent-select" style="z-index:2000">
 				<div id="baseCategories" class="overflow-auto w-25 border-end"></div>

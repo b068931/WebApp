@@ -1,4 +1,5 @@
 ﻿$(function () {
+	const maxIntegerValue = 2147483647;
 	var searchQuery = {
 		maxid: 0
 	};
@@ -22,14 +23,20 @@
 	}
 
 	function updateSearchPage(element) {
-		if (searchQuery["maxdate"] != undefined) {
-			searchQuery["maxdate"] = element.date;
+		var searchPageMappings = {
+			sortdate: "date",
+			sortviews: "viewsCount",
+			sortstars: "trueRating",
+			sortprice: "truePrice",
+			sortdiscount: "discount"
 		}
-		else if (searchQuery["maxviews"] != undefined) {
-			searchQuery["maxviews"] = element.viewsCount;
-		}
-		else if (searchQuery["maxstars"] != undefined) {
-			searchQuery["maxstars"] = element.stars;
+
+		for (var mapping in searchPageMappings) {
+			if (Object.prototype.hasOwnProperty.call(searchPageMappings, mapping)) {
+				if (searchQuery[mapping] != undefined) {
+					searchQuery[mapping] = element[searchPageMappings[mapping]];
+				}
+			}
 		}
 	}
 
@@ -61,16 +68,25 @@
 	}
 
 	function readSearchAndServe() {
+		var newSearchQuery = {
+			maxid: 0
+		};
+
+		function chooseOnOrderType(first, second) {
+			return (newSearchQuery["ordertype"] == "regular")
+				? first
+				: second;
+		}
+		function assignSortType(name, first, second) {
+			newSearchQuery[name] = chooseOnOrderType(first, second);
+		}
+
 		$("#productsContainer").children().remove();
 		$("#loadMore")
 			.addClass("btn-outline-secondary")
 			.removeClass("btn-outline-danger")
 			.removeClass("disabled")
 			.html("Завантажити ще");
-
-		var newSearchQuery = {
-			maxid: 0
-		};
 
 		var brand = $("#brandSearch").val();
 		if (brand != 0) {
@@ -104,30 +120,18 @@
 		}
 
 		var sortType = $("#sortType").val();
-		if (sortType != 0) {
+		if (sortType != "0") {
 			newSearchQuery["ordertype"] = $("#orderType").val();
-			switch (sortType) {
-				case "date":
-					newSearchQuery["maxdate"] =
-						(newSearchQuery["ordertype"] == "regular")
-							? "0001-01-01"
-							: "9999-12-31";
-					break;
-
-				case "views":
-					newSearchQuery["maxviews"] = 
-						(newSearchQuery["ordertype"] == "regular")
-							? 0
-							: 2147483647;
-					break;
-
-				case "stars":
-					newSearchQuery["maxstars"] =
-						(newSearchQuery["ordertype"] == "regular")
-							? 0
-							: 2147483647;
-					break;
+			var sortMappings = {
+				date: { min: "0001-01-01", max: "9999-12-31" },
+				views: { min: 0, max: maxIntegerValue },
+				stars: { min: 0, max: maxIntegerValue },
+				price: { min: 0, max: 99999999 },
+				discount: { min: 0, max: maxIntegerValue }
 			}
+
+			var selectedSortMapping = sortMappings[sortType];
+			assignSortType("sort" + sortType, selectedSortMapping["min"], selectedSortMapping["max"]);
 		}
 
 		searchQuery = newSearchQuery;

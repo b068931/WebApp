@@ -32,6 +32,7 @@ namespace WebApp.Services.Implementation
 				Description = vm.Description,
 				Price = vm.Price,
 				Discount = vm.Discount,
+				TruePrice = vm.Price - (vm.Discount * vm.Price / 100),
 				CategoryId = vm.CategoryId,
 				BrandId = (vm.BrandId == 0) ? null : vm.BrandId
 			};
@@ -44,27 +45,16 @@ namespace WebApp.Services.Implementation
 		private void ChangeProduct(ProductUpdate vm)
 		{
 			ValidateCategoryId(vm.CategoryId);
-			Product updateProduct = new Product()
-			{
-				Id = vm.Id,
-				Name = vm.Name,
-				Description = vm.Description,
-				Price = vm.Price,
-				Discount = vm.Discount,
-				CategoryId = vm.CategoryId,
-				BrandId = (vm.BrandId == 0) ? null : vm.BrandId
-			};
+			Product updateProduct = FindProduct(vm.Id);
 
-			_database.Products.Update(updateProduct);
-			_database.Products
-				.Entry(updateProduct)
-				.Property(e => e.MainImageId)
-				.IsModified = false;
-
-			_database.Products
-				.Entry(updateProduct)
-				.Property(e => e.Created)
-				.IsModified = false;
+			updateProduct.Id = vm.Id;
+			updateProduct.Name = vm.Name;
+			updateProduct.Description = vm.Description;
+			updateProduct.Price = vm.Price;
+			updateProduct.Discount = vm.Discount;
+			updateProduct.TruePrice = vm.Price - (vm.Discount * vm.Price / 100);
+			updateProduct.CategoryId = vm.CategoryId;
+			updateProduct.BrandId = (vm.BrandId == 0) ? null : vm.BrandId;
 
 			_database.SaveChanges();
 		}
@@ -92,7 +82,8 @@ namespace WebApp.Services.Implementation
 				   Description = e.Description,
 				   Price = e.Price,
 				   Discount = e.Discount,
-				   Stars = e.Stars,
+				   TruePrice = e.TruePrice,
+				   TrueRating = e.TrueRating,
 				   Date = e.Created,
 				   ViewsCount = e.ViewsCount,
 				   MainImageId = e.MainImageId ?? 0

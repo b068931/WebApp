@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis;
-using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using WebApp.Database.Entities;
@@ -8,8 +6,10 @@ using WebApp.Helpers;
 using WebApp.Helpers.Products.Filtering;
 using WebApp.Helpers.Products.Filtering.Filters;
 using WebApp.Helpers.Products.Filtering.OrderTypes;
+using WebApp.Helpers.Products.Filtering.SortTypes;
 using WebApp.Services.Interfaces;
 using WebApp.ViewModels.Product;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace WebApp.Controllers.Products
 {
@@ -33,6 +33,86 @@ namespace WebApp.Controllers.Products
 		private IActionResult GetProductUpdateView(int productId)
 		{
 			return View("ProductUpdateForm", _products.GetProductUpdateVM(productId));
+		}
+		private ProductsSearchInitializator GetSearchInitialization(
+			string? query,
+			int? selectedCategory,
+			int? selectedBrand,
+			string? selectedSortType,
+			string? selectedOrderType)
+		{
+			ProductsSearchInitializator search = new ProductsSearchInitializator()
+			{
+				Query = query ?? string.Empty,
+				Categories = _categories.GetSelectListWithSelectedId(selectedCategory ?? 0),
+				Brands = _brands.GetSelectListWithSelectedId(selectedBrand ?? 0),
+				SortTypes = new List<SelectListItem>()
+				{
+					new SelectListItem()
+					{
+						Text = "Дата створення",
+						Value = "date"
+					},
+					new SelectListItem()
+					{
+						Text = "Ціна (зі знижкою)",
+						Value = "price"
+					},
+					new SelectListItem()
+					{
+						Text = "Знижки",
+						Value = "discount"
+					},
+					new SelectListItem()
+					{
+						Text = "Кількість переглядів",
+						Value = "views"
+					},
+					new SelectListItem()
+					{
+						Text = "Оцінки",
+						Value = "stars"
+					}
+				},
+				Directions = new List<SelectListItem>() 
+				{
+					new SelectListItem()
+					{
+						Text = "Зростання",
+						Value = "regular"
+					},
+					new SelectListItem()
+					{
+						Text = "Спадання",
+						Value = "reversed"
+					}
+				}
+			};
+
+			if(selectedSortType != null)
+			{
+				foreach (var sortType in search.SortTypes)
+				{
+					if (sortType.Value == selectedSortType)
+					{
+						sortType.Selected = true;
+						break;
+					}
+				}
+			}
+			if(selectedOrderType != null)
+			{
+				foreach(var orderType in search.Directions)
+				{
+					if(orderType.Value == selectedOrderType)
+					{
+						orderType.Selected = true;
+						break;
+					}
+				}
+			}
+
+			return search;
 		}
 
 		private IActionResult PerformAction(
@@ -94,9 +174,11 @@ namespace WebApp.Controllers.Products
 			_ordersFactory = new ProductOrderFactory(
 				new Dictionary<string, Func<int, string, bool, IOrdering<Product>>>()
 				{
-					{"maxdate", DateOrder.CreateInstance},
-					{"maxviews", ViewsOrder.CreateInstance},
-					{"maxstars", RatingsOrder.CreateInstance}
+					{"sortdate", DateOrder.CreateInstance},
+					{"sortviews", ViewsOrder.CreateInstance},
+					{"sortstars", RatingsOrder.CreateInstance},
+					{"sortprice", PriceOrder.CreateInstance},
+					{"sortdiscount", DiscountOrder.CreateInstance}
 				}
 			);
 		}
@@ -109,7 +191,9 @@ namespace WebApp.Controllers.Products
 				() =>
 				{
 					Dictionary<string, string> searchParameters =
-						Request.Query.ToDictionary(e => e.Key, e => e.Value.ToString());
+						Request.Query
+							.Where(e => e.Key != "maxid")
+							.ToDictionary(e => e.Key, e => e.Value.ToString());
 
 					List<IFilter<Product>> filters = 
 						_filtersFactory.ParseFilters(searchParameters);
@@ -255,15 +339,13 @@ namespace WebApp.Controllers.Products
 		public IActionResult Index(
 			[FromQuery(Name = "query")] string? query,
 			[FromQuery(Name = "brand")] int? brandId,
-			[FromQuery(Name = "category")] int? categoryId)
+			[FromQuery(Name = "category")] int? categoryId,
+			[FromQuery(Name = "sort")] string? sortType,
+			[FromQuery(Name = "order")] string? orderType)
 		{
 			return View(
 				"ShowProductsList",
-				(
-					query ?? string.Empty,
-					_categories.GetSelectListWithSelectedId(categoryId ?? 0), 
-					_brands.GetSelectListWithSelectedId(brandId ?? 0)
-				)
+				GetSearchInitialization(query, categoryId, brandId, sortType, orderType)
 			);
 		}
 	}

@@ -16,21 +16,21 @@ namespace WebApp.Helpers.Products.Filtering.OrderTypes
 
 		public IQueryable<Product> Apply(IQueryable<Product> request)
 		{
-			request = _sortDirection.ApplyOrdering(e => e.Stars, request);
+			request = _sortDirection.ApplyOrdering(e => e.TrueRating, request);
 			if(_sortDirection.IsReversed)
 			{
 				request = request
 					.Where(e =>
-						(e.Stars < _maxRating) ||
-							(e.Stars == _maxRating && e.Id > _maxId)
+						(e.TrueRating < _maxRating) ||
+							(e.TrueRating == _maxRating && e.Id > _maxId)
 					);
 			}
 			else
 			{
 				request = request
 					.Where(e =>
-						(e.Stars > _maxRating) ||
-							(e.Stars == _maxRating && e.Id > _maxId)
+						(e.TrueRating > _maxRating) ||
+							(e.TrueRating == _maxRating && e.Id > _maxId)
 					);
 			}
 

@@ -80,6 +80,14 @@ namespace WebApp.Database
 			modelBuilder.Entity<Product>()
 				.Property(e => e.Created)
 				.HasDefaultValueSql("getdate()");
+
+			modelBuilder.Entity<Product>()
+				.Property(e => e.Price)
+				.HasPrecision(10, 2);
+
+			modelBuilder.Entity<Product>()
+				.Property(e => e.TruePrice)
+				.HasPrecision(10, 2);
 		}
 	}
 }
