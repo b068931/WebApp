@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
-using WebApp.Services.Interfaces;
+using WebApp.Services.Interfaces.Grouping;
 
 namespace WebApp.Controllers.Grouping
 {

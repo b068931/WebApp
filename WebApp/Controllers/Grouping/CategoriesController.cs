@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
-using WebApp.Services.Interfaces;
+using WebApp.Services.Interfaces.Grouping;
 
 namespace WebApp.Controllers.Grouping
 {
-	[Route("/categories")]
+    [Route("/categories")]
 	public class CategoriesController : Controller
 	{
 		private readonly ICategoriesManager _categories;

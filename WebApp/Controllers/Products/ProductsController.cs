@@ -7,13 +7,14 @@ using WebApp.Helpers.Products.Filtering;
 using WebApp.Helpers.Products.Filtering.Filters;
 using WebApp.Helpers.Products.Filtering.OrderTypes;
 using WebApp.Helpers.Products.Filtering.SortTypes;
-using WebApp.Services.Interfaces;
 using WebApp.ViewModels.Product;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using WebApp.Services.Interfaces.Grouping;
+using WebApp.Services.Interfaces.Products;
 
 namespace WebApp.Controllers.Products
 {
-	[Route("/products")]
+    [Route("/products")]
 	public class ProductsController : Controller
 	{
 		private readonly ProductFiltersFactory _filtersFactory;
