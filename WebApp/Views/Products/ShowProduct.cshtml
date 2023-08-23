@@ -10,7 +10,12 @@
 
 		<form action="/products/action/update" method="get">
 			<input type="hidden" value="@Model.Id" name="id" />
-			<input type="submit" class="btn btn-outline-dark me-3" value="Змінити" />
+			<input type="submit" class="btn btn-outline-dark me-3" value="Змінити Головну Сторінку" />
+		</form>
+
+		<form action="/product/stocks" method="get">
+			<input type="hidden" value="@Model.Id" name="id" />
+			<input type="submit" class="btn btn-outline-dark mx-3" value="Керувати Наявними" />
 		</form>
 
 		<form action="/products/images/action/update" method="get">

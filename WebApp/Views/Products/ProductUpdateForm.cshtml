@@ -1,5 +1,20 @@
 ﻿@model WebApp.ViewModels.Product.ProductUpdate
 
+<div id="largeImage" class="modal fade" tabindex="-1" aria-labelledby="largeImageLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-scrollable modal-xl">
+		<div class="modal-content">
+		<div class="modal-header">
+			<h5 id="largeImageTitle" class="modal-title">[Title]</h5>
+			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		</div>
+		<div id="largeImageBody" class="modal-body"></div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+		</div>
+		</div>
+	</div>
+</div>
+
 <div class="mt-3 mx-2">
 	<form action="/products/action/update" method="post" enctype="multipart/form-data">
 		@Html.AntiForgeryToken()
@@ -43,25 +58,12 @@
 			<input asp-for=ProductImages id="productImages" class="d-none" accept="image/*" />
 			<span asp-validation-for=ProductImages class="form-text text-danger"></span>
 		</div>
-		<input type="submit" class="btn btn-success" value="Змінити" />
+		<input type="submit" class="btn btn-success w-100" value="Змінити" />
 	</form>
 
-	<div id="largeImage" class="modal fade" tabindex="-1" aria-labelledby="largeImageLabel" aria-hidden="true">
-		<div class="modal-dialog modal-dialog-scrollable modal-xl">
-			<div class="modal-content">
-			<div class="modal-header">
-				<h5 id="largeImageTitle" class="modal-title">[Title]</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			<div id="largeImageBody" class="modal-body"></div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-			</div>
-			</div>
-		</div>
-	</div>
+	<hr />
 
-	<div class="text-muted">Попередній перегляд обраних зображень:</div>
+	<div class="text-muted mt-2">Попередній перегляд обраних зображень:</div>
 	<div id="selectedImagesContainer" class="mx-3 mt-2 text-center"></div>
 </div>
 

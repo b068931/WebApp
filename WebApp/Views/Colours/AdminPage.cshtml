@@ -1,0 +1,43 @@
+﻿@model List<WebApp.Database.Models.Colour>
+
+<div class="mt-3 mx-2">
+	<a href="/admin" class="text-black mb-2">Назад</a>
+	<form id="confirmationForm" action="#" method="post" enctype="multipart/form-data">
+		@Html.AntiForgeryToken()
+		<input id="id" name="colourId" type="hidden" />
+		<div id="inputsContainer">
+			<div id="colourInfoInputs">
+				<div class="input-group">
+					<label id="textLabel" for="requestQuery" class="input-group-text">Name:</label>
+					<input id="requestQuery" name="colourName" type="text" class="form-control">
+				</div>
+				<div class="input-group mt-2">
+					<label id="colourLabel" for="colourPicker" class="input-group-text">Colour:</label>
+					<input id="colourPicker" name="colourHex" type="color" class="form-control" style="height:2.3rem;">
+				</div>
+			</div>
+
+			<input id="confirm" type="submit" value="Confirm" class="btn btn-success w-100 mt-2 d-none" />
+			<input id="abort" type="button" value="Abort" class="btn btn-danger w-100 mt-2 d-none" />
+		</div>
+	</form>
+	<div class="mt-2 w-100" id="createButtonContainer">
+		<button id="create" class="btn btn-success w-100">Create</button>
+	</div>
+	<hr />
+	<ul id="coloursList" class="list-group">
+		@foreach(var colour in Model)
+		{
+			<li data-myid="@colour.Id" class="colour-list-element d-flex list-group-item list-group-item-action list-group-item-light">
+				<div class="me-auto d-flex flex-row">
+					<div data-colourvalue="@colour.HexCode" class="colour-sample my-auto me-2 border border-1 rounded-circle" style="height:30px;width:30px;background:@colour.HexCode"></div>
+					<div class="colour-name my-auto">@colour.Name</div>
+				</div>
+			</li>
+		}
+	</ul>
+</div>
+
+@section scripts {
+	<script type="text/javascript" src="~/js/admin/coloursAdminPage.js"></script>
+}

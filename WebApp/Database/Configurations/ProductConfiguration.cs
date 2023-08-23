@@ -49,7 +49,7 @@ namespace WebApp.Database.Configurations
 
 			builder
 				.Property(e => e.TrueRating)
-				.HasComputedColumnSql("COALESCE([StarsCount] / NULLIF([RatingsCount], 0), 0)");
+				.HasComputedColumnSql("COALESCE([StarsCount] / NULLIF([RatingsCount], 0), 0)", stored: true);
 		}
 	}
 }

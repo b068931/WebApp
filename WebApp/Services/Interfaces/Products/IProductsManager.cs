@@ -10,6 +10,11 @@ namespace WebApp.Services.Interfaces.Products
         Product FindProduct(int productId);
         int GetProductMainImage(int productId);
 
+        List<Database.Models.ProductStock> GetProductStocks(int productId);
+        void CreateProductStocks(int productId, int colourId, int sizeId, int stockSize);
+        void UpdateProductStocks(int stockId, int colourId, int sizeId, int stockSize);
+        void DeleteProductStocks(int stockId);
+
         List<ProductShowLightWeightJson> Search(
             List<IFilter<Product>> filters,
             IOrdering<Product> paginator

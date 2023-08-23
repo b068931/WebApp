@@ -33,7 +33,7 @@ namespace WebApp.Controllers
             return View("MainPage", result);
 		}
 
-		[HttpGet("/about/us")]
+		[HttpGet("/aboutus")]
 		public IActionResult AboutUs()
 		{
 			return View("AboutUs", new AboutUsVM()
@@ -41,6 +41,12 @@ namespace WebApp.Controllers
 				PopularCategories = _categories.GetPopularCategories(),
 				Brands = _brands.GetAllBrands()
 			});
+		}
+
+		[HttpGet("/admin")]
+		public IActionResult AdminPanel()
+		{
+			return View("AdminPanel");
 		}
 
 		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

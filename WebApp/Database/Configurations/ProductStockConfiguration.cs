@@ -29,6 +29,10 @@ namespace WebApp.Database.Configurations
 				.WithMany(e => e.Stocks)
 				.HasForeignKey(e => e.SizeId)
 				.OnDelete(DeleteBehavior.Restrict);
+
+			builder
+				.HasIndex(e => new { e.ProductId, e.ColourId, e.SizeId })
+				.IsUnique(true);
 		}
 	}
 }

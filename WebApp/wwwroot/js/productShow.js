@@ -20,6 +20,9 @@
 
         $(this).on("click", function () {
             $("#shownImage").attr("src", $(this).attr("src"));
+            if ($("#shownImage").prop("complete") === true) {
+                $("#shownImage").makeImageFitBox(shownImageWidth, shownImageHeight);
+            }
         });
     });
 
@@ -51,7 +54,11 @@
     }
 
     if ($("#shownImage").prop("complete") === true) {
-        $("#shownImage").makeImageFitBox(shownImageWidth, shownImageHeight);
+        $("#shownImage")
+            .makeImageFitBox(shownImageWidth, shownImageHeight)
+            .on("click", function () {
+                toggleZoom($(this));
+            });
     }
     else {
         $("#shownImage")

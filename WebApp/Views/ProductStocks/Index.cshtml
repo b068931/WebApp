@@ -1,0 +1,122 @@
+﻿@model WebApp.ViewModels.Product.ProductStocksChange
+
+<div id="stockDeleteConfirmation" class="modal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Підтвердження видалення елементу</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+	  <div class="modal-body d-none">
+		  <form id="deleteConfirmationForm" action="/product/stocks/action/delete" method="post">
+			  <input type="hidden" name="productId" value="@Model.ProductId" />
+			  <input id="stockIdDeleteInput" type="hidden" name="stockId" value="0" />
+		  </form>
+	  </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Відмінити</button>
+        <button form="deleteConfirmationForm" type="submit" class="btn btn-primary">Підтвердити</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="stockChangeForm" class="modal" tabindex="-1">
+  <div class="modal-dialog modal-fullscreen">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Створення/Зміна елементу</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="#" method="post" id="stockSettingsContainer">
+			<input type="hidden" name="productId" value="@Model.ProductId" />
+			<h3>Оберіть колір</h3>
+			<fieldset id="colours" class="d-flex justify-content-center border-top">
+				@foreach(var colour in Model.Colours)
+				{
+					<input id="colour-@colour.Id" type="radio" value="@colour.Id" name="stockColour" class="colour-select radio-select d-none" />
+					<label for="colour-@colour.Id" data-myid="@colour.Id" class="prevent-select m-2 rounded-2" role="button">
+						<div class="d-flex flex-column p-3">
+							<div class="border border-1 rounded-circle mx-auto" style="height:30px;width:30px;background:@colour.HexCode"></div>
+							<div class="fw-bold mt-2">@colour.Name</div>
+						</div>
+					</label>
+				}
+			</fieldset>
+			<h3 class="mt-5">Оберіть розмір</h3>
+			<fieldset id="sizes" class="d-flex justify-content-center border-top">
+				@foreach(var size in Model.Sizes)
+				{
+					<input id="size-@size.Id" type="radio" value="@size.Id" name="stockProductsSize" class="size-select radio-select d-none" />
+					<label for="size-@size.Id" data-myid="@size.Id" class="radio-select prevent-select m-2 border border-3 rounded-2" role="button">
+						<div class="d-flex flex-column p-3">
+							<div class="fw-bold mt-2">@size.Name</div>
+						</div>
+					</label>
+				}
+			</fieldset>
+			<h3 class="mt-5">Оберіть кількість</h3>
+			<input id="stockSizeInput" type="number" name="stockSize" class="form-control"/>
+		</form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
+        <button form="stockSettingsContainer" type="submit" class="btn btn-primary">Зберегти</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="m-3">
+	@if(Model.ErrorMessage != null)
+	{
+		<div class="text-danger fw-bold mb-2">Помилка виконання запиту: @Model.ErrorMessage</div>
+	}
+	<a href="/products/product/@Model.ProductId" class="text-black mb-2">Назад на сторінку продукту</a>
+	<button id="create" class="btn btn-outline-success w-100">Створити</button>
+	<table class="table table-striped table-hover border-top pt-2 mt-3">
+        <thead>
+            <tr>
+              <th scope="col">Колір</th>
+              <th scope="col">Розмір</th>
+              <th scope="col">Кількість</th>
+              <th scope="col">Дія</th>
+            </tr>
+        </thead>
+		<tbody>
+			@foreach(var stock in Model.Stocks)
+			{
+				<tr>
+					<td class="p-3 ps-1">
+						<div class="d-flex border border-2 rounded-pill p-1">
+							<div class="rounded-circle my-auto ms-3 me-auto" style="width:30px;height:30px;background:@stock.Colour.HexCode"></div>
+							<div class="fw-bold me-auto">@stock.Colour.Name</div>
+						</div>
+					</td>
+					<td class="p-3 ps-1">
+						<div class="d-flex border border-2 rounded-pill p-1">
+							<div class="fw-bold mx-auto">@stock.Size.Name</div>
+						</div>
+					</td>
+					<td class="p-3 ps-1">
+						<div class="d-flex mt-1">
+							<span class="my-auto">@stock.ProductAmount</span>
+						</div>
+					</td>
+					<td class="p-3 ps-1">
+						<div class="d-flex mt-1">
+							<button data-stockid="@stock.Id" data-selectedcolour="@stock.Colour.Id" data-selectedsize="@stock.Size.Id" data-stocksize="@stock.ProductAmount" class="change-stock-btn btn btn-warning my-auto me-1 flex-fill">Змінити</button>
+							<button data-stockid="@stock.Id" class="delete-stock-btn btn btn-danger my-auto flex-fill">Видалити</button>
+						</div>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+</div>
+
+@section scripts {
+	<script type="text/javascript" src="~/js/productStocksChange.js"></script>
+}

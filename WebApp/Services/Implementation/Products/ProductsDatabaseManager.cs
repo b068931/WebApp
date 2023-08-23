@@ -23,6 +23,13 @@ namespace WebApp.Services.Implementation.Products
                 throw new UserInteractionException("Invalid category provided. Reload the page.");
             }
         }
+        private Database.Entities.ProductStock FindProductStock(int stockId)
+        {
+            return _database.ProductStocks.Find(stockId) ??
+                throw new UserInteractionException(
+                    string.Format("Product stock with id {0} does not exist", stockId)
+                );
+        }
 
         private Product AddNewProduct(ProductCreate vm)
         {
@@ -162,7 +169,59 @@ namespace WebApp.Services.Implementation.Products
             };
         }
 
-        public List<ProductShowLightWeightJson> Search(
+		public List<Database.Models.ProductStock> GetProductStocks(int productId)
+		{
+			return _database.ProductStocks
+                .Include(e => e.Colour)
+                .Include(e => e.Size)
+                .Where(e => e.ProductId == productId)
+                .Select(e => new Database.Models.ProductStock()
+                {
+                    Id = e.Id,
+                    ProductAmount = e.ProductAmount,
+                    Colour = new Database.Models.Colour()
+                    {
+                        Id = e.Colour.Id,
+                        Name = e.Colour.Name,
+                        HexCode = e.Colour.HexCode
+                    },
+                    Size = new Database.Models.Size()
+                    {
+                        Id = e.Size.Id,
+                        Name = e.Size.SizeName
+                    }
+                })
+                .ToList();
+		}
+		public void CreateProductStocks(int productId, int colourId, int sizeId, int stockSize)
+		{
+            Database.Entities.ProductStock newStock = new Database.Entities.ProductStock()
+            {
+                ProductAmount = stockSize,
+                ProductId = productId,
+                ColourId = colourId,
+                SizeId = sizeId
+            };
+
+            _database.ProductStocks.Add(newStock);
+            _database.SaveChanges();
+		}
+		public void UpdateProductStocks(int stockId, int colourId, int sizeId, int stockSize)
+		{
+			Database.Entities.ProductStock foundStock = FindProductStock(stockId);
+            foundStock.ColourId = colourId;
+            foundStock.SizeId = sizeId;
+            foundStock.ProductAmount = stockSize;
+
+            _database.SaveChanges();
+		}
+		public void DeleteProductStocks(int stockId)
+		{
+			_database.ProductStocks.Remove(FindProductStock(stockId));
+            _database.SaveChanges();
+		}
+
+		public List<ProductShowLightWeightJson> Search(
             List<IFilter<Product>> filters,
             IOrdering<Product> paginator)
         {
@@ -211,5 +270,5 @@ namespace WebApp.Services.Implementation.Products
 
             _database.SaveChanges();
         }
-    }
+	}
 }

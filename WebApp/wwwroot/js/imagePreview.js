@@ -34,7 +34,8 @@ $(function () {
             });
 
             var imageContainer = $("<div>", {
-                class: "border border-1 rounded m-2 p-1 d-inline-block"
+                class: "border border-1 rounded m-2 p-1 d-inline-block",
+                role: "button"
             });
 
             imageContainer.append(newImage);

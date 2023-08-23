@@ -16,6 +16,8 @@ builder.Services.AddScoped<IBrandsManager, BrandsDatabaseManager>();
 builder.Services.AddScoped<ICategoriesManager, CategoriesDatabaseManager>();
 builder.Services.AddScoped<IProductImagesManager, ProductImagesDatabaseManager>();
 builder.Services.AddScoped<IProductsManager, ProductsDatabaseManager>();
+builder.Services.AddScoped<IColoursManager, ColoursDatabaseManager>();
+builder.Services.AddScoped<ISizesManager, SizesDatabaseManager>();
 
 var app = builder.Build();
 

@@ -1,6 +1,7 @@
 ﻿@model List<WebApp.Database.Models.Brand>
 
 <div class="mt-3 mx-2">
+	<a href="/admin" class="text-black mb-2">Назад</a>
 	<form id="confirmationForm" action="#" method="post" enctype="multipart/form-data">
 		@Html.AntiForgeryToken()
 		<input id="id" name="brandId" type="hidden" />
