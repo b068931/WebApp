@@ -1,7 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Microsoft.EntityFrameworkCore;
+using WebApp.Database.Configurations;
 
 namespace WebApp.Database.Entities
 {
+	[EntityTypeConfiguration(typeof(ProductConfiguration))]
 	public class Product
 	{
 		public int Id { get; set; }
@@ -28,5 +30,7 @@ namespace WebApp.Database.Entities
 
 		public int CategoryId { get; set; }
 		public Category Category { get; set; } = default!;
+
+		public List<ProductStock> Stocks { get; set; } = default!;
 	}
 }

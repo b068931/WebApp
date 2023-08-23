@@ -1,5 +1,9 @@
-﻿namespace WebApp.Database.Entities
+﻿using Microsoft.EntityFrameworkCore;
+using WebApp.Database.Configurations;
+
+namespace WebApp.Database.Entities
 {
+	[EntityTypeConfiguration(typeof(BrandImageConfiguration))]
 	public class BrandImage
 	{
 		public int Id { get; set; }

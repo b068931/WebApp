@@ -32,7 +32,6 @@ namespace WebApp.Services.Implementation
 				Description = vm.Description,
 				Price = vm.Price,
 				Discount = vm.Discount,
-				TruePrice = vm.Price - (vm.Discount * vm.Price / 100),
 				CategoryId = vm.CategoryId,
 				BrandId = (vm.BrandId == 0) ? null : vm.BrandId
 			};
@@ -52,7 +51,6 @@ namespace WebApp.Services.Implementation
 			updateProduct.Description = vm.Description;
 			updateProduct.Price = vm.Price;
 			updateProduct.Discount = vm.Discount;
-			updateProduct.TruePrice = vm.Price - (vm.Discount * vm.Price / 100);
 			updateProduct.CategoryId = vm.CategoryId;
 			updateProduct.BrandId = (vm.BrandId == 0) ? null : vm.BrandId;
 
