@@ -1,4 +1,5 @@
-﻿using WebApp.Database.Entities;
+﻿using Microsoft.Extensions.Primitives;
+using WebApp.Database.Entities;
 
 namespace WebApp.Helpers.Products.Filtering.Filters
 {
@@ -12,7 +13,7 @@ namespace WebApp.Helpers.Products.Filtering.Filters
 				e.TrueRating >= _minRating
 			);
 
-		public static IFilter<Product> CreateInstance(string value) 
-			=> new MinRating(int.Parse(value));
+		public static IFilter<Product> CreateInstance(StringValues value) 
+			=> new MinRating(int.Parse(value.ToString()));
 	}
 }

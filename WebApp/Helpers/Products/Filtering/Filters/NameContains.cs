@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using Microsoft.Extensions.Primitives;
+using System.Runtime.Serialization;
 using WebApp.Database.Entities;
 
 namespace WebApp.Helpers.Products.Filtering.Filters
@@ -11,7 +12,7 @@ namespace WebApp.Helpers.Products.Filtering.Filters
         public IQueryable<Product> Apply(IQueryable<Product> request)
             => request.Where(e => e.Name.Contains(_substring));
 
-        public static IFilter<Product> CreateInstance(string value) 
-            => new NameContains(value);
+        public static IFilter<Product> CreateInstance(StringValues value) 
+            => new NameContains(value.ToString());
 	}
 }

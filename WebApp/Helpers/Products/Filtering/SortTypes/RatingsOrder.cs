@@ -1,4 +1,5 @@
-﻿using WebApp.Database.Entities;
+﻿using Microsoft.Extensions.Primitives;
+using WebApp.Database.Entities;
 
 namespace WebApp.Helpers.Products.Filtering.OrderTypes
 {
@@ -37,10 +38,10 @@ namespace WebApp.Helpers.Products.Filtering.OrderTypes
 			return request;
 		}
 
-		public static IOrdering<Product> CreateInstance(int maxId, string value, bool isReversed)
+		public static IOrdering<Product> CreateInstance(int maxId, StringValues value, bool isReversed)
 			=> new RatingsOrder(
 				maxId, 
-				int.Parse(value), 
+				int.Parse(value.ToString()), 
 				new GenericComparer<int>(isReversed)
 			);
 	}

@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using WebApp.Database.Entities;
+﻿using WebApp.Database.Entities;
 
 namespace WebApp.Helpers.Products.Filtering.OrderTypes
 {

@@ -11,6 +11,7 @@ using WebApp.ViewModels.Product;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WebApp.Services.Interfaces.Grouping;
 using WebApp.Services.Interfaces.Products;
+using Microsoft.Extensions.Primitives;
 
 namespace WebApp.Controllers.Products
 {
@@ -161,19 +162,20 @@ namespace WebApp.Controllers.Products
 			};
 
 			_filtersFactory = new ProductFiltersFactory(
-				new Dictionary<string, Func<string, IFilter<Product>>>()
+				new Dictionary<string, Func<StringValues, IFilter<Product>>>()
 				{
-					{"brand", BelongsToBrand.CreateInstance},
-					{"category", BelongsToCategory.CreateInstance},
+					{"brand[]", BelongsToBrand.CreateInstance},
+					{"category[]", BelongsToCategory.CreateInstance},
 					{"maxprice", MaxPrice.CreateInstance},
 					{"minprice", MinPrice.CreateInstance},
 					{"namecontains", NameContains.CreateInstance},
-					{"minrating", MinRating.CreateInstance}
+					{"minrating", MinRating.CreateInstance},
+					{"minratingscount", MinReviewsCount.CreateInstance}
 				}
 			);
 
 			_ordersFactory = new ProductOrderFactory(
-				new Dictionary<string, Func<int, string, bool, IOrdering<Product>>>()
+				new Dictionary<string, Func<int, StringValues, bool, IOrdering<Product>>>()
 				{
 					{"sortdate", DateOrder.CreateInstance},
 					{"sortviews", ViewsOrder.CreateInstance},
@@ -191,10 +193,10 @@ namespace WebApp.Controllers.Products
 			return PerformAction(
 				() =>
 				{
-					Dictionary<string, string> searchParameters =
+					Dictionary<string, StringValues> searchParameters =
 						Request.Query
 							.Where(e => e.Key != "maxid")
-							.ToDictionary(e => e.Key, e => e.Value.ToString());
+							.ToDictionary(e => e.Key, e => e.Value);
 
 					List<IFilter<Product>> filters = 
 						_filtersFactory.ParseFilters(searchParameters);

@@ -27,8 +27,8 @@
 				</div>
 				<div class="search-target">
 					<div class="p-2">
-						<label for="category" class="form-label">Категорія для пошуку:</label>
-						<select asp-items="@Model.Categories" class="form-control" id="category">
+						<label for="category" class="form-label">Категорії для пошуку:</label>
+						<select asp-items="@Model.Categories" class="form-control" id="category" multiple>
 							<option value="0">Не вказано</option>
 						</select>
 					</div>
@@ -41,8 +41,8 @@
 				</div>
 				<div class="search-target">
 					<div class="p-2">
-						<label for="brandSearch" class="form-label">Бренд товарів:</label>
-						<select asp-items="@Model.Brands" id="brandSearch" class="form-control">
+						<label for="brandSearch" class="form-label">Бренди товарів:</label>
+						<select asp-items="@Model.Brands" id="brandSearch" class="form-control" multiple>
 							<option value="0">Не вказано</option>
 						</select>
 					</div>
@@ -70,9 +70,13 @@
 					<h2 class="maximizer my-auto maximizer">+</h2>
 				</div>
 				<div class="search-target">
-					<div class="p-2">
+					<div class="p-2 border-bottom">
 						<label for="minRating" class="form-label">Мін. рейтинг (від 0 до 10):</label>
 						<input type="number" class="form-control" id="minRating" />
+					</div>
+					<div class="p-2">
+						<label for="minRating" class="form-label">Мін. кількість оцінок:</label>
+						<input type="number" class="form-control" id="minRatingsCount" />
 					</div>
 				</div>
 			</div>

@@ -1,17 +1,23 @@
-﻿using System.Runtime.Serialization;
+﻿using Microsoft.Extensions.Primitives;
 using WebApp.Database.Entities;
 
 namespace WebApp.Helpers.Products.Filtering.Filters
 {
     public class BelongsToBrand : IFilter<Product>
     {
-        private readonly int _brandId;
-        public BelongsToBrand(int brandId) => _brandId = brandId;
+        private readonly List<int> _brandsIds;
+        public BelongsToBrand(List<int> brandsIds) => _brandsIds = brandsIds;
 
         public IQueryable<Product> Apply(IQueryable<Product> request)
-            => request.Where(e => e.BrandId == _brandId);
+            => request.Where(e => _brandsIds.Contains(e.BrandId ?? 0));
 
-        public static IFilter<Product> CreateInstance(string value)
-            => new BelongsToBrand(int.Parse(value));
+        public static IFilter<Product> CreateInstance(StringValues value)
+            => new BelongsToBrand(
+                value.Select(
+                    e => int.Parse(
+                        e ?? throw new ArgumentNullException("Null argument passed to brands filter")
+                    )
+                ).ToList()
+            );
 	}
 }

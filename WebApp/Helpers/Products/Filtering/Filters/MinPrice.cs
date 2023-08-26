@@ -1,4 +1,4 @@
-﻿using System.Runtime.Serialization;
+﻿using Microsoft.Extensions.Primitives;
 using WebApp.Database.Entities;
 
 namespace WebApp.Helpers.Products.Filtering.Filters
@@ -11,7 +11,7 @@ namespace WebApp.Helpers.Products.Filtering.Filters
         public IQueryable<Product> Apply(IQueryable<Product> request)
             => request.Where(e => e.Price >= _minPrice);
 
-        public static IFilter<Product> CreateInstance(string value)
-            => new MinPrice(int.Parse(value));
+        public static IFilter<Product> CreateInstance(StringValues value)
+            => new MinPrice(int.Parse(value.ToString()));
 	}
 }

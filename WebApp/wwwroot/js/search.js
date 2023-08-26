@@ -119,6 +119,11 @@
 			newSearchQuery["minrating"] = minRating;
 		}
 
+		var minRatingsCount = $("#minRatingsCount").val();
+		if (minRatingsCount != "") {
+			newSearchQuery["minratingscount"] = minRatingsCount;
+		}
+
 		var sortType = $("#sortType").val();
 		if (sortType != "0") {
 			newSearchQuery["ordertype"] = $("#orderType").val();
