@@ -15,6 +15,8 @@ namespace WebApp.Services.Implementation.Products
         private readonly IProductImagesManager _images;
         private readonly IBrandsManager _brands;
         private readonly ICategoriesManager _categories;
+        private readonly IColoursManager _colours;
+        private readonly ISizesManager _sizes;
 
         private void ValidateCategoryId(int categoryId)
         {
@@ -102,12 +104,16 @@ namespace WebApp.Services.Implementation.Products
             DatabaseContext database,
             IProductImagesManager images,
             IBrandsManager brands,
-            ICategoriesManager categories)
+            ICategoriesManager categories,
+            IColoursManager colours,
+            ISizesManager sizes)
         {
             _database = database;
             _images = images;
             _brands = brands;
             _categories = categories;
+            _colours = colours;
+            _sizes = sizes;
         }
 
         public Product FindProduct(int productId)
@@ -135,13 +141,19 @@ namespace WebApp.Services.Implementation.Products
                 Id = foundProduct.Id,
                 Name = foundProduct.Name,
                 Description = foundProduct.Description,
-                Price = foundProduct.Price,
+                Price = Math.Round(foundProduct.Price, 2),
                 Discount = foundProduct.Discount,
+                TruePrice = Math.Round(foundProduct.TruePrice, 2),
+                ViewsCount = foundProduct.ViewsCount,
+                Rating = foundProduct.TrueRating,
+                ReviewsCount = foundProduct.RatingsCount,
                 BrandInfo = foundProduct.Brand == null
                     ? null
                     : (foundProduct.Brand.Name, foundProduct.Brand.ImageId ?? 0),
                 MainImageId = foundProduct.MainImageId ?? 0,
-                ProductImagesIds = _images.GetProductImages(productId)
+                ProductImagesIds = _images.GetProductImages(productId),
+                AvailableColours = _colours.GetAllColours(),
+                AvailableSizes = _sizes.GetAllSizes()
             };
         }
         public ProductUpdate GetProductUpdateVM(int productId)
@@ -239,6 +251,10 @@ namespace WebApp.Services.Implementation.Products
                     createdProduct.MainImageId = loadedImages[0].Id;
 
                     _database.SaveChanges();
+                }
+                else
+                {
+                    throw new UserInteractionException("Для створення нового товару потрібно додати хоча б одне зображення.");
                 }
 
                 transaction.Commit();

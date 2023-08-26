@@ -1,4 +1,4 @@
-@media(max-width: 1920px){
+﻿@media(max-width: 1920px){
 	html {
 		font-size: 20px;
 	}
@@ -196,7 +196,7 @@ body {
 }
 
 .radio-select + label {
-	border: 2px solid #f0f0f0 !important;
+	border: 2px solid #f0f0f0;
 	transition: border 0.3s ease;
 }
 
@@ -205,5 +205,5 @@ body {
 }
 
 .radio-select:checked + label {
-	border:2px solid #0280ff !important;
+	border:2px solid #0280ff;
 }

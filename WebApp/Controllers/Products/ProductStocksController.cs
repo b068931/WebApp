@@ -66,6 +66,7 @@ namespace WebApp.Controllers.Products
 		}
 
 		[HttpPost("action/create")]
+		[ValidateAntiForgeryToken]
 		public IActionResult Create(
 			[FromForm(Name = "productId")] int productId,
 			[FromForm(Name = "stockColour")] int colourId,
@@ -76,6 +77,7 @@ namespace WebApp.Controllers.Products
 		}
 
 		[HttpPost("action/update/{stockId}")]
+		[ValidateAntiForgeryToken]
 		public IActionResult Update(
 			[FromForm(Name = "productId")] int productId,
 			[FromRoute(Name = "stockId")] int stockId,
@@ -87,6 +89,7 @@ namespace WebApp.Controllers.Products
 		}
 
 		[HttpPost("action/delete")]
+		[ValidateAntiForgeryToken]
 		public IActionResult Delete(
 			[FromForm(Name = "productId")] int productId,
 			[FromForm(Name = "stockId")] int stockId)

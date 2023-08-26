@@ -73,4 +73,49 @@
                 toggleZoom($(this));
             });
     }
+
+    $("#descriptionShow")
+        .animatedSlideDown($("#formatedProductDescription"), $("#descriptionMaximizer"));
+
+    $("#stocksShow")
+        .animatedSlideDown($("#stocksContainer"), $("#stocksMaximizer"));
+
+    $("#deleteProductButton").on("click", function () {
+        $("#productDeleteConfirmation").modal("show");
+    });
+
+    var loadedProductStocksInformation = null;
+    var location = window.location.href.split("/");
+    $.get("/product/stocks/json?productId=" + location[location.length - 1],
+        function (data, status) {
+            if (status === "success") {
+                loadedProductStocksInformation = data;
+                $(".stock-information-select")
+                    .on("change", function () {
+                        var selectedColour = $("#colours input[type=radio]:checked");
+                        var selectedSize = $("#sizes input[type=radio]:checked");
+                        if (selectedColour.length > 0 && selectedSize.length > 0) {
+                            for (var stockInfo of loadedProductStocksInformation) {
+                                if (stockInfo.colour.id == selectedColour.data("myid") && stockInfo.size.id == selectedSize.data("myid")) {
+                                    $("#availableContainer")
+                                        .html(stockInfo.productAmount + " одиниць.")
+                                        .removeClass("text-danger");
+                                    return;
+                                }
+                            }
+
+                            $("#availableContainer")
+                                .html("Немає у наявності.")
+                                .addClass("text-danger");
+                        }
+                    });
+
+                $("#stocksShow").removeClass("d-none");
+            }
+            else {
+                alert("Unable to load product stocks information.");
+            }
+        },
+        "json"
+    );
 });

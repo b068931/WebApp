@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
+using WebApp.Database.Models;
 
 namespace WebApp.ViewModels.Product
 {
@@ -13,8 +14,10 @@ namespace WebApp.ViewModels.Product
 
         public decimal Price { get; set; }
         public int Discount { get; set; }
+        public decimal TruePrice { get; set; }
 
         public int ViewsCount { get; set; }
+
         public int Rating { get; set; }
         public int ReviewsCount { get; set; }
 
@@ -22,5 +25,8 @@ namespace WebApp.ViewModels.Product
 
         public int MainImageId { get; set; }
         public List<int> ProductImagesIds { get; set; } = default!;
+
+        public List<Colour> AvailableColours { get; set; } = default!;
+        public List<Size> AvailableSizes { get; set; } = default!;
     }
 }

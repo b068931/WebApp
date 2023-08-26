@@ -1,12 +1,44 @@
 ﻿@model WebApp.ViewModels.Product.ProductShow
+@{
+	string shortDescription;
+	if(Model.Description.Length <= 250)
+	{
+		shortDescription = Model.Description;
+	}
+	else
+	{
+		shortDescription = Model.Description.Substring(0, 250);
+		if(char.IsLetterOrDigit(shortDescription.Last()))
+		{
+			shortDescription += "...";
+		}
+	}
+}
+
+<div id="productDeleteConfirmation" class="modal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Підтвердження видалення елементу</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+	  <div class="modal-body d-none">
+		  <form id="deleteConfirmationForm" action="/products/action/delete" method="post">
+			  @Html.AntiForgeryToken()
+			  <input type="hidden" value="@Model.Id" name="id" />
+		  </form>
+	  </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Відмінити</button>
+        <button form="deleteConfirmationForm" type="submit" class="btn btn-primary">Підтвердити</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="mt-3 mx-2">
-	<div class="d-flex flex-row w-100">
-		<form action="/products/action/delete" method="post" class="me-auto">
-			@Html.AntiForgeryToken()
-			<input type="hidden" value="@Model.Id" name="id" />
-			<input type="submit" class="btn btn-outline-danger ms-3" value="Видалити" />
-		</form>
+	<div class="d-flex flex-row w-100 border-bottom pb-3">
+		<button id="deleteProductButton" class="btn btn-outline-danger me-auto">Видалити</button>
 
 		<form action="/products/action/update" method="get">
 			<input type="hidden" value="@Model.Id" name="id" />
@@ -42,14 +74,41 @@
 				</div>
 			</div>
 		</div>
-		<div>
-			<p>Name: @Model.Name</p>
-			<p>Description: @Model.Description</p>
-			<p>Price: @Model.Price</p>
-			<p>Discount: @Model.Discount</p>
-			<p>Viewscount: @Model.ViewsCount</p>
-			<p>Stars count: @Model.Rating</p>
-			<p>Ratings count: @Model.ReviewsCount</p>
+		<div style="max-width:32rem;">
+			<h4>
+				@Model.Name <span class="text-muted">(Переглядів: @Model.ViewsCount)</span>
+			</h4>
+			@if(Model.Discount == 0)
+			{
+				<p class="fw-bold">@Model.Price грн</p>
+			}
+			else
+			{
+				<p>
+					<div class="text-muted text-decoration-line-through">@Model.Price грн</div>
+					<div class="fw-bold d-flex">
+						<span class="my-auto">@Model.TruePrice грн</span>
+						<span class="badge rounded-pill bg-dark ms-2 my-auto">-@Model.Discount%</span>
+					</div>
+				</p>
+			}
+			<p>
+				<div class="prevent-select">
+					@for(int counter = 0; counter < Model.Rating; ++counter)
+					{
+						<span role="button">★</span>
+					}
+					@for(int counter = Model.Rating; counter < 10; ++counter)
+					{
+						<span role="button">☆</span>
+					}
+					<span class="text-muted">(@Model.ReviewsCount)</span>
+				</div>
+			</p>
+			<p>
+				<span class="fw-bold">Короткий опис: </span>@shortDescription
+			</p>
+			<button class="btn btn-outline-dark mt-4 px-5 rounded-5">Додати у кошик</button>
 		</div>
 		@if(Model.BrandInfo != null)
 		{
@@ -57,6 +116,49 @@
 				<img id="brandImage" width="200" height="80" src="/images/brandImage/@Model.BrandInfo.Value.ImageId" alt="@Model.BrandInfo.Value.Name"/>
 			</div>
 		}
+	</div>
+
+	<div class="mt-3">
+		<div id="descriptionShow" class="d-flex flex-row mx-2 py-2 prevent-select" role="button">
+			<span class="me-auto my-auto text-uppercase">Повний опис з оригінальним форматуванням</span>
+			<h2 id="descriptionMaximizer" class="my-auto">+</h2>
+		</div>
+		<pre id="formatedProductDescription" style="display:none;" class="ms-3">@Model.Description</pre>
+
+		<div id="stocksShow" class="d-flex flex-row mx-2 py-2 prevent-select d-none" role="button">
+			<span class="me-auto my-auto text-uppercase">Види товару у наявності</span>
+			<h2 id="stocksMaximizer" class="my-auto">+</h2>
+		</div>
+		<div id="stocksContainer" style="display:none;" class="ms-3">
+			<form action="#" style="font-size:0.9rem;">
+				<h4>Оберіть колір</h4>
+				<fieldset id="colours" class="d-flex justify-content-start border-top">
+					@foreach(var colour in Model.AvailableColours)
+					{
+						<input id="colour-@colour.Id" data-myid="@colour.Id" type="radio" value="@colour.Id" name="stockColour" class="stock-information-select radio-select d-none" />
+						<label for="colour-@colour.Id" for="colour-@colour.Id" class="prevent-select m-2 rounded-pill" role="button">
+							<div class="d-flex flex-row p-2">
+								<div class="border border-1 rounded-circle" style="height:1.5rem;width:1.5rem;background:@colour.HexCode"></div>
+								<div class="fw-bold ms-3 my-auto">@colour.Name</div>
+							</div>
+						</label>
+					}
+				</fieldset>
+				<h4 class="mt-5">Оберіть розмір</h4>
+				<fieldset id="sizes" class="d-flex justify-content-start border-top">
+					@foreach(var size in Model.AvailableSizes)
+					{
+						<input id="size-@size.Id" data-myid="@size.Id" type="radio" value="@size.Id" name="stockProductsSize" class="stock-information-select radio-select d-none" />
+						<label for="size-@size.Id" for="size-@size.Id" class="prevent-select m-2 rounded-pill" role="button">
+							<div class="d-flex flex-row p-2">
+								<div class="fw-bold">@size.Name</div>
+							</div>
+						</label>
+					}
+				</fieldset>
+			</form>
+			<div class="border-top mt-4 p-2">У наявності: <span id="availableContainer"></span></div>
+		</div>
 	</div>
 
 	<div class="mt-5">
