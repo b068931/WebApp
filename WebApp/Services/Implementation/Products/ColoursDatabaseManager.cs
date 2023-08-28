@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using WebApp.Database;
 using WebApp.Database.Models;
 using WebApp.Helpers;
@@ -31,6 +32,17 @@ namespace WebApp.Services.Implementation.Products
 					Id = e.Id,
 					Name = e.Name,
 					HexCode = e.HexCode
+				})
+				.ToList();
+		}
+		public List<SelectListItem> GetSelectList()
+		{
+			return _database.ProductColours
+				.AsNoTracking()
+				.Select(e => new SelectListItem
+				{
+					Text = e.Name,
+					Value = e.Id.ToString()
 				})
 				.ToList();
 		}

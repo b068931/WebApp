@@ -207,3 +207,17 @@ body {
 .radio-select:checked + label {
 	border:2px solid #0280ff;
 }
+
+.product-preview-long-info {
+	display: none;
+}
+
+.product-preview:hover .product-preview-long-info {
+	display:block;
+}
+
+.image-container {
+	background-size:contain;
+	background-repeat:no-repeat;
+	background-position:center;
+}

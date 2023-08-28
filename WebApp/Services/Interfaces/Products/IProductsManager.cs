@@ -15,7 +15,7 @@ namespace WebApp.Services.Interfaces.Products
         void UpdateProductStocks(int stockId, int colourId, int sizeId, int stockSize);
         void DeleteProductStocks(int stockId);
 
-        List<ProductShowLightWeightJson> Search(
+        Task<List<ProductShowLightWeight>> SearchAsync(
             List<IFilter<Product>> filters,
             IOrdering<Product> paginator
         );

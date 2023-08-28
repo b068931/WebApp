@@ -21,6 +21,8 @@ namespace WebApp.Controllers.Products
 		private readonly ProductFiltersFactory _filtersFactory;
 		private readonly ProductOrderFactory _ordersFactory;
 
+		private readonly IColoursManager _colours;
+		private readonly ISizesManager _sizes;
 		private readonly IBrandsManager _brands;
 		private readonly ICategoriesManager _categories;
 		private readonly IProductImagesManager _images;
@@ -48,6 +50,8 @@ namespace WebApp.Controllers.Products
 				Query = query ?? string.Empty,
 				Categories = _categories.GetSelectListWithSelectedId(selectedCategory ?? 0),
 				Brands = _brands.GetSelectListWithSelectedId(selectedBrand ?? 0),
+				Colours = _colours.GetSelectList(),
+				Sizes = _sizes.GetSelectList(),
 				SortTypes = new List<SelectListItem>()
 				{
 					new SelectListItem()
@@ -117,10 +121,10 @@ namespace WebApp.Controllers.Products
 			return search;
 		}
 
-		private IActionResult PerformAction(
-			Func<IActionResult> action, 
+		private ResultT PerformAction<ResultT>(
+			Func<ResultT> action, 
 			Action<UserInteractionException>? onUserError, 
-			Func<IActionResult> onFail)
+			Func<ResultT> onFail)
 		{
 			try
 			{
@@ -146,12 +150,16 @@ namespace WebApp.Controllers.Products
 			ICategoriesManager categories,
 			IProductImagesManager images,
 			IProductsManager products,
+			IColoursManager colours,
+			ISizesManager sizes,
 			ILogger<ProductsController> logger)
 		{
 			_brands = brands;
 			_categories = categories;
 			_images = images;
 			_products = products;
+			_colours = colours;
+			_sizes = sizes;
 			_logger = logger;
 			_jsonSettings = new JsonSerializerSettings()
 			{
@@ -166,6 +174,8 @@ namespace WebApp.Controllers.Products
 				{
 					{"brand[]", BelongsToBrand.CreateInstance},
 					{"category[]", BelongsToCategory.CreateInstance},
+					{"colour[]", PresentColour.CreateInstance},
+					{"psize[]", PresentSize.CreateInstance},
 					{"maxprice", MaxPrice.CreateInstance},
 					{"minprice", MinPrice.CreateInstance},
 					{"namecontains", NameContains.CreateInstance},
@@ -187,15 +197,17 @@ namespace WebApp.Controllers.Products
 		}
 
 		[HttpGet("search")]
-		public IActionResult Search(
-			[FromQuery(Name = "maxid")] int maxId)
+		public Task<IActionResult> Search(
+			[FromQuery(Name = "maxid")] int maxId,
+			[FromQuery(Name = "portionindex")] int portionIndex)
 		{
-			return PerformAction(
-				() =>
+			return PerformAction<Task<IActionResult>>(
+				async () =>
 				{
 					Dictionary<string, StringValues> searchParameters =
 						Request.Query
 							.Where(e => e.Key != "maxid")
+							.Where(e => e.Key != "portionindex")
 							.ToDictionary(e => e.Key, e => e.Value);
 
 					List<IFilter<Product>> filters = 
@@ -204,17 +216,29 @@ namespace WebApp.Controllers.Products
 					IOrdering<Product> paginator =
 						_ordersFactory.CreateOrdering(maxId, searchParameters);
 
+					List<Database.Models.ProductShowLightWeight> searchResult = 
+						await _products.SearchAsync(filters, paginator);
+
 					//System.Text.Json does not support DateOnly objects for some reason. Using Newtonsoft.Json instead
 					return Content(
 						JsonConvert.SerializeObject(
-							_products.Search(filters, paginator),
+							new
+							{
+								searchResult,
+								html = await ControllerExtenstions.RenderViewAsync(
+									this,
+									"_ProductSearchPreview",
+									(searchResult, portionIndex),
+									true
+								)
+							},
 							_jsonSettings
 						),
 						"application/json"
 					);
 				},
 				null,
-				() => BadRequest()
+				async () => await Task.Run(() => BadRequest())
 			);
 		}
 
@@ -222,7 +246,7 @@ namespace WebApp.Controllers.Products
 		public IActionResult Show(
 			[FromRoute(Name = "productId")] int productId)
 		{
-			return PerformAction(
+			return PerformAction<IActionResult>(
 				() => View("ShowProduct", _products.GetProductShowVM(productId)), 
 				null,
 				() => Redirect("/")
@@ -304,7 +328,7 @@ namespace WebApp.Controllers.Products
 			[FromForm(Name = "productId")] int productId,
 			[FromForm(Name = "deleteImages")] List<int> imagesToDelete)
 		{
-			return PerformAction(
+			return PerformAction<IActionResult>(
 				() =>
 				{
 					Product associatedProduct = _products.FindProduct(productId);

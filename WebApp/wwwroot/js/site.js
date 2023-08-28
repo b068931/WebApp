@@ -18,6 +18,18 @@
 }(jQuery));
 
 (function ($) {
+    $.fn.makeImageFitBoxRems = function (imageMaxWidth, imageMaxHeight) {
+        return this.each(function () {
+            var pixelsPerRem = parseFloat($("html").css("font-size"));
+            $(this).makeImageFitBox(
+                Math.round(imageMaxWidth * pixelsPerRem),
+                Math.round(imageMaxHeight * pixelsPerRem)
+            );
+        });
+    };
+}(jQuery));
+
+(function ($) {
     $.fn.animatedSlideDown = function (target, maximizer) {
         return this.each(function () {
             target.hide();

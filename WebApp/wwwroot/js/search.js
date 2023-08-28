@@ -1,17 +1,15 @@
 ﻿$(function () {
+	const productImagePreviewWidth = 18;
+	const productImagePreviewHeight = 26;
+
 	const maxIntegerValue = 2147483647;
 	var searchQuery = {
 		maxid: 0
 	};
 
-	function addNewProduct(product) {
-		var productContainer = $("<div>").html(product.name);
-		var productImage = $("<img>", { src: "/images/image/" + product.mainImageId });
-		var showFull = $("<a>", { href: "/products/product/" + product.id, target: "_blank" }).html("showfull");
-
-		productContainer.append(showFull);
-		productContainer.append(productImage);
-		$("#productsContainer").append(productContainer);
+	function addNewProducts(html) {
+		$("#productsContainer")[0]
+			.insertAdjacentHTML("beforeend", html);
 	}
 
 	function onNoProducts() {
@@ -46,18 +44,19 @@
 			searchQuery,
 			function (data, status) {
 				if (status === "success") {
-					if (data.length === 0) {
+					if (data.searchResult.length === 0) {
 						onNoProducts();
+						return;
 					}
 
-					data.forEach(
+					data.searchResult.forEach(
 						element => {
 							searchQuery["maxid"] = Math.max(searchQuery["maxid"], element.id);
-							addNewProduct(element);
 						}
 					)
 
-					updateSearchPage(data[data.length - 1]);
+					updateSearchPage(data.searchResult[data.searchResult.length - 1]);
+					addNewProducts(data.html);
 				}
 				else {
 					alert("Ooops. Unable to load new products.");
@@ -122,6 +121,16 @@
 		var minRatingsCount = $("#minRatingsCount").val();
 		if (minRatingsCount != "") {
 			newSearchQuery["minratingscount"] = minRatingsCount;
+		}
+
+		var presentColour = $("#colourSearch").val();
+		if (presentColour != 0) {
+			newSearchQuery["colour"] = presentColour;
+		}
+
+		var presentSize = $("#sizeSearch").val();
+		if (presentSize != 0) {
+			newSearchQuery["psize"] = presentSize;
 		}
 
 		var sortType = $("#sortType").val();

@@ -1,27 +1,27 @@
 ﻿$(function () {
-    var previewImageWidth = 118.5;
-    var previewImageHeight = 218.5;
+    var previewImageWidth = 6;
+    var previewImageHeight = 13;
 
-    var shownImageWidth = 447.5;
-    var shownImageHeight = 665;
+    var shownImageWidth = 27;
+    var shownImageHeight = 40;
 
-    var brandImageWidth = 200;
-    var brandImageHeight = 200;
+    var brandImageWidth = 12.5;
+    var brandImageHeight = 12.5;
 
     $(".min-image").each(function (index, element) {
         if ($(this).prop("complete") === true) {
-            $(this).makeImageFitBox(previewImageWidth, previewImageHeight);
+            $(this).makeImageFitBoxRems(previewImageWidth, previewImageHeight);
         }
         else {
             $(this).on("load", function () {
-                $(this).makeImageFitBox(previewImageWidth, previewImageHeight);
+                $(this).makeImageFitBoxRems(previewImageWidth, previewImageHeight);
             });
         }
 
         $(this).on("click", function () {
             $("#shownImage").attr("src", $(this).attr("src"));
             if ($("#shownImage").prop("complete") === true) {
-                $("#shownImage").makeImageFitBox(shownImageWidth, shownImageHeight);
+                $("#shownImage").makeImageFitBoxRems(shownImageWidth, shownImageHeight);
             }
         });
     });
@@ -30,14 +30,13 @@
     var zoomFactor = 2;
     function toggleZoom(image) {
         if (isZoomed) {
-            image.makeImageFitBox(shownImageWidth, shownImageHeight);
+            image.makeImageFitBoxRems(shownImageWidth, shownImageHeight);
 
             $("#shownImageScrollContainer").removeClass("overflow-auto");
             isZoomed = false;
         }
         else {
-            image.attr("width", zoomFactor * image.attr("width"));
-            image.attr("height", zoomFactor * image.attr("height"));
+            image.makeImageFitBoxRems(zoomFactor * shownImageWidth, zoomFactor * shownImageHeight);
 
             $("#shownImageScrollContainer").addClass("overflow-auto");
             isZoomed = true;
@@ -45,17 +44,17 @@
     }
 
     if ($("#brandImage").prop("complete") === true) {
-        $("#brandImage").makeImageFitBox(brandImageWidth, brandImageHeight);
+        $("#brandImage").makeImageFitBoxRems(brandImageWidth, brandImageHeight);
     }
     else {
         $("#brandImage").on("load", function () {
-            $(this).makeImageFitBox(brandImageWidth, brandImageHeight);
+            $(this).makeImageFitBoxRems(brandImageWidth, brandImageHeight);
         });
     }
 
     if ($("#shownImage").prop("complete") === true) {
         $("#shownImage")
-            .makeImageFitBox(shownImageWidth, shownImageHeight)
+            .makeImageFitBoxRems(shownImageWidth, shownImageHeight)
             .on("click", function () {
                 toggleZoom($(this));
             });
@@ -63,7 +62,7 @@
     else {
         $("#shownImage")
             .on("load", function () {
-                $(this).makeImageFitBox(shownImageWidth, shownImageHeight);
+                $(this).makeImageFitBoxRems(shownImageWidth, shownImageHeight);
                 if (isZoomed) {
                     $("#shownImageScrollContainer").removeClass("overflow-auto");
                     isZoomed = false;

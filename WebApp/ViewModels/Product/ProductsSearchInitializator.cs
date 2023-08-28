@@ -11,5 +11,8 @@ namespace WebApp.ViewModels.Product
 
 		public List<SelectListItem> SortTypes { get; set; } = default!;
 		public List<SelectListItem> Directions { get; set; } = default!;
+
+		public List<SelectListItem> Colours { get; set; } = default!;
+		public List<SelectListItem> Sizes { get; set; } = default!;
 	}
 }

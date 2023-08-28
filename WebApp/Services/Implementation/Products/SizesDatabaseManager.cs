@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using WebApp.Database;
 using WebApp.Database.Entities;
 using WebApp.Helpers;
@@ -30,6 +31,17 @@ namespace WebApp.Services.Implementation.Products
 				{
 					Id = e.Id,
 					Name = e.SizeName
+				})
+				.ToList();
+		}
+		public List<SelectListItem> GetSelectList()
+		{
+			return _database.ProductSizes
+				.AsNoTracking()
+				.Select(e => new SelectListItem()
+				{
+					Text = e.SizeName,
+					Value = e.Id.ToString()
 				})
 				.ToList();
 		}
