@@ -1,1 +1,38 @@
-﻿<a href="/admin">адмін панель</a>
+﻿<div class="mt-4 mx-5 h-100 d-flex flex-column">
+	<div class="d-flex flex-row mx-auto text-white">
+		<div id="newProductsBanner" class="tile position-relative top-0 start-0 d-flex" style="background-image:url(/resources/mainpage/image1.png);width:39.72rem;height:24rem;" role="button">
+			<div class="gradient w-100 h-100 position-absolute top-0 start-0"></div>
+			<div class="mt-auto ms-4 mb-3 tile-content">
+				<h3 class="fst-italic">Нові пропозиції </h3><h3 id="currentYear"></h3>
+			</div>
+		</div>
+		<div class="d-flex flex-column">
+			<div id="allProductsBanner" class="tile m-2 mt-0 bg-dark position-relative top-0 start-0 d-flex flex-column" style="background-image:url(/resources/mainpage/image2.png);width:29rem;height:12rem;" role="button">
+				<div class="gradient w-100 h-100 position-absolute top-0 start-0"></div>
+				<img class="ms-4 mt-2" src="/resources/highheel.svg" />
+				<div class="mt-1 ms-4 text-wrap w-25 tile-content">
+					<span class="fst-italic">Стильні </span>
+					<span class="fw-bold">образи</span>
+					<span class="fst-italic"> на кожен день</span>
+				</div>
+			</div>
+			<div class="d-flex flex-row">
+				<div id="bestProductsBanner" class="tile m-2 my-0 bg-dark position-relative top-0 start-0 d-flex flex-column" style="background-image:url(/resources/mainpage/image3.png);width:11.4rem;height:11.4rem;" role="button">
+					<div class="gradient w-100 h-100 position-absolute top-0 start-0"></div>
+					<img class="mt-auto mx-auto tile-content" src="/resources/star.svg" />
+					<h5 class="mx-auto tile-content text-wrap mb-3">Найкращі товари</h5>
+				</div>
+				<div id="discountsBanner" class="tile m-2 mt-0 ms-auto bg-dark position-relative top-0 start-0 d-flex flex-column" style="background-image:url(/resources/mainpage/image4.png);width:17rem;height:11.4rem;" role="button">
+					<div class="gradient w-100 h-100 position-absolute top-0 start-0"></div>
+
+					<img class="mx-auto mt-auto tile-content" src="/resources/purse.svg" />
+					<h5 class="mx-auto mt-1 tile-content mb-3">Найгарячіші знижки</h5>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section scripts {
+	<script type="text/javascript" src="~/js/mainPage.js"></script>
+}

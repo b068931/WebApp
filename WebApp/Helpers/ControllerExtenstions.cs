@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc;
+using WebApp.Helpers.Exceptions;
 
 namespace WebApp.Helpers
 {

@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using WebApp.Database;
 using WebApp.Database.Entities;
-using WebApp.Helpers;
+using WebApp.Helpers.Exceptions;
 using WebApp.Services.Interfaces.Grouping;
 
 namespace WebApp.Services.Implementation.Grouping

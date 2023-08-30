@@ -2,14 +2,14 @@
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using WebApp.Helpers;
+using WebApp.Helpers.Exceptions;
 using WebApp.Services.Interfaces.Products;
 using WebApp.ViewModels.Product;
 using static NuGet.Packaging.PackagingConstants;
 
 namespace WebApp.Controllers.Products
 {
-	[Route("/product/stocks")]
+    [Route("/product/stocks")]
 	public class ProductStocksController : Controller
 	{
 		private readonly IColoursManager _colours;

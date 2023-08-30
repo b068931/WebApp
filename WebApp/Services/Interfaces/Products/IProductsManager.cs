@@ -1,6 +1,6 @@
 ﻿using WebApp.Database.Entities;
 using WebApp.Database.Models;
-using WebApp.Helpers;
+using WebApp.Helpers.Filtering;
 using WebApp.ViewModels.Product;
 
 namespace WebApp.Services.Interfaces.Products

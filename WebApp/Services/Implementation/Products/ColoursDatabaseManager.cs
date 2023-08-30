@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using WebApp.Database;
 using WebApp.Database.Models;
-using WebApp.Helpers;
+using WebApp.Helpers.Exceptions;
 using WebApp.Services.Interfaces.Products;
 
 namespace WebApp.Services.Implementation.Products

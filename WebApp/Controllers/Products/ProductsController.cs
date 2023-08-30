@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using WebApp.Services.Interfaces.Grouping;
 using WebApp.Services.Interfaces.Products;
 using Microsoft.Extensions.Primitives;
+using WebApp.Helpers.Filtering;
+using WebApp.Helpers.Exceptions;
 
 namespace WebApp.Controllers.Products
 {
@@ -43,11 +45,15 @@ namespace WebApp.Controllers.Products
 			int? selectedCategory,
 			int? selectedBrand,
 			string? selectedSortType,
-			string? selectedOrderType)
+			string? selectedOrderType,
+			string? minDate,
+			int? minRatingsCount)
 		{
 			ProductsSearchInitializator search = new ProductsSearchInitializator()
 			{
 				Query = query ?? string.Empty,
+				MinDate = minDate ?? string.Empty,
+				MinRatingsCount = minRatingsCount ?? 0,
 				Categories = _categories.GetSelectListWithSelectedId(selectedCategory ?? 0),
 				Brands = _brands.GetSelectListWithSelectedId(selectedBrand ?? 0),
 				Colours = _colours.GetSelectList(),
@@ -369,11 +375,21 @@ namespace WebApp.Controllers.Products
 			[FromQuery(Name = "brand")] int? brandId,
 			[FromQuery(Name = "category")] int? categoryId,
 			[FromQuery(Name = "sort")] string? sortType,
-			[FromQuery(Name = "order")] string? orderType)
+			[FromQuery(Name = "order")] string? orderType,
+			[FromQuery(Name = "mindate")] string? minDate,
+			[FromQuery(Name = "minratings")] int? minRatingsCount)
 		{
 			return View(
 				"ShowProductsList",
-				GetSearchInitialization(query, categoryId, brandId, sortType, orderType)
+				GetSearchInitialization(
+					query, 
+					categoryId,
+					brandId, 
+					sortType,
+					orderType, 
+					minDate,
+					minRatingsCount
+				)
 			);
 		}
 	}

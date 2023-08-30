@@ -2,14 +2,15 @@
 using WebApp.Database;
 using WebApp.Database.Entities;
 using WebApp.Database.Models;
-using WebApp.Helpers;
+using WebApp.Helpers.Exceptions;
+using WebApp.Helpers.Filtering;
 using WebApp.Services.Interfaces.Grouping;
 using WebApp.Services.Interfaces.Products;
 using WebApp.ViewModels.Product;
 
 namespace WebApp.Services.Implementation.Products
 {
-	public class ProductsDatabaseManager : IProductsManager
+    public class ProductsDatabaseManager : IProductsManager
 	{
 		private readonly DatabaseContext _database;
 		private readonly IProductImagesManager _images;

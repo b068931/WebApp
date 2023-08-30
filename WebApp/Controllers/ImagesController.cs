@@ -2,7 +2,7 @@
 using WebApp.Controllers.Grouping;
 using WebApp.Database;
 using WebApp.Database.Entities;
-using WebApp.Helpers;
+using WebApp.Helpers.Exceptions;
 using WebApp.Services.Interfaces.Grouping;
 using WebApp.Services.Interfaces.Products;
 

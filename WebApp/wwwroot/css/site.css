@@ -221,3 +221,33 @@ body {
 	background-repeat:no-repeat;
 	background-position:center;
 }
+
+.tile {
+	border-radius: 2rem;
+	background-size: 103% 103%;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.tile .gradient {
+	z-index: 1000;
+
+	opacity: 0;
+	background: linear-gradient(to top, rgba(64, 93, 42, 1), rgba(64, 93, 42, 0));
+
+	border-radius: 2rem;
+	transition: opacity 0.4s ease;
+}
+
+.tile .tile-content {
+	z-index: 1001;
+}
+
+.tile:hover .gradient {
+	opacity: 0.99;
+}
+
+.tile img {
+	width: 2.3rem;
+	height: 2.3rem;
+}
