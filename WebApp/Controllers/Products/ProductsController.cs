@@ -180,7 +180,9 @@ namespace WebApp.Controllers.Products
 					{"minprice", MinPrice.CreateInstance},
 					{"namecontains", NameContains.CreateInstance},
 					{"minrating", MinRating.CreateInstance},
-					{"minratingscount", MinReviewsCount.CreateInstance}
+					{"minratingscount", MinReviewsCount.CreateInstance},
+					{"mincreated", MinDate.CreateInstance},
+					{"maxcreated", MaxDate.CreateInstance}
 				}
 			);
 
@@ -198,7 +200,8 @@ namespace WebApp.Controllers.Products
 
 		[HttpGet("search")]
 		public Task<IActionResult> Search(
-			[FromQuery(Name = "maxid")] int maxId)
+			[FromQuery(Name = "maxid")] int maxId,
+			[FromQuery(Name = "includesearchresult")] bool isSearchResultIncluded = true)
 		{
 			return PerformAction<Task<IActionResult>>(
 				async () =>
@@ -217,19 +220,19 @@ namespace WebApp.Controllers.Products
 					List<Database.Models.ProductShowLightWeight> searchResult = 
 						await _products.SearchAsync(filters, paginator);
 
+					string html = await ControllerExtenstions.RenderViewAsync(
+						this,
+						"_ProductSearchPreview",
+						searchResult,
+						true
+					);
+
 					//System.Text.Json does not support DateOnly objects for some reason. Using Newtonsoft.Json instead
 					return Content(
 						JsonConvert.SerializeObject(
-							new
-							{
-								searchResult,
-								html = await ControllerExtenstions.RenderViewAsync(
-									this,
-									"_ProductSearchPreview",
-									searchResult,
-									true
-								)
-							},
+							isSearchResultIncluded
+								? new { searchResult, html }
+								: new { html },
 							_jsonSettings
 						),
 						"application/json"

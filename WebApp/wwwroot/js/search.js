@@ -133,6 +133,16 @@
 			newSearchQuery["psize"] = presentSize;
 		}
 
+		var minDate = $("#minDate").val();
+		if (minDate != "") {
+			newSearchQuery["mincreated"] = minDate;
+		}
+
+		var maxDate = $("#maxDate").val();
+		if (maxDate != "") {
+			newSearchQuery["maxcreated"] = maxDate;
+		}
+
 		var sortType = $("#sortType").val();
 		if (sortType != "0") {
 			newSearchQuery["ordertype"] = $("#orderType").val();

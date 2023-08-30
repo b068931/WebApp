@@ -10,27 +10,20 @@ namespace WebApp.Controllers
 {
     public class HomeController : Controller
 	{
-		//!!!THIS DATABASECONTEXT INSTANCE MUST BE REPLACED WITH IProductsManager WHEN THE DESIGN OF THE MAIN PAGE IS READY
-		//RIGHT NOW IT IS USED TO QUERY ALL PRODUCTS AND SHOW THEM FOR DEBUG PURPOSES
-		private readonly DatabaseContext _database;
-
 		private readonly ICategoriesManager _categories;
 		private readonly IBrandsManager _brands;
 
 		public HomeController(
-			DatabaseContext database,
 			ICategoriesManager categories,
 			IBrandsManager brands)
 		{
-			_database = database;
 			_categories = categories;
 			_brands = brands;
 		}
 
 		public IActionResult Index()
 		{
-			var result = _database.Products.Include(e => e.Brand).ToList();
-            return View("MainPage", result);
+            return View("MainPage");
 		}
 
 		[HttpGet("/aboutus")]
