@@ -198,8 +198,7 @@ namespace WebApp.Controllers.Products
 
 		[HttpGet("search")]
 		public Task<IActionResult> Search(
-			[FromQuery(Name = "maxid")] int maxId,
-			[FromQuery(Name = "portionindex")] int portionIndex)
+			[FromQuery(Name = "maxid")] int maxId)
 		{
 			return PerformAction<Task<IActionResult>>(
 				async () =>
@@ -207,7 +206,6 @@ namespace WebApp.Controllers.Products
 					Dictionary<string, StringValues> searchParameters =
 						Request.Query
 							.Where(e => e.Key != "maxid")
-							.Where(e => e.Key != "portionindex")
 							.ToDictionary(e => e.Key, e => e.Value);
 
 					List<IFilter<Product>> filters = 
@@ -228,7 +226,7 @@ namespace WebApp.Controllers.Products
 								html = await ControllerExtenstions.RenderViewAsync(
 									this,
 									"_ProductSearchPreview",
-									(searchResult, portionIndex),
+									searchResult,
 									true
 								)
 							},

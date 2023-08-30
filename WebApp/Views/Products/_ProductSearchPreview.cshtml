@@ -1,6 +1,5 @@
-﻿@model (List<WebApp.Database.Models.ProductShowLightWeight> productsToShow, int portionIndex)
-
-@foreach(var productInfo in Model.productsToShow)
+﻿@model List<WebApp.Database.Models.ProductShowLightWeight>
+@foreach(var productInfo in Model)
 {
 	<div class="p-2 text-wrap product-preview m-2" style="max-width:18rem;width:18rem;">
 		<a href="/products/product/@productInfo.Id" target="_blank">
