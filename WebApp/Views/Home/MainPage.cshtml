@@ -1,4 +1,4 @@
-﻿<div class="mt-4 mx-5 h-100 d-flex flex-column">
+﻿<div class="mt-4 mx-2 h-100 d-flex flex-column">
 	<div class="d-flex flex-row mx-auto text-white">
 		<div id="newProductsBanner" class="tile position-relative top-0 start-0 d-flex" style="background-image:url(/resources/mainpage/image1.png);width:39.72rem;height:24rem;" role="button">
 			<div class="gradient w-100 h-100 position-absolute top-0 start-0"></div>
@@ -31,6 +31,59 @@
 			</div>
 		</div>
 	</div>
+
+	<h3 class="mx-auto mt-5">Нові пропозиції</h3>
+	<h4 class="mx-auto text-muted">Популярні товари за останні 30 днів</h4>
+	<div id="lastMonthPopularContainer" class="mt-2 d-flex flex-row justify-content-center flex-wrap"></div>
+
+	<div id="carouselBanner" class="carousel slide my-5 mx-auto" data-bs-ride="false">
+		<div class="carousel-indicators">
+			<button type="button" data-bs-target="#carouselBanner" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+			<button type="button" data-bs-target="#carouselBanner" data-bs-slide-to="1" aria-label="Slide 2"></button>
+			<button type="button" data-bs-target="#carouselBanner" data-bs-slide-to="2" aria-label="Slide 3"></button>
+		</div>
+		<div class="carousel-inner carousel-contents">
+			<div class="carousel-item active">
+				<div class="d-flex flex-row">
+					<img class="carousel-image ms-auto" src="/resources/mainpage/carousel/placeholder.png" />
+					<div class="side-text-container text-end text-wrap w-25 d-flex flex-column align-items-end align-self-stretch w-25 me-auto">
+						<h2 class="fw-bold">Одягайся у будь-який сезон разом з нами!</h2>
+						<a class="btn btn-outline-light mt-5 px-4" href="/products">Всі товари</a>
+					</div>
+				</div>
+			</div>
+			<div class="carousel-item">
+				<div class="d-flex flex-row">
+					<img class="carousel-image ms-auto" src="/resources/mainpage/carousel/ecofriendly.png" />
+					<div class="side-text-container text-end text-wrap w-25 d-flex flex-column align-items-end align-self-stretch w-25 me-auto">
+						<h2 class="fw-bold">Тільки найкращі еко-товари!</h2>
+						<a class="btn btn-outline-light mt-5 px-4" href="/products">До товарів</a>
+					</div>
+				</div>
+			</div>
+			<div class="carousel-item">
+				<div class="d-flex flex-row">
+					<img class="carousel-image ms-auto" src="/resources/mainpage/carousel/rock.png" />
+					<div class="side-text-container text-end text-wrap w-25 d-flex flex-column align-items-end align-self-stretch w-25 me-auto">
+						<h2 class="fw-bold">Будь-хто знайде щось для себе!</h2>
+						<a class="btn btn-outline-light mt-5 px-4" href="/products">Пошук</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="d-flex flex-column mx-5">
+		<div class="d-flex flex-row flex-wrap justify-content-start">
+			<h2 id="recommendedSearchSelect" class="fw-bold mx-2 text-blob-big" role="button">Рекомендовані</h2>
+			<h2 id="newSearchSelect" class="fw-bold mx-2 text-blob-big" role="button">Новинки</h2>
+			<h2 id="discountSearchSelect" class="fw-bold mx-2 text-blob-big" role="button">Знижки</h2>
+		</div>
+		<div id="productTypeSelectContainer" class="d-flex flex-row justify-content-center"></div>
+		<a class="text-muted mx-auto" href="/products">Більше товарів...</a>
+	</div>
+
+	<img src="/resources/mainpage/bottombanner.png" class="mx-auto mt-5" style="width:68.25rem;height:28.2rem;"/>
 </div>
 
 @section scripts {
