@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebApp.Database.Configurations;
+using WebApp.Database.Entities.Auth;
 using WebApp.Database.Entities.Grouping;
 
 namespace WebApp.Database.Entities.Products
@@ -32,6 +33,12 @@ namespace WebApp.Database.Entities.Products
         public int CategoryId { get; set; }
         public Category Category { get; set; } = default!;
 
-        public List<ProductStock> Stocks { get; set; } = default!;
+		public int ProductOwnerId { get; set; }
+		public ApplicationUser ProductOwner { get; set; } = default!;
+
+		public List<ProductStock> Stocks { get; set; } = default!;
+
+        public List<ApplicationUser> ViewedByUsers { get; set; } = default!;
+        public List<ApplicationUser> RatedByUsers { get; set; } = default!;
     }
 }

@@ -1,10 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using WebApp.Database.Entities.Auth;
 using WebApp.Database.Entities.Grouping;
 using WebApp.Database.Entities.Products;
 
 namespace WebApp.Database
 {
-    public class DatabaseContext : DbContext
+    public class DatabaseContext : IdentityDbContext<ApplicationUser, ApplicationRole, int, ApplicationUserClaim, ApplicationUserRole, ApplicationUserLogin, ApplicationRoleClaim, ApplicationUserToken>
 	{
 		public DatabaseContext(DbContextOptions options) 
 			: base(options)

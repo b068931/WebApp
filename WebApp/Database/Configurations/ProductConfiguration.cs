@@ -32,6 +32,12 @@ namespace WebApp.Database.Configurations
 				.OnDelete(DeleteBehavior.ClientSetNull);
 
 			builder
+				.HasOne(e => e.ProductOwner)
+				.WithMany(e => e.UserProducts)
+				.HasForeignKey(e => e.ProductOwnerId)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			builder
 				.Property(e => e.Created)
 				.HasDefaultValueSql("getdate()");
 
