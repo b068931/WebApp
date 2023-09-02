@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Primitives;
 using System.Runtime.Serialization;
-using WebApp.Database.Entities;
+using WebApp.Database.Entities.Products;
 using WebApp.Helpers.Filtering;
 
 namespace WebApp.Helpers.Products.Filtering.Filters

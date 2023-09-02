@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WebApp.Database;
-using WebApp.Database.Entities;
+using WebApp.Database.Entities.Grouping;
 using WebApp.Database.Models;
 using WebApp.Helpers;
 using WebApp.Services.Interfaces.Grouping;

@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Primitives;
-using WebApp.Database.Entities;
+using WebApp.Database.Entities.Products;
 using WebApp.Helpers.Filtering;
 using WebApp.Helpers.Products.Filtering.OrderTypes;
 

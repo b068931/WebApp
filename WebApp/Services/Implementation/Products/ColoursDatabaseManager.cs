@@ -1,16 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WebApp.Database;
+using WebApp.Database.Entities.Products;
 using WebApp.Database.Models;
 using WebApp.Helpers.Exceptions;
 using WebApp.Services.Interfaces.Products;
 
 namespace WebApp.Services.Implementation.Products
 {
-	public class ColoursDatabaseManager : IColoursManager
+    public class ColoursDatabaseManager : IColoursManager
 	{
 		private readonly DatabaseContext _database;
-		private Database.Entities.Colour FindColour(int id)
+		private Database.Entities.Products.Colour FindColour(int id)
 		{
 			return _database.ProductColours.Find(id) ??
 					throw new UserInteractionException(
@@ -23,11 +24,11 @@ namespace WebApp.Services.Implementation.Products
 			_database = database;
 		}
 
-		public List<Colour> GetAllColours()
+		public List<Database.Models.Colour> GetAllColours()
 		{
 			return _database.ProductColours
 				.AsNoTracking()
-				.Select(e => new Colour 
+				.Select(e => new Database.Models.Colour 
 				{ 
 					Id = e.Id,
 					Name = e.Name,
@@ -49,7 +50,7 @@ namespace WebApp.Services.Implementation.Products
 
 		public void CreateColour(string name, string hexCode)
 		{
-			Database.Entities.Colour newColour = new Database.Entities.Colour()
+			Database.Entities.Products.Colour newColour = new Database.Entities.Products.Colour()
 			{
 				Name = name,
 				HexCode = hexCode
@@ -60,7 +61,7 @@ namespace WebApp.Services.Implementation.Products
 		}
 		public void UpdateColour(int id, string name, string hexCode)
 		{
-			Database.Entities.Colour foundColour = FindColour(id);
+			Database.Entities.Products.Colour foundColour = FindColour(id);
 			foundColour.Name = name;
 			foundColour.HexCode = hexCode;
 

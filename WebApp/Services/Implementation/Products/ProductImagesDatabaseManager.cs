@@ -1,5 +1,5 @@
 ﻿using WebApp.Database;
-using WebApp.Database.Entities;
+using WebApp.Database.Entities.Products;
 using WebApp.Helpers.Exceptions;
 using WebApp.Services.Interfaces.Products;
 

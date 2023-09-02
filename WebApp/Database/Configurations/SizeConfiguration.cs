@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using WebApp.Database.Entities;
+using WebApp.Database.Entities.Products;
 
 namespace WebApp.Database.Configurations
 {
-	public class SizeConfiguration : IEntityTypeConfiguration<Size>
+    public class SizeConfiguration : IEntityTypeConfiguration<Size>
 	{
 		public void Configure(EntityTypeBuilder<Size> builder)
 		{

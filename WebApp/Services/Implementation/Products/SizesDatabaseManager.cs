@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WebApp.Database;
-using WebApp.Database.Entities;
+using WebApp.Database.Entities.Products;
 using WebApp.Helpers.Exceptions;
 using WebApp.Services.Interfaces.Products;
 
 namespace WebApp.Services.Implementation.Products
 {
-	public class SizesDatabaseManager : ISizesManager
+    public class SizesDatabaseManager : ISizesManager
 	{
 		private readonly DatabaseContext _database;
 		Size FindSize(int id)

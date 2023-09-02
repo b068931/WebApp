@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WebApp.Database.Entities;
+using WebApp.Database.Entities.Grouping;
+using WebApp.Database.Entities.Products;
 
 namespace WebApp.Database
 {
-	public class DatabaseContext : DbContext
+    public class DatabaseContext : DbContext
 	{
 		public DatabaseContext(DbContextOptions options) 
 			: base(options)

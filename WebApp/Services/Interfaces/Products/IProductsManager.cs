@@ -1,4 +1,4 @@
-﻿using WebApp.Database.Entities;
+﻿using WebApp.Database.Entities.Products;
 using WebApp.Database.Models;
 using WebApp.Helpers.Filtering;
 using WebApp.ViewModels.Product;

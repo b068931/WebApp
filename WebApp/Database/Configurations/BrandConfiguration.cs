@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Reflection.Emit;
-using WebApp.Database.Entities;
+using WebApp.Database.Entities.Grouping;
 
 namespace WebApp.Database.Configurations
 {
-	public class BrandConfiguration : IEntityTypeConfiguration<Brand>
+    public class BrandConfiguration : IEntityTypeConfiguration<Brand>
 	{
 		public void Configure(EntityTypeBuilder<Brand> builder)
 		{

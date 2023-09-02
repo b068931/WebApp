@@ -1,5 +1,5 @@
 ﻿using System.Linq.Expressions;
-using WebApp.Database.Entities;
+using WebApp.Database.Entities.Products;
 
 namespace WebApp.Helpers.Filtering
 {

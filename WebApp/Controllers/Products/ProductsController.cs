@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using WebApp.Database.Entities;
 using WebApp.Helpers;
 using WebApp.Helpers.Products.Filtering;
 using WebApp.Helpers.Products.Filtering.Filters;
@@ -14,6 +13,7 @@ using WebApp.Services.Interfaces.Products;
 using Microsoft.Extensions.Primitives;
 using WebApp.Helpers.Filtering;
 using WebApp.Helpers.Exceptions;
+using WebApp.Database.Entities.Products;
 
 namespace WebApp.Controllers.Products
 {

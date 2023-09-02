@@ -1,11 +1,11 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Text;
 using WebApp.Database;
-using WebApp.Database.Entities;
+using WebApp.Database.Entities.Grouping;
 
 namespace WebApp.Helpers
 {
-	public class CategoriesDrawer
+    public class CategoriesDrawer
 	{
 		private readonly int _specifiedDepth;
 		private readonly string _paddingCharacters;

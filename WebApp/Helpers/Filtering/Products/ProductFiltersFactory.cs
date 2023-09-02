@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Primitives;
-using WebApp.Database.Entities;
 using WebApp.Helpers.Filtering;
 using WebApp.Helpers.Exceptions;
+using WebApp.Database.Entities.Products;
 
 namespace WebApp.Helpers.Products.Filtering
 {

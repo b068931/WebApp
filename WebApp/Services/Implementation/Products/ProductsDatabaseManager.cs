@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebApp.Database;
-using WebApp.Database.Entities;
+using WebApp.Database.Entities.Products;
 using WebApp.Database.Models;
 using WebApp.Helpers.Exceptions;
 using WebApp.Helpers.Filtering;
@@ -26,7 +26,7 @@ namespace WebApp.Services.Implementation.Products
 				throw new UserInteractionException("Invalid category provided. Reload the page.");
 			}
 		}
-		private Database.Entities.ProductStock FindProductStock(int stockId)
+		private Database.Entities.Products.ProductStock FindProductStock(int stockId)
 		{
 			return _database.ProductStocks.Find(stockId) ??
 				throw new UserInteractionException(
@@ -231,7 +231,7 @@ namespace WebApp.Services.Implementation.Products
 		}
 		public void CreateProductStocks(int productId, int colourId, int sizeId, int stockSize)
 		{
-			Database.Entities.ProductStock newStock = new Database.Entities.ProductStock()
+			Database.Entities.Products.ProductStock newStock = new Database.Entities.Products.ProductStock()
 			{
 				ProductAmount = stockSize,
 				ProductId = productId,
@@ -244,7 +244,7 @@ namespace WebApp.Services.Implementation.Products
 		}
 		public void UpdateProductStocks(int stockId, int colourId, int sizeId, int stockSize)
 		{
-			Database.Entities.ProductStock foundStock = FindProductStock(stockId);
+			Database.Entities.Products.ProductStock foundStock = FindProductStock(stockId);
 			foundStock.ColourId = colourId;
 			foundStock.SizeId = sizeId;
 			foundStock.ProductAmount = stockSize;

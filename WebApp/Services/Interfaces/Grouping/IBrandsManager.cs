@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using WebApp.Database.Entities;
+using WebApp.Database.Entities.Grouping;
 
 namespace WebApp.Services.Interfaces.Grouping
 {
