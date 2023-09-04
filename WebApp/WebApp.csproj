@@ -7,6 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="AuthorizedContent\js\imagePreview.js" />
+    <Content Include="AuthorizedContent\js\admin\brandsAdminPage.js" />
+    <Content Include="AuthorizedContent\js\admin\categoriesAdminPage.js" />
+    <Content Include="AuthorizedContent\js\admin\coloursAdminPage.js" />
+    <Content Include="AuthorizedContent\js\admin\sizesAdminPage.js" />
+    <Content Include="AuthorizedContent\js\productImagesUpdate.js" />
+    <Content Include="AuthorizedContent\js\productStocksChange.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.21" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.21" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0-preview.6.23329.4" />

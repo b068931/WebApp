@@ -7,7 +7,7 @@ using WebApp.Helpers.Exceptions;
 using WebApp.Services.Interfaces.Grouping;
 using WebApp.Services.Interfaces.Products;
 
-namespace WebApp.Controllers
+namespace WebApp.Controllers.Resources
 {
     [Route("/images")]
     public class ImagesController : Controller
@@ -32,7 +32,7 @@ namespace WebApp.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Oops.");
             }
         }
-        
+
         private async Task<IActionResult> GetProductImageFileResult(int imageToReturn)
         {
             ProductImage foundImage = await _images.FindImage(imageToReturn);
@@ -41,8 +41,8 @@ namespace WebApp.Controllers
         private async Task<IActionResult> GetBrandImageFileResult(int imageToReturn)
         {
             BrandImage foundImage = await _brands.GetBrandImage(imageToReturn);
-			return new FileStreamResult(new MemoryStream(foundImage.Data), foundImage.ContentType);
-		}
+            return new FileStreamResult(new MemoryStream(foundImage.Data), foundImage.ContentType);
+        }
 
         public ImagesController(
             IProductImagesManager images,

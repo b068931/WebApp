@@ -7,6 +7,7 @@ using WebApp.Services.Implementation.Products;
 using WebApp.Database.Entities.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +16,11 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
 	options.UseSqlServer(builder.Configuration.GetConnectionString("Database") ?? throw new InvalidOperationException("Unable to find database connection string.")));
 
 builder.Services
-	.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+	.AddIdentityCore<ApplicationUser>(options =>
+	{
+		options.SignIn.RequireConfirmedAccount = true;
+	})
+	.AddRoles<ApplicationRole>()
 	.AddEntityFrameworkStores<DatabaseContext>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -23,6 +28,12 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 		options =>
 		{
 			options.LoginPath = new PathString("/auth/login");
+			options.LogoutPath = new PathString("/auth/logout");
+			options.AccessDeniedPath = new PathString("/auth/noentry");
+
+			options.ExpireTimeSpan = TimeSpan.FromDays(5);
+			options.SlidingExpiration = true;
+
 			options.ReturnUrlParameter = "return";
 		});
 
@@ -53,7 +64,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+app.UseStaticFiles(); //Almost all static files are available anonymously
 
 app.UseRouting();
 
