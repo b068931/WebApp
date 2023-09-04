@@ -1,0 +1,58 @@
+﻿@model WebApp.ViewModels.Auth.RegisterVM
+
+<div class="d-flex" style="line-height:0.8;">
+	<img src="/resources/womanongrass.png" class="h-100" style="width:37.5%;" />
+	<div class="d-flex flex-column flex-fill">
+		<img src="/resources/brandbig.svg" class="mx-auto mt-auto" style="width:180px;height:133px;" />
+		<span class="mx-auto" style="color:rgba(33, 37, 23, 1);">Приєднуйся до нашої великої родини</span>
+		<div class="d-flex my-4 mx-auto">
+			@if (Model.ReturnUrl != null)
+			{
+				<a href="/auth/login?return=@Model.ReturnUrl" class="prevent-select link_color me-4">
+					<h4>Вхід</h4>
+				</a>
+			}
+			else
+			{
+				<a href="/auth/login" class="prevent-select link_color me-4">
+					<h4>Вхід</h4>
+				</a>
+			}
+			<h4 class="prevent-select">Реєстрація</h4>
+		</div>
+		<form method="post" action="/auth/register" class="d-flex flex-column pb-3 mb-auto mx-auto">
+			@if (Model.ReturnUrl != null)
+			{
+				<input type="hidden" asp-for=ReturnUrl />
+			}
+			<div class="d-flex flex-column">
+				<div class="d-flex">
+					<label for="logininput" class="me-auto pe-3 my-auto">
+						<h4 class="pt-2">Логін</h4>
+					</label>
+					<input id="logininput" asp-for=Email placeholder="Введіть ім'я" class="form-control" style="width:20rem;height:3rem;" />
+				</div>
+				<span class="text-danger mt-1" asp-validation-for=Email></span>
+			</div>
+			<div class="d-flex flex-column">
+				<div class="d-flex mt-3">
+					<label for="passwordinput" class="me-auto pe-3 my-auto">
+						<h4 class="pt-2">Пароль</h4>
+					</label>
+					<input id="passwordinput" asp-for=Password placeholder="Введіть пароль" class="form-control" style="width:20rem;height:3rem;" />
+				</div>
+				<span class="text-danger mt-1" asp-validation-for=Password></span>
+			</div>
+			<div class="d-flex flex-column">
+				<div class="d-flex mt-3">
+					<label for="passwordinput" class="me-auto pe-3 my-auto">
+						<h4 class="pt-2">Підтвердження</h4>
+					</label>
+					<input id="passwordinput" asp-for=PasswordRepeat placeholder="Повторіть пароль ще раз" class="form-control" style="width:20rem;height:3rem;" />
+				</div>
+				<span class="text-danger mt-1" asp-validation-for=PasswordRepeat></span>
+			</div>
+			<input type="submit" value="Створити" class=" mt-5 btn btn-outline-dark" style="border-radius:1.1rem;" />
+		</form>
+	</div>
+</div>

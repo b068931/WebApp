@@ -19,6 +19,7 @@ builder.Services
 	.AddIdentityCore<ApplicationUser>(options =>
 	{
 		options.SignIn.RequireConfirmedAccount = true;
+		options.Password.RequiredLength = 10;
 	})
 	.AddRoles<ApplicationRole>()
 	.AddEntityFrameworkStores<DatabaseContext>();
