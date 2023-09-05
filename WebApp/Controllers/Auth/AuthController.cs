@@ -10,10 +10,14 @@ namespace WebApp.Controllers.Auth
 	public class AuthController : Controller
 	{
 		private readonly UserManager<ApplicationUser> _users;
+		private readonly SignInManager<ApplicationUser> _signIn;
+
 		public AuthController(
-			UserManager<ApplicationUser> users)
+			UserManager<ApplicationUser> users, 
+			SignInManager<ApplicationUser> signIn)
 		{
 			_users = users;
+			_signIn = signIn;
 		}
 
 		[AllowAnonymous]
@@ -29,8 +33,33 @@ namespace WebApp.Controllers.Auth
 
 		[AllowAnonymous]
 		[HttpPost("login")]
-		public IActionResult Login(LoginVM loginVM)
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> Login(LoginVM loginVM)
 		{
+			if(ModelState.IsValid)
+			{
+				var result =
+					await _signIn.PasswordSignInAsync(
+						loginVM.Email, loginVM.Password, true, false
+					);
+
+				if(result.Succeeded)
+				{
+					if(!string.IsNullOrEmpty(loginVM.ReturnUrl) && Url.IsLocalUrl(loginVM.ReturnUrl))
+					{
+						return Redirect(loginVM.ReturnUrl);
+					}
+					else
+					{
+						return Redirect("/");
+					}
+				}
+				else
+				{
+					ModelState.AddModelError("Password", "Ви вказали неправильний пароль та/або електронну пошту.");
+				}
+			}
+
 			return View("Login", loginVM);
 		}
 
@@ -47,6 +76,7 @@ namespace WebApp.Controllers.Auth
 
 		[AllowAnonymous]
 		[HttpPost("register")]
+		[ValidateAntiForgeryToken]
 		public IActionResult Register(RegisterVM registerVM)
 		{
 			return View("Register", registerVM);

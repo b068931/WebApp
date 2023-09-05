@@ -25,6 +25,7 @@
 			}
 		</div>
 		<form method="post" action="/auth/login" class="d-flex flex-column pb-3 mb-auto mx-auto">
+			@Html.AntiForgeryToken()
 			@if(Model.ReturnUrl != null)
 			{
 				<input type="hidden" asp-for=ReturnUrl />

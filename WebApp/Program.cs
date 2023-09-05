@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using WebApp.Services.Database.Grouping;
 using WebApp.Services.Database.Products;
+using Microsoft.AspNetCore.Identity;
+using WebApp.Helpers.Exceptions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,13 +19,22 @@ builder.Services
 	.AddIdentityCore<ApplicationUser>(options =>
 	{
 		options.SignIn.RequireConfirmedAccount = true;
-		options.Password.RequiredLength = 10;
+
+		options.User.RequireUniqueEmail = true;
+		options.User.AllowedUserNameCharacters = "0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM_ ";
+
+		options.Password.RequiredLength = 20; //The only strict requirement is the length of the password. This is to encourage the use of 'passPHRASES' instead of 'passWORDS'
+		options.Password.RequireNonAlphanumeric = false;
+		options.Password.RequireDigit = false;
+		options.Password.RequireLowercase = false;
+		options.Password.RequireUppercase = false;
 	})
 	.AddRoles<ApplicationRole>()
+	.AddSignInManager()
 	.AddEntityFrameworkStores<DatabaseContext>();
 
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-	.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
+builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme)
+	.AddCookie(IdentityConstants.ApplicationScheme,
 		options =>
 		{
 			options.LoginPath = new PathString("/auth/login");
@@ -61,8 +72,26 @@ if (!app.Environment.IsDevelopment())
 	app.UseHsts();
 }
 
+using (var scope = app.Services.CreateScope())
+{
+	try
+	{
+		DatabaseInitializer initializer = new DatabaseInitializer(
+			scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>(),
+			scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>(),
+			app.Configuration
+		);
+		
+		await initializer.InitializeAuthAsync();
+	}
+	catch(Exception exc)
+	{
+		throw new ServerInitializationException("Unable to initialize the database. This is required to create an admin account with a few initial roles.", exc);
+	}
+}
+
 app.UseHttpsRedirection();
-app.UseStaticFiles(); //Almost all static files are available anonymously
+app.UseStaticFiles(); //Almost all static files are available anonymously. For other static files check AuthorizedStaticFilesController
 
 app.UseRouting();
 
