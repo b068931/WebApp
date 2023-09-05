@@ -4,7 +4,7 @@ using WebApp.Database;
 using WebApp.Database.Entities.Grouping;
 using WebApp.Helpers.Exceptions;
 
-namespace WebApp.Services.Implementation.Grouping
+namespace WebApp.Services.Database.Grouping
 {
     public class BrandsManager
     {
@@ -45,11 +45,11 @@ namespace WebApp.Services.Implementation.Grouping
             _database = database;
         }
 
-        public List<Database.Models.Brand> GetAllBrands()
+        public List<WebApp.Database.Models.Brand> GetAllBrands()
         {
             return _database.Brands
                     .AsNoTracking()
-                    .Select(e => new Database.Models.Brand()
+                    .Select(e => new WebApp.Database.Models.Brand()
                     {
                         Id = e.Id,
                         Name = e.Name,

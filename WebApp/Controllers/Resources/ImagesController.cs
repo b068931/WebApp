@@ -4,8 +4,8 @@ using WebApp.Database;
 using WebApp.Database.Entities.Grouping;
 using WebApp.Database.Entities.Products;
 using WebApp.Helpers.Exceptions;
-using WebApp.Services.Implementation.Grouping;
-using WebApp.Services.Implementation.Products;
+using WebApp.Services.Database.Grouping;
+using WebApp.Services.Database.Products;
 
 namespace WebApp.Controllers.Resources
 {

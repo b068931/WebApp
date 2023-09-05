@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WebApp.Services.Implementation.Products;
+using WebApp.Services.Database.Products;
 
 namespace WebApp.Controllers.Products
 {

@@ -12,8 +12,8 @@ using Microsoft.Extensions.Primitives;
 using WebApp.Helpers.Filtering;
 using WebApp.Helpers.Exceptions;
 using WebApp.Database.Entities.Products;
-using WebApp.Services.Implementation.Grouping;
-using WebApp.Services.Implementation.Products;
+using WebApp.Services.Database.Grouping;
+using WebApp.Services.Database.Products;
 
 namespace WebApp.Controllers.Products
 {

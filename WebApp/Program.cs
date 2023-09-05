@@ -1,10 +1,10 @@
 using WebApp.Database;
 using Microsoft.EntityFrameworkCore;
-using WebApp.Services.Implementation.Grouping;
-using WebApp.Services.Implementation.Products;
 using WebApp.Database.Entities.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using WebApp.Services.Database.Grouping;
+using WebApp.Services.Database.Products;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using WebApp.Services.Implementation.Grouping;
+using WebApp.Services.Database.Grouping;
 using WebApp.ViewModels;
 
 namespace WebApp.Controllers

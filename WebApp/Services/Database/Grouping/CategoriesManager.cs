@@ -6,7 +6,7 @@ using WebApp.Database.Models;
 using WebApp.Helpers;
 using WebApp.ViewModels.Categories;
 
-namespace WebApp.Services.Implementation.Grouping
+namespace WebApp.Services.Database.Grouping
 {
     public class CategoriesManager
     {

@@ -4,10 +4,10 @@ using WebApp.Database.Entities.Products;
 using WebApp.Database.Models;
 using WebApp.Helpers.Exceptions;
 using WebApp.Helpers.Filtering;
-using WebApp.Services.Implementation.Grouping;
+using WebApp.Services.Database.Grouping;
 using WebApp.ViewModels.Product;
 
-namespace WebApp.Services.Implementation.Products
+namespace WebApp.Services.Database.Products
 {
     public class ProductsManager
     {
@@ -25,7 +25,7 @@ namespace WebApp.Services.Implementation.Products
                 throw new UserInteractionException("Invalid category provided. Reload the page.");
             }
         }
-        private Database.Entities.Products.ProductStock FindProductStock(int stockId)
+        private WebApp.Database.Entities.Products.ProductStock FindProductStock(int stockId)
         {
             return _database.ProductStocks.Find(stockId) ??
                 throw new UserInteractionException(
@@ -104,7 +104,7 @@ namespace WebApp.Services.Implementation.Products
                     Date = e.Created,
                     AvailableColours = e.Stocks
                         .DistinctBy(e => e.ColourId)
-                        .Select(e => new Database.Models.Colour()
+                        .Select(e => new WebApp.Database.Models.Colour()
                         {
                             Id = e.Colour.Id,
                             Name = e.Colour.Name,
@@ -113,7 +113,7 @@ namespace WebApp.Services.Implementation.Products
                         .ToList(),
                     AvailableSizes = e.Stocks
                         .DistinctBy(e => e.SizeId)
-                        .Select(e => new Database.Models.Size()
+                        .Select(e => new WebApp.Database.Models.Size()
                         {
                             Id = e.Size.Id,
                             Name = e.Size.SizeName
@@ -204,23 +204,23 @@ namespace WebApp.Services.Implementation.Products
             };
         }
 
-        public List<Database.Models.ProductStock> GetProductStocks(int productId)
+        public List<WebApp.Database.Models.ProductStock> GetProductStocks(int productId)
         {
             return _database.ProductStocks
                 .Include(e => e.Colour)
                 .Include(e => e.Size)
                 .Where(e => e.ProductId == productId)
-                .Select(e => new Database.Models.ProductStock()
+                .Select(e => new WebApp.Database.Models.ProductStock()
                 {
                     Id = e.Id,
                     ProductAmount = e.ProductAmount,
-                    Colour = new Database.Models.Colour()
+                    Colour = new WebApp.Database.Models.Colour()
                     {
                         Id = e.Colour.Id,
                         Name = e.Colour.Name,
                         HexCode = e.Colour.HexCode
                     },
-                    Size = new Database.Models.Size()
+                    Size = new WebApp.Database.Models.Size()
                     {
                         Id = e.Size.Id,
                         Name = e.Size.SizeName
@@ -230,7 +230,7 @@ namespace WebApp.Services.Implementation.Products
         }
         public void CreateProductStocks(int productId, int colourId, int sizeId, int stockSize)
         {
-            Database.Entities.Products.ProductStock newStock = new Database.Entities.Products.ProductStock()
+            WebApp.Database.Entities.Products.ProductStock newStock = new WebApp.Database.Entities.Products.ProductStock()
             {
                 ProductAmount = stockSize,
                 ProductId = productId,
@@ -243,7 +243,7 @@ namespace WebApp.Services.Implementation.Products
         }
         public void UpdateProductStocks(int stockId, int colourId, int sizeId, int stockSize)
         {
-            Database.Entities.Products.ProductStock foundStock = FindProductStock(stockId);
+            WebApp.Database.Entities.Products.ProductStock foundStock = FindProductStock(stockId);
             foundStock.ColourId = colourId;
             foundStock.SizeId = sizeId;
             foundStock.ProductAmount = stockSize;

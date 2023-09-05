@@ -4,7 +4,7 @@ using WebApp.Database;
 using WebApp.Database.Entities.Products;
 using WebApp.Helpers.Exceptions;
 
-namespace WebApp.Services.Implementation.Products
+namespace WebApp.Services.Database.Products
 {
     public class SizesManager
     {
@@ -22,11 +22,11 @@ namespace WebApp.Services.Implementation.Products
             _database = database;
         }
 
-        public List<Database.Models.Size> GetAllSizes()
+        public List<WebApp.Database.Models.Size> GetAllSizes()
         {
             return _database.ProductSizes
                 .AsNoTracking()
-                .Select(e => new Database.Models.Size()
+                .Select(e => new WebApp.Database.Models.Size()
                 {
                     Id = e.Id,
                     Name = e.SizeName

@@ -2,7 +2,7 @@
 using WebApp.Database.Entities.Products;
 using WebApp.Helpers.Exceptions;
 
-namespace WebApp.Services.Implementation.Products
+namespace WebApp.Services.Database.Products
 {
     public class ProductImagesManager
     {

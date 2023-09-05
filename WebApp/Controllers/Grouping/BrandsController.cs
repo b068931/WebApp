@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using WebApp.Helpers.Exceptions;
-using WebApp.Services.Implementation.Grouping;
+using WebApp.Services.Database.Grouping;
 
 namespace WebApp.Controllers.Grouping
 {

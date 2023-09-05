@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using WebApp.Helpers.Exceptions;
-using WebApp.Services.Implementation.Products;
+using WebApp.Services.Database.Products;
 using WebApp.ViewModels.Product;
 
 namespace WebApp.Controllers.Products
