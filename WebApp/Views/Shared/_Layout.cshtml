@@ -9,112 +9,120 @@
 	<link rel="stylesheet" href="~/WebApp.styles.css" asp-append-version="true" />
 </head>
 <body>
-	<header>
-		<nav class="header navbar navbar-expand-sm navbar-light">
-			<div class="container-fluid">
-				<a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-					<img id="brand" src="/resources/brand.svg" alt="" width="85" height="63">
-				</a>
-				<div class="contents collapse navbar-collapse">
-					<div class="d-flex flex-row justify-content-between w-100">
-						<form method="get" action="/products" id="headerSearchBar" class="flex-grow-1">
-							<div class="input-group">
-								<input name="query" class="form-control border-0" type="search" placeholder="Я хочу купити на EKO..." aria-label="Search">
-								<button class="btn bg-white" type="submit">
-									<img id="searchIcon" class="mx-auto my-auto" src="/resources/lookup.svg"/>
-								</button>
+	@if (ViewBag.RenderHeader)
+	{
+		<header>
+			<nav class="header navbar navbar-expand-sm navbar-light">
+				<div class="container-fluid">
+					<a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+						<img id="brand" src="/resources/brand.svg" alt="" width="85" height="63">
+					</a>
+					<div class="contents collapse navbar-collapse">
+						<div class="d-flex flex-row justify-content-between w-100">
+							<form method="get" action="/products" id="headerSearchBar" class="flex-grow-1">
+								<div class="input-group">
+									<input name="query" class="form-control border-0" type="search" placeholder="Я хочу купити на EKO..." aria-label="Search">
+									<button class="btn bg-white" type="submit">
+										<img id="searchIcon" class="mx-auto my-auto" src="/resources/lookup.svg"/>
+									</button>
+								</div>
+							</form>
+
+							<button id="addProduct" class="btn btn-outline-dark px-5">
+								Додати товар
+							</button>
+
+							<div id="languageSwitch" class="d-flex flex-row justify-content-start my-auto">
+								<span role="button" class="language-blob">UA</span>
+								<span class="mx-1 align-self-center">|</span>
+								<span role="button" class="language-blob">EN</span>
 							</div>
-						</form>
 
-						<button id="addProduct" class="btn btn-outline-dark px-5">
-							Додати товар
-						</button>
+							<a href="#" class="my-auto">
+								<img id="shoppingCart" src="/resources/shoppingcart.svg"/>
+							</a>
 
-						<div id="languageSwitch" class="d-flex flex-row justify-content-start my-auto">
-							<span role="button" class="language-blob">UA</span>
-							<span class="mx-1 align-self-center">|</span>
-							<span role="button" class="language-blob">EN</span>
-						</div>
-
-						<a href="#" class="my-auto">
-							<img id="shoppingCart" src="/resources/shoppingcart.svg"/>
-						</a>
-
-						<div id="languageSwitch" class="d-flex flex-row justify-content-start my-auto">
-							<a href="#" class="link_color">Вхід</a>
-							<span class="mx-1 align-self-center">/</span>
-							<a href="#" class="link_color">Реєстрація</a>
+							<div id="languageSwitch" class="d-flex flex-row justify-content-start my-auto">
+								<a href="#" class="link_color">Вхід</a>
+								<span class="mx-1 align-self-center">/</span>
+								<a href="#" class="link_color">Реєстрація</a>
+							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-		</nav>
-		<div id="categoriesSelector" class="position-relative">
-			<div class="d-flex justify-content-around">
-				<div id="categoriesToggler" class="link_color prevent-select my-3" role="button">
-					Каталог
+			</nav>
+			<div id="categoriesSelector" class="position-relative">
+				<div class="d-flex justify-content-around">
+					<div id="categoriesToggler" class="link_color prevent-select my-3" role="button">
+						Каталог
+					</div>
+					<a href="/products?sort=views&order=reversed" class="link_color prevent-select my-3">
+						Популярне
+					</a>
+					<a href="/products?sort=date&order=reversed" class="link_color prevent-select my-3">
+						Новинки
+					</a>
+					<a href="/products?sort=discount&order=reversed" class="link_color prevent-select my-3">
+						Знижки
+					</a>
+					<a href="/products?sort=stars&order=reversed" class="link_color prevent-select my-3">
+						Високі оцінки
+					</a>
 				</div>
-				<a href="/products?sort=views&order=reversed" class="link_color prevent-select my-3">
-					Популярне
-				</a>
-				<a href="/products?sort=date&order=reversed" class="link_color prevent-select my-3">
-					Новинки
-				</a>
-				<a href="/products?sort=discount&order=reversed" class="link_color prevent-select my-3">
-					Знижки
-				</a>
-				<a href="/products?sort=stars&order=reversed" class="link_color prevent-select my-3">
-					Високі оцінки
-				</a>
+				<div id="categoriesList" class="position-absolute w-100 d-flex justify-content-start d-none prevent-select" style="z-index:2000">
+					<div id="baseCategories" class="overflow-auto w-25 border-end"></div>
+				</div>
 			</div>
-			<div id="categoriesList" class="position-absolute w-100 d-flex justify-content-start d-none prevent-select" style="z-index:2000">
-				<div id="baseCategories" class="overflow-auto w-25 border-end"></div>
-			</div>
-		</div>
-	</header>
+		</header>
+	}
+
 	<div class="container-fluid p-0 m-0">
 		<main role="main">
 			@RenderBody()
 		</main>
 	</div>
 
-	<footer class="myfooter position-absolute top-100 start-0 container-fluid pb-3 pt-5 px-5">
-		<div class="d-flex flex-column">
-			<div class="d-flex flex-row justify-content-end text-wrap">
-				<div class="d-flex flex-column small-block me-5">
-					<a class="link_underline" href="/aboutus">Як це працює?</a>
-					<span class="mt-4">Україна, 02121, місто Київ, Харківське шосе, будинок 201-203, літера 4Г</span>
+	@if (ViewBag.RenderFooter)
+	{
+		<footer class="myfooter position-absolute top-100 start-0 container-fluid pb-3 pt-5 px-5">
+			<div class="d-flex flex-column">
+				<div class="d-flex flex-row justify-content-end text-wrap">
+					<div class="d-flex flex-column small-block me-5">
+						<a class="link_underline" href="/aboutus">Як це працює?</a>
+						<span class="mt-4">Україна, 02121, місто Київ, Харківське шосе, будинок 201-203, літера 4Г</span>
+					</div>
+					<div class="d-flex flex-column small-block me-5">
+						<a class="link_underline" href="#">Політика кофіденційності</a>
+						<a class="link_underline mt-4" href="#">Договір-оферта</a>
+						<a class="link_underline mt-4" href="#">Контакти</a>
+						<a href="/admin" class="link_underline mt-4">Адмін панель</a>
+					</div>
+					<div class="d-flex flex-column small-block">
+						<span>Ми у соц. мережах</span>
+						<div class="d-flex flex-row mt-4">
+							<a href="https://www.facebook.com" class="me-3">
+								<img class="social-network" src="/resources/facebook.svg"/>
+							</a>
+							<a href="https://www.youtube.com" class="me-3">
+								<img class="social-network" src="/resources/youtube.svg"/>
+							</a>
+							<a href="https://www.instagram.com">
+								<img class="social-network" src="/resources/instagram.svg"/>
+							</a>
+						</div>
+					</div>
 				</div>
-				<div class="d-flex flex-column small-block me-5">
-					<a class="link_underline" href="#">Політика кофіденційності</a>
-					<a class="link_underline mt-4" href="#">Договір-оферта</a>
-					<a class="link_underline mt-4" href="#">Контакти</a>
-					<a href="/admin" class="link_underline mt-4">Адмін панель</a>
-				</div>
-				<div class="d-flex flex-column small-block">
-					<span>Ми у соц. мережах</span>
-					<div class="d-flex flex-row mt-4">
-						<a href="https://www.facebook.com" class="me-3">
-							<img class="social-network" src="/resources/facebook.svg"/>
-						</a>
-						<a href="https://www.youtube.com" class="me-3">
-							<img class="social-network" src="/resources/youtube.svg"/>
-						</a>
-						<a href="https://www.instagram.com">
-							<img class="social-network" src="/resources/instagram.svg"/>
-						</a>
+				<div class="d-flex flex-row justify-content-start">
+					<div class="d-flex flex-column">
+						<img id="brand" class="mt-5" src="/resources/brandwhite.svg"/>
+						<span class="mt-3">Речі за кліком серця. Всі права захищені</span>
+						<span>&copy; 2023 Ekobrand.ua</span>
 					</div>
 				</div>
 			</div>
-			<div class="d-flex flex-row justify-content-start">
-				<div class="d-flex flex-column">
-					<img id="brand" class="mt-5" src="/resources/brandwhite.svg"/>
-					<span class="mt-3">Речі за кліком серця. Всі права захищені</span>
-					<span>&copy; 2023 Ekobrand.ua</span>
-				</div>
-			</div>
-		</div>
-	</footer>
+		</footer>
+	}
+
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="~/js/header.js"></script>
