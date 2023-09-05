@@ -4,16 +4,16 @@ using WebApp.Database;
 using WebApp.Database.Entities.Grouping;
 using WebApp.Database.Entities.Products;
 using WebApp.Helpers.Exceptions;
-using WebApp.Services.Interfaces.Grouping;
-using WebApp.Services.Interfaces.Products;
+using WebApp.Services.Implementation.Grouping;
+using WebApp.Services.Implementation.Products;
 
 namespace WebApp.Controllers
 {
     [Route("/images")]
     public class ImagesController : Controller
     {
-        private readonly IProductImagesManager _images;
-        private readonly IBrandsManager _brands;
+        private readonly ProductImagesManager _images;
+        private readonly BrandsManager _brands;
         private readonly ILogger<CategoriesController> _logger;
 
         private async Task<IActionResult> PerformAction(Func<Task<IActionResult>> action)
@@ -45,8 +45,8 @@ namespace WebApp.Controllers
 		}
 
         public ImagesController(
-            IProductImagesManager images,
-            IBrandsManager brands,
+            ProductImagesManager images,
+            BrandsManager brands,
             ILogger<CategoriesController> logger)
         {
             _images = images;

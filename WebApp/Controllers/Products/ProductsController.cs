@@ -8,12 +8,12 @@ using WebApp.Helpers.Products.Filtering.OrderTypes;
 using WebApp.Helpers.Products.Filtering.SortTypes;
 using WebApp.ViewModels.Product;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using WebApp.Services.Interfaces.Grouping;
-using WebApp.Services.Interfaces.Products;
 using Microsoft.Extensions.Primitives;
 using WebApp.Helpers.Filtering;
 using WebApp.Helpers.Exceptions;
 using WebApp.Database.Entities.Products;
+using WebApp.Services.Implementation.Grouping;
+using WebApp.Services.Implementation.Products;
 
 namespace WebApp.Controllers.Products
 {
@@ -23,12 +23,12 @@ namespace WebApp.Controllers.Products
 		private readonly ProductFiltersFactory _filtersFactory;
 		private readonly ProductOrderFactory _ordersFactory;
 
-		private readonly IColoursManager _colours;
-		private readonly ISizesManager _sizes;
-		private readonly IBrandsManager _brands;
-		private readonly ICategoriesManager _categories;
-		private readonly IProductImagesManager _images;
-		private readonly IProductsManager _products;
+		private readonly ColoursManager _colours;
+		private readonly SizesManager _sizes;
+		private readonly BrandsManager _brands;
+		private readonly CategoriesManager _categories;
+		private readonly ProductImagesManager _images;
+		private readonly ProductsManager _products;
 		private readonly ILogger<ProductsController> _logger;
 		private readonly JsonSerializerSettings _jsonSettings;
 
@@ -152,12 +152,12 @@ namespace WebApp.Controllers.Products
 		}
 		
 		public ProductsController(
-			IBrandsManager brands,
-			ICategoriesManager categories,
-			IProductImagesManager images,
-			IProductsManager products,
-			IColoursManager colours,
-			ISizesManager sizes,
+			BrandsManager brands,
+			CategoriesManager categories,
+			ProductImagesManager images,
+			ProductsManager products,
+			ColoursManager colours,
+			SizesManager sizes,
 			ILogger<ProductsController> logger)
 		{
 			_brands = brands;

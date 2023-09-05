@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
-using WebApp.Services.Interfaces.Grouping;
+using WebApp.Helpers.Exceptions;
+using WebApp.Services.Implementation.Grouping;
 
 namespace WebApp.Controllers.Grouping
 {
@@ -8,7 +9,7 @@ namespace WebApp.Controllers.Grouping
     public class BrandsController : Controller
     {
         private readonly ILogger<BrandsController> _logger;
-        private readonly IBrandsManager _brands;
+        private readonly BrandsManager _brands;
 
 		private IActionResult PerformAction(Action callback)
 		{
@@ -16,6 +17,10 @@ namespace WebApp.Controllers.Grouping
 			{
 				callback();
 			}
+            catch(UserInteractionException ex)
+            {
+                _logger.LogWarning(ex, "BrandsController incorrect action.");
+            }
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "BrandsController error.");
@@ -24,7 +29,7 @@ namespace WebApp.Controllers.Grouping
 			return Redirect("/brands");
 		}
 
-		public BrandsController(ILogger<BrandsController> logger, IBrandsManager brands)
+		public BrandsController(ILogger<BrandsController> logger, BrandsManager brands)
 		{
 			_logger = logger;
 			_brands = brands;
@@ -45,7 +50,11 @@ namespace WebApp.Controllers.Grouping
             [FromForm(Name = "brandName")] string newBrandName,
             [FromForm(Name = "brandImage")] IFormFile brandImage)
         {
-            return PerformAction(() => _brands.CreateBrand(newBrandName, brandImage));
+            return PerformAction(
+                () => _brands.CreateBrand(newBrandName, brandImage ?? 
+                    throw new UserInteractionException("Trying to create a brand with no image.")
+                )
+            );
         }
 
         [HttpPost("action/update")]

@@ -4,12 +4,11 @@ using WebApp.Database;
 using WebApp.Database.Entities.Grouping;
 using WebApp.Database.Models;
 using WebApp.Helpers;
-using WebApp.Services.Interfaces.Grouping;
 using WebApp.ViewModels.Categories;
 
 namespace WebApp.Services.Implementation.Grouping
 {
-    public class CategoriesDatabaseManager : ICategoriesManager
+    public class CategoriesManager
     {
         private readonly DatabaseContext _database;
 
@@ -82,7 +81,7 @@ namespace WebApp.Services.Implementation.Grouping
             }
         }
 
-        public CategoriesDatabaseManager(DatabaseContext database)
+        public CategoriesManager(DatabaseContext database)
         {
             _database = database;
         }

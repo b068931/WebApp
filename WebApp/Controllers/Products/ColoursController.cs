@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WebApp.Services.Interfaces.Products;
+using WebApp.Services.Implementation.Products;
 
 namespace WebApp.Controllers.Products
 {
-	[Route("/colours")]
+    [Route("/colours")]
 	public class ColoursController : Controller
 	{
-		private readonly IColoursManager _colours;
+		private readonly ColoursManager _colours;
 		private readonly ILogger<ColoursController> _logger;
 		private IActionResult PerformAction(Action callback)
 		{
@@ -22,7 +22,7 @@ namespace WebApp.Controllers.Products
 			return Redirect("/colours");
 		}
 
-		public ColoursController(IColoursManager colours, ILogger<ColoursController> logger)
+		public ColoursController(ColoursManager colours, ILogger<ColoursController> logger)
 		{
 			_colours = colours;
 			_logger = logger;

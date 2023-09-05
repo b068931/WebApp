@@ -1,7 +1,5 @@
 using WebApp.Database;
 using Microsoft.EntityFrameworkCore;
-using WebApp.Services.Interfaces.Grouping;
-using WebApp.Services.Interfaces.Products;
 using WebApp.Services.Implementation.Grouping;
 using WebApp.Services.Implementation.Products;
 
@@ -12,12 +10,12 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<DatabaseContext>(options =>
 	options.UseSqlServer(builder.Configuration.GetConnectionString("Database") ?? throw new InvalidOperationException("Unable to find database connection string.")));
 
-builder.Services.AddScoped<IBrandsManager, BrandsDatabaseManager>();
-builder.Services.AddScoped<ICategoriesManager, CategoriesDatabaseManager>();
-builder.Services.AddScoped<IProductImagesManager, ProductImagesDatabaseManager>();
-builder.Services.AddScoped<IProductsManager, ProductsDatabaseManager>();
-builder.Services.AddScoped<IColoursManager, ColoursDatabaseManager>();
-builder.Services.AddScoped<ISizesManager, SizesDatabaseManager>();
+builder.Services.AddScoped<BrandsManager>();
+builder.Services.AddScoped<CategoriesManager>();
+builder.Services.AddScoped<ProductImagesManager>();
+builder.Services.AddScoped<ProductsManager>();
+builder.Services.AddScoped<ColoursManager>();
+builder.Services.AddScoped<SizesManager>();
 
 var app = builder.Build();
 

@@ -3,18 +3,17 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using WebApp.Helpers.Exceptions;
-using WebApp.Services.Interfaces.Products;
+using WebApp.Services.Implementation.Products;
 using WebApp.ViewModels.Product;
-using static NuGet.Packaging.PackagingConstants;
 
 namespace WebApp.Controllers.Products
 {
     [Route("/product/stocks")]
 	public class ProductStocksController : Controller
 	{
-		private readonly IColoursManager _colours;
-		private readonly ISizesManager _sizes;
-		private readonly IProductsManager _products;
+		private readonly ColoursManager _colours;
+		private readonly SizesManager _sizes;
+		private readonly ProductsManager _products;
 		private readonly ILogger<ProductStocksController> _logger;
 		private readonly JsonSerializerSettings _jsonSettings;
 
@@ -50,7 +49,7 @@ namespace WebApp.Controllers.Products
 			});
 		}
 
-		public ProductStocksController(IColoursManager colours, ISizesManager sizes, IProductsManager products, ILogger<ProductStocksController> logger)
+		public ProductStocksController(ColoursManager colours, SizesManager sizes, ProductsManager products, ILogger<ProductStocksController> logger)
 		{
 			_colours = colours;
 			_sizes = sizes;

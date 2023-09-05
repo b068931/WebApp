@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
-using WebApp.Services.Interfaces.Grouping;
+using WebApp.Services.Implementation.Grouping;
 
 namespace WebApp.Controllers.Grouping
 {
     [Route("/categories")]
 	public class CategoriesController : Controller
 	{
-		private readonly ICategoriesManager _categories;
+		private readonly CategoriesManager _categories;
 		private readonly ILogger<CategoriesController> _logger;
 
 		private (string, string) GenerateAdminPageModel(string result)
@@ -37,7 +37,7 @@ namespace WebApp.Controllers.Grouping
 			return View("AdminPage", GenerateAdminPageModel(result));
 		}
 
-		public CategoriesController(ICategoriesManager categories, ILogger<CategoriesController> logger)
+		public CategoriesController(CategoriesManager categories, ILogger<CategoriesController> logger)
 		{
 			_categories = categories;
 			_logger = logger;

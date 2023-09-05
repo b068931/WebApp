@@ -1,11 +1,10 @@
 ﻿using WebApp.Database;
 using WebApp.Database.Entities.Products;
 using WebApp.Helpers.Exceptions;
-using WebApp.Services.Interfaces.Products;
 
 namespace WebApp.Services.Implementation.Products
 {
-    public class ProductImagesDatabaseManager : IProductImagesManager
+    public class ProductImagesManager
     {
         private static readonly int MaxFileSize = 10485760;
         private readonly DatabaseContext _database;
@@ -48,7 +47,7 @@ namespace WebApp.Services.Implementation.Products
             return newImages;
         }
 
-        public ProductImagesDatabaseManager(DatabaseContext database)
+        public ProductImagesManager(DatabaseContext database)
         {
             _database = database;
         }
