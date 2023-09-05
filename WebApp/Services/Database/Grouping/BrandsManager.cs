@@ -3,11 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using WebApp.Database;
 using WebApp.Database.Entities.Grouping;
 using WebApp.Helpers.Exceptions;
-using WebApp.Services.Interfaces.Grouping;
 
 namespace WebApp.Services.Implementation.Grouping
 {
-    public class BrandsDatabaseManager : IBrandsManager
+    public class BrandsManager
     {
         private static readonly int MaxImageSize = 10485760;
 
@@ -41,7 +40,7 @@ namespace WebApp.Services.Implementation.Grouping
             return brandImage;
         }
 
-        public BrandsDatabaseManager(DatabaseContext database)
+        public BrandsManager(DatabaseContext database)
         {
             _database = database;
         }

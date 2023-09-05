@@ -1,21 +1,18 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
-using WebApp.Database;
-using WebApp.Database.Models;
-using WebApp.Services.Interfaces.Grouping;
+using WebApp.Services.Implementation.Grouping;
 using WebApp.ViewModels;
 
 namespace WebApp.Controllers
 {
     public class HomeController : Controller
 	{
-		private readonly ICategoriesManager _categories;
-		private readonly IBrandsManager _brands;
+		private readonly CategoriesManager _categories;
+		private readonly BrandsManager _brands;
 
 		public HomeController(
-			ICategoriesManager categories,
-			IBrandsManager brands)
+			CategoriesManager categories,
+			BrandsManager brands)
 		{
 			_categories = categories;
 			_brands = brands;

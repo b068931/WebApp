@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WebApp.Services.Interfaces.Products;
+using WebApp.Services.Implementation.Products;
 
 namespace WebApp.Controllers.Products
 {
-	[Route("/sizes")]
+    [Route("/sizes")]
 	public class SizesController : Controller
 	{
-		private readonly ISizesManager _sizes;
+		private readonly SizesManager _sizes;
 		private readonly ILogger<SizesController> _logger;
 		private IActionResult PerformAction(Action callback)
 		{
@@ -22,7 +22,7 @@ namespace WebApp.Controllers.Products
 			return Redirect("/sizes");
 		}
 
-		public SizesController(ISizesManager sizes, ILogger<SizesController> logger)
+		public SizesController(SizesManager sizes, ILogger<SizesController> logger)
 		{
 			_sizes = sizes;
 			_logger = logger;
