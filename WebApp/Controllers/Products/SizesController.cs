@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WebApp.Services.Database.Products;
 
 namespace WebApp.Controllers.Products
 {
     [Route("/sizes")]
+	[Authorize(Roles = "admin")]
 	public class SizesController : Controller
 	{
 		private readonly SizesManager _sizes;

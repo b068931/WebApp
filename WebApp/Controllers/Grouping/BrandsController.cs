@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using WebApp.Helpers.Exceptions;
 using WebApp.Services.Database.Grouping;
@@ -6,7 +7,8 @@ using WebApp.Services.Database.Grouping;
 namespace WebApp.Controllers.Grouping
 {
     [Route("/brands")]
-    public class BrandsController : Controller
+	[Authorize(Roles = "admin")]
+	public class BrandsController : Controller
     {
         private readonly ILogger<BrandsController> _logger;
         private readonly BrandsManager _brands;
@@ -36,7 +38,8 @@ namespace WebApp.Controllers.Grouping
 		}
 
         [HttpGet("/brands/json")]
-        public JsonResult GetAll()
+		[AllowAnonymous]
+		public JsonResult GetAll()
         {
             return Json(
                 _brands.GetAllBrands(),

@@ -14,10 +14,12 @@ using WebApp.Helpers.Exceptions;
 using WebApp.Database.Entities.Products;
 using WebApp.Services.Database.Grouping;
 using WebApp.Services.Database.Products;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebApp.Controllers.Products
 {
     [Route("/products")]
+	[Authorize(Roles = "admin,user")]
 	public class ProductsController : Controller
 	{
 		private readonly ProductFiltersFactory _filtersFactory;
@@ -205,6 +207,7 @@ namespace WebApp.Controllers.Products
 		}
 
 		[HttpGet("search")]
+		[AllowAnonymous]
 		public Task<IActionResult> Search(
 			[FromQuery(Name = "maxid")] int maxId,
 			[FromQuery(Name = "includesearchresult")] bool isSearchResultIncluded = true)
@@ -250,6 +253,7 @@ namespace WebApp.Controllers.Products
 		}
 
 		[HttpGet("product/{productId}")]
+		[AllowAnonymous]
 		public IActionResult Show(
 			[FromRoute(Name = "productId")] int productId)
 		{
@@ -309,7 +313,7 @@ namespace WebApp.Controllers.Products
 					() => GetProductCreateView()
 				);
 			}
-
+			
 			return PerformAction(
 				() =>
 				{
@@ -370,6 +374,7 @@ namespace WebApp.Controllers.Products
 			);
 		}
 
+		[AllowAnonymous]
 		public IActionResult Index(
 			[FromQuery(Name = "query")] string? query,
 			[FromQuery(Name = "brand")] int? brandId,

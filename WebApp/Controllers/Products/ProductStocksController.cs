@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -9,6 +10,7 @@ using WebApp.ViewModels.Product;
 namespace WebApp.Controllers.Products
 {
     [Route("/product/stocks")]
+	[Authorize(Roles = "admin,user")]
 	public class ProductStocksController : Controller
 	{
 		private readonly ColoursManager _colours;
@@ -97,6 +99,7 @@ namespace WebApp.Controllers.Products
 		}
 
 		[HttpGet("json")]
+		[AllowAnonymous]
 		public IActionResult GetProductStocksJson(
 			[FromQuery(Name = "productId")] int productId)
 		{

@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WebApp.Services.Database.Products;
 
 namespace WebApp.Controllers.Products
 {
     [Route("/colours")]
+	[Authorize(Roles = "admin")]
 	public class ColoursController : Controller
 	{
 		private readonly ColoursManager _colours;

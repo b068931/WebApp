@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using WebApp.Services.Database.Grouping;
 using WebApp.ViewModels;
 
 namespace WebApp.Controllers
 {
-    public class HomeController : Controller
+	public class HomeController : Controller
 	{
 		private readonly CategoriesManager _categories;
 		private readonly BrandsManager _brands;
@@ -18,12 +19,14 @@ namespace WebApp.Controllers
 			_brands = brands;
 		}
 
+		[AllowAnonymous]
 		public IActionResult Index()
 		{
             return View("MainPage");
 		}
 
 		[HttpGet("/aboutus")]
+		[AllowAnonymous]
 		public IActionResult AboutUs()
 		{
 			return View("AboutUs", new AboutUsVM()
@@ -34,12 +37,14 @@ namespace WebApp.Controllers
 		}
 
 		[HttpGet("/admin")]
+		[Authorize(Roles = "admin")]
 		public IActionResult AdminPanel()
 		{
 			return View("AdminPanel");
 		}
 
 		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+		[AllowAnonymous]
 		public IActionResult Error()
 		{
 			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });

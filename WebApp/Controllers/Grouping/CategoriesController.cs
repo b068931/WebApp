@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using WebApp.Services.Database.Grouping;
 
 namespace WebApp.Controllers.Grouping
 {
     [Route("/categories")]
+	[Authorize(Roles = "admin")]
 	public class CategoriesController : Controller
 	{
 		private readonly CategoriesManager _categories;
@@ -44,6 +46,7 @@ namespace WebApp.Controllers.Grouping
 		}
 
 		[HttpGet("base")]
+		[AllowAnonymous]
 		public JsonResult GetBaseCategories()
 		{
 			return Json(
@@ -53,6 +56,7 @@ namespace WebApp.Controllers.Grouping
 		}
 
 		[HttpGet("category/{parentId}/children")]
+		[AllowAnonymous]
 		public JsonResult GetChildren(
 			[FromRoute(Name = "parentId")] int parentId)
 		{

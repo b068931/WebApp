@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WebApp.Controllers.Grouping;
 using WebApp.Database;
 using WebApp.Database.Entities.Grouping;
@@ -10,7 +11,8 @@ using WebApp.Services.Database.Products;
 namespace WebApp.Controllers.Resources
 {
     [Route("/images")]
-    public class ImagesController : Controller
+	[AllowAnonymous]
+	public class ImagesController : Controller
     {
         private readonly ProductImagesManager _images;
         private readonly BrandsManager _brands;
