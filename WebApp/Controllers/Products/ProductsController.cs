@@ -15,12 +15,16 @@ using WebApp.Database.Entities.Products;
 using WebApp.Services.Database.Grouping;
 using WebApp.Services.Database.Products;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
+using WebApp.Database.Entities.Auth;
+using WebApp.Controllers.Abstract;
 
 namespace WebApp.Controllers.Products
 {
     [Route("/products")]
 	[Authorize(Roles = "admin,user")]
-	public class ProductsController : Controller
+	public class ProductsController : ExtendedController
 	{
 		private readonly ProductFiltersFactory _filtersFactory;
 		private readonly ProductOrderFactory _ordersFactory;
@@ -229,8 +233,7 @@ namespace WebApp.Controllers.Products
 					List<Database.Models.ProductShowLightWeight> searchResult = 
 						await _products.SearchAsync(filters, paginator);
 
-					string html = await ControllerExtenstions.RenderViewAsync(
-						this,
+					string html = await RenderViewAsync(
 						"_ProductSearchPreview",
 						searchResult,
 						true
@@ -278,11 +281,11 @@ namespace WebApp.Controllers.Products
 			{
 				return GetProductCreateView();
 			}
-
+			
 			return PerformAction(
 				() =>
 				{
-					Product createdProduct = _products.CreateProduct(vm);
+					Product createdProduct = _products.CreateProduct(GetUserId(), vm);
 					return Redirect("/products/product/" + createdProduct.Id);
 				},
 				(ex) => ModelState.AddModelError(string.Empty, ex.Message),
@@ -310,18 +313,18 @@ namespace WebApp.Controllers.Products
 				return PerformAction(
 					() => GetProductUpdateView(vm.Id),
 					(ex) => ModelState.AddModelError(string.Empty, ex.Message),
-					() => GetProductCreateView()
+					() => GetProductUpdateView(vm.Id)
 				);
 			}
 			
 			return PerformAction(
 				() =>
 				{
-					_products.UpdateProduct(vm);
+					_products.UpdateProduct(GetUserId(), vm);
 					return Redirect("/products/product/" + vm.Id);
 				},
 				(ex) => ModelState.AddModelError(string.Empty, ex.Message),
-				() => GetProductCreateView()
+				() => GetProductUpdateView(vm.Id)
 			);
 		}
 
@@ -342,12 +345,12 @@ namespace WebApp.Controllers.Products
 			return PerformAction<IActionResult>(
 				() =>
 				{
-					Product associatedProduct = _products.FindProduct(productId);
+					Product associatedProduct = _products.FindOwnedProduct(GetUserId(), productId);
 					if (mainImageId != 0)
 						_products.ChangeMainImage(productId, mainImageId);
 
 					if (imagesToDelete.Contains(_products.GetProductMainImage(productId)))
-						throw new UserInteractionException("You can not delete a main image of your product.");
+						throw new UserInteractionException("Ви не можете видалити головне зображення вашого продукту.");
 					else
 						_images.DeleteImages(imagesToDelete);
 
@@ -366,7 +369,7 @@ namespace WebApp.Controllers.Products
 			return PerformAction(
 				() =>
 				{
-					_products.DeleteProduct(idToDelete);
+					_products.DeleteProduct(GetUserId(), idToDelete);
 					return Redirect("/");
 				},
 				null,

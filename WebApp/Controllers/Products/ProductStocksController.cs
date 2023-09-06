@@ -3,15 +3,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using WebApp.Controllers.Abstract;
 using WebApp.Helpers.Exceptions;
 using WebApp.Services.Database.Products;
 using WebApp.ViewModels.Product;
 
 namespace WebApp.Controllers.Products
 {
-    [Route("/product/stocks")]
+	[Route("/product/stocks")]
 	[Authorize(Roles = "admin,user")]
-	public class ProductStocksController : Controller
+	public class ProductStocksController : ExtendedController
 	{
 		private readonly ColoursManager _colours;
 		private readonly SizesManager _sizes;
@@ -74,7 +75,10 @@ namespace WebApp.Controllers.Products
 			[FromForm(Name = "stockProductsSize")] int sizeId,
 			[FromForm(Name = "stockSize")] int stockSize)
 		{
-			return PerformAction(() => _products.CreateProductStocks(productId, colourId, sizeId, stockSize), productId);
+			return PerformAction(
+				() => _products.CreateProductStocks(GetUserId(), productId, colourId, sizeId, stockSize), 
+				productId
+			);
 		}
 
 		[HttpPost("action/update/{stockId}")]
@@ -86,7 +90,10 @@ namespace WebApp.Controllers.Products
 			[FromForm(Name = "stockProductsSize")] int sizeId,
 			[FromForm(Name = "stockSize")] int stockSize)
 		{
-			return PerformAction(() => _products.UpdateProductStocks(stockId, colourId, sizeId, stockSize), productId);
+			return PerformAction(
+				() => _products.UpdateProductStocks(GetUserId(), stockId, colourId, sizeId, stockSize), 
+				productId
+			);
 		}
 
 		[HttpPost("action/delete")]
@@ -95,7 +102,10 @@ namespace WebApp.Controllers.Products
 			[FromForm(Name = "productId")] int productId,
 			[FromForm(Name = "stockId")] int stockId)
 		{
-			return PerformAction(() => _products.DeleteProductStocks(stockId), productId);
+			return PerformAction(
+				() => _products.DeleteProductStocks(GetUserId(), stockId), 
+				productId
+			);
 		}
 
 		[HttpGet("json")]

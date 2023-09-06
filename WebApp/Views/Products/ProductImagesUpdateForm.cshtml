@@ -32,7 +32,7 @@ else
 			@Html.Raw("</div>")
 	</div>
 	<hr />
-	<form id="confirmationForm" action="/products/images/action/update" method="post" class="mx-3">
+	<form id="confirmationForm" action="/products/images/action/update" method="post" class="mx-3 mb-3">
 		@Html.AntiForgeryToken()
 		<div class="text-danger" asp-validation-summary="ModelOnly"></div>
 		<input name="newMainImageId" id="mainImage" type="hidden" value="0"/>
