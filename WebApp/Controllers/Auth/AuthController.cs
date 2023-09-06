@@ -63,6 +63,14 @@ namespace WebApp.Controllers.Auth
 			return View("Login", loginVM);
 		}
 
+		[HttpPost("logout")]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> Logout()
+		{
+			await _signIn.SignOutAsync();
+			return Redirect("/");
+		}
+
 		[AllowAnonymous]
 		[HttpGet("register")]
 		public IActionResult Register(

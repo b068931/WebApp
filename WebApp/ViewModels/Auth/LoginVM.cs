@@ -4,7 +4,7 @@ namespace WebApp.ViewModels.Auth
 {
 	public class LoginVM
 	{
-		[Required(ErrorMessage = "Будь ласка, вкажіть вашу поштову адресу")]
+		[Required(ErrorMessage = "Будь ласка, вкажіть ваш логін")]
 		[DataType(DataType.Text)]
 		public string Email { get; set; } = default!;
 

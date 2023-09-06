@@ -4,6 +4,11 @@ namespace WebApp.ViewModels.Auth
 {
 	public class RegisterVM
 	{
+		[Required(ErrorMessage = "Будь ласка, вкажіть своє ім'я")]
+		[MinLength(2, ErrorMessage = "Мінімальна довжина: 2 символа")]
+		[MaxLength(25, ErrorMessage = "Максимальна довжина: 25 символів")]
+		public string UserName { get; set; } = default!;
+
 		[Required(ErrorMessage = "Будь ласка, вкажіть вашу поштову адресу")]
 		[DataType(DataType.EmailAddress)]
 		public string Email { get; set; } = default!;
