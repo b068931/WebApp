@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.Primitives;
 using WebApp.Database.Entities.Products;
-using WebApp.Helpers.Filtering;
 
-namespace WebApp.Helpers.Products.Filtering.OrderTypes
+namespace WebApp.Utilities.Filtering.Products.OrderTypes
 {
-    public class RatingsOrder : IOrdering<Product>
+	public class RatingsOrder : IOrdering<Product>
 	{
 		private int _maxId;
 		private int _maxRating;
@@ -19,7 +18,7 @@ namespace WebApp.Helpers.Products.Filtering.OrderTypes
 		public IQueryable<Product> Apply(IQueryable<Product> request)
 		{
 			request = _sortDirection.ApplyOrdering(e => e.TrueRating, request);
-			if(_sortDirection.IsReversed)
+			if (_sortDirection.IsReversed)
 			{
 				request = request
 					.Where(e =>
@@ -41,8 +40,8 @@ namespace WebApp.Helpers.Products.Filtering.OrderTypes
 
 		public static IOrdering<Product> CreateInstance(int maxId, StringValues value, bool isReversed)
 			=> new RatingsOrder(
-				maxId, 
-				int.Parse(value.ToString()), 
+				maxId,
+				int.Parse(value.ToString()),
 				new GenericComparer<int>(isReversed)
 			);
 	}

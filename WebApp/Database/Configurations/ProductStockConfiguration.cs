@@ -4,7 +4,7 @@ using WebApp.Database.Entities.Products;
 
 namespace WebApp.Database.Configurations
 {
-    public class ProductStockConfiguration : IEntityTypeConfiguration<ProductStock>
+	public class ProductStockConfiguration : IEntityTypeConfiguration<ProductStock>
 	{
 		public void Configure(EntityTypeBuilder<ProductStock> builder)
 		{

@@ -3,9 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using WebApp.Controllers.Abstract;
-using WebApp.Helpers.Exceptions;
 using WebApp.Services.Database.Products;
+using WebApp.Utilities.Exceptions;
 using WebApp.ViewModels.Product;
 
 namespace WebApp.Controllers.Products
@@ -27,16 +26,16 @@ namespace WebApp.Controllers.Products
 			{
 				action();
 			}
-			catch(UserInteractionException exc)
+			catch (UserInteractionException exc)
 			{
 				error = exc.Message;
 			}
-			catch(DbUpdateException)
+			catch (DbUpdateException)
 			{
 				error = "Ви не можете створювати продукти у наявності з однаковим кольором та розміром. " +
 					"Якщо ви вважаєте, що ця помилка не є правильною, то перезавантажте сторінку та спробуйте ще раз.";
 			}
-			catch(Exception exc)
+			catch (Exception exc)
 			{
 				error = "Unexpected error.";
 				_logger.LogError(exc, "ProductStocksController error. See exception for details.");

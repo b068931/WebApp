@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.Primitives;
 using WebApp.Database.Entities.Products;
-using WebApp.Helpers.Filtering;
 
-namespace WebApp.Helpers.Products.Filtering.SortTypes
+namespace WebApp.Utilities.Filtering.Products.SortTypes
 {
-    public class DiscountOrder : IOrdering<Product>
+	public class DiscountOrder : IOrdering<Product>
 	{
 		private int _maxId;
 		private int _maxDiscount;

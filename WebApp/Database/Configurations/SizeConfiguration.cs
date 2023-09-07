@@ -4,7 +4,7 @@ using WebApp.Database.Entities.Products;
 
 namespace WebApp.Database.Configurations
 {
-    public class SizeConfiguration : IEntityTypeConfiguration<Size>
+	public class SizeConfiguration : IEntityTypeConfiguration<Size>
 	{
 		public void Configure(EntityTypeBuilder<Size> builder)
 		{

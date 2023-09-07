@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.Primitives;
 using WebApp.Database.Entities.Products;
-using WebApp.Helpers.Filtering;
 
-namespace WebApp.Helpers.Products.Filtering.Filters
+namespace WebApp.Utilities.Filtering.Products.Filters
 {
-    public class BelongsToCategory : IFilter<Product>
+	public class BelongsToCategory : IFilter<Product>
 	{
 		private readonly List<int> _categoriesIds;
 		public BelongsToCategory(List<int> categoriesIds) => _categoriesIds = categoriesIds;
@@ -14,7 +13,7 @@ namespace WebApp.Helpers.Products.Filtering.Filters
 
 		public static IFilter<Product> CreateInstance(StringValues value)
 			=> new BelongsToCategory(
-				value.Select(e => 
+				value.Select(e =>
 					int.Parse(
 						e ?? throw new ArgumentNullException("Null argument passed to categories filter")
 					)

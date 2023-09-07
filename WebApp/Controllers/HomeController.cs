@@ -22,7 +22,7 @@ namespace WebApp.Controllers
 		[AllowAnonymous]
 		public IActionResult Index()
 		{
-            return View("MainPage");
+			return View("MainPage");
 		}
 
 		[HttpGet("/aboutus")]

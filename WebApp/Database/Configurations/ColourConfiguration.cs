@@ -4,7 +4,7 @@ using WebApp.Database.Entities.Products;
 
 namespace WebApp.Database.Configurations
 {
-    public class ColourConfiguration : IEntityTypeConfiguration<Colour>
+	public class ColourConfiguration : IEntityTypeConfiguration<Colour>
 	{
 		public void Configure(EntityTypeBuilder<Colour> builder)
 		{

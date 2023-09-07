@@ -1,11 +1,10 @@
-﻿using System.Runtime.CompilerServices;
-using System.Text;
+﻿using System.Text;
 using WebApp.Database;
 using WebApp.Database.Entities.Grouping;
 
-namespace WebApp.Helpers
+namespace WebApp.Utilities
 {
-    public class CategoriesDrawer
+	public class CategoriesDrawer
 	{
 		private readonly int _specifiedDepth;
 		private readonly string _paddingCharacters;
@@ -34,8 +33,8 @@ namespace WebApp.Helpers
 
 			builder.Append(
 				string.Format(
-					"<span class='category' data-myid='{0}' role='button'{2}>{1}</span>", 
-					category.Id, 
+					"<span class='category' data-myid='{0}' role='button'{2}>{1}</span>",
+					category.Id,
 					category.Name,
 					category.IsPopular ? " style='color:#d68100'" : ""
 				)
@@ -44,7 +43,8 @@ namespace WebApp.Helpers
 			builder.Append(_newLine);
 
 			_database.Categories.Entry(category).Collection(e => e.Children).Load();
-			foreach(Category childCategory in category.Children) {
+			foreach (Category childCategory in category.Children)
+			{
 				RecursiveDrawCategories(builder, childCategory, currentDepth - 1);
 			}
 		}

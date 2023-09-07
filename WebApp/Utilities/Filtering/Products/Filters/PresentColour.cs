@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.Primitives;
 using WebApp.Database.Entities.Products;
-using WebApp.Helpers.Filtering;
 
-namespace WebApp.Helpers.Products.Filtering.Filters
+namespace WebApp.Utilities.Filtering.Products.Filters
 {
-    public class PresentColour : IFilter<Product>
+	public class PresentColour : IFilter<Product>
 	{
 		private readonly List<int> _coloursIds;
 		public PresentColour(List<int> coloursIds) => _coloursIds = coloursIds;

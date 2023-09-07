@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
-using WebApp.Services.Database.Grouping;
+using WebApp.Utilities.Database.Grouping;
 
 namespace WebApp.Controllers.Grouping
 {
@@ -15,7 +15,7 @@ namespace WebApp.Controllers.Grouping
 		private (string, string) GenerateAdminPageModel(string result)
 		{
 			return (
-				_categories.GetBrush().DrawCategories(_categories.GetBaseCategory()), 
+				_categories.GetBrush().DrawCategories(_categories.GetBaseCategory()),
 				result
 			);
 		}

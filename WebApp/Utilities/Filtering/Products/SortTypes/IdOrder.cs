@@ -1,9 +1,8 @@
 ﻿using WebApp.Database.Entities.Products;
-using WebApp.Helpers.Filtering;
 
-namespace WebApp.Helpers.Products.Filtering.OrderTypes
+namespace WebApp.Utilities.Filtering.Products.OrderTypes
 {
-    public class IdOrder : IOrdering<Product>
+	public class IdOrder : IOrdering<Product>
 	{
 		private int _maxId;
 		public IdOrder(int maxId)
@@ -14,7 +13,7 @@ namespace WebApp.Helpers.Products.Filtering.OrderTypes
 				.OrderBy(e => e.Id)
 				.Where(e => e.Id > _maxId);
 
-		public static IOrdering<Product> CreateInstance(int maxId) 
+		public static IOrdering<Product> CreateInstance(int maxId)
 			=> new IdOrder(maxId);
 	}
 }

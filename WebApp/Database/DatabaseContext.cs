@@ -8,7 +8,7 @@ namespace WebApp.Database
 {
     public class DatabaseContext : IdentityDbContext<ApplicationUser, ApplicationRole, int, ApplicationUserClaim, ApplicationUserRole, ApplicationUserLogin, ApplicationRoleClaim, ApplicationUserToken>
 	{
-		public DatabaseContext(DbContextOptions options) 
+		public DatabaseContext(DbContextOptions options)
 			: base(options)
 		{
 			Database.EnsureCreated();

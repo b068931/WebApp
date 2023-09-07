@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.Primitives;
 using WebApp.Database.Entities.Products;
-using WebApp.Helpers.Filtering;
 
-namespace WebApp.Helpers.Products.Filtering.Filters
+namespace WebApp.Utilities.Filtering.Products.Filters
 {
-    public class PresentSize : IFilter<Product>
+	public class PresentSize : IFilter<Product>
 	{
 		private readonly List<int> _sizesIds;
 		public PresentSize(List<int> sizesIds) => _sizesIds = sizesIds;

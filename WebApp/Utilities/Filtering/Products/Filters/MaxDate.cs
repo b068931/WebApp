@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.Primitives;
 using WebApp.Database.Entities.Products;
-using WebApp.Helpers.Filtering;
 
-namespace WebApp.Helpers.Products.Filtering.Filters
+namespace WebApp.Utilities.Filtering.Products.Filters
 {
-    public class MaxDate : IFilter<Product>
+	public class MaxDate : IFilter<Product>
 	{
 		private readonly DateOnly _maxDate;
 		public MaxDate(DateOnly maxDate) => _maxDate = maxDate;

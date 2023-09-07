@@ -1,17 +1,16 @@
 ﻿using Microsoft.Extensions.Primitives;
 using WebApp.Database.Entities.Products;
-using WebApp.Helpers.Filtering;
 
-namespace WebApp.Helpers.Products.Filtering.Filters
+namespace WebApp.Utilities.Filtering.Products.Filters
 {
-    public class MinReviewsCount : IFilter<Product>
+	public class MinReviewsCount : IFilter<Product>
 	{
 		private readonly int _minReviewsCount;
 		public MinReviewsCount(int minReviewsCount)
 			=> _minReviewsCount = minReviewsCount;
 
-		public IQueryable<Product> Apply(IQueryable<Product> request) 
-			=> request.Where(e => 
+		public IQueryable<Product> Apply(IQueryable<Product> request)
+			=> request.Where(e =>
 			e.RatingsCount >= _minReviewsCount
 		);
 

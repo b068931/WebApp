@@ -1,12 +1,10 @@
 ﻿using Microsoft.Extensions.Primitives;
 using System.Globalization;
 using WebApp.Database.Entities.Products;
-using WebApp.Helpers.Filtering;
-using WebApp.Helpers.Products.Filtering.OrderTypes;
 
-namespace WebApp.Helpers.Products.Filtering.SortTypes
+namespace WebApp.Utilities.Filtering.Products.SortTypes
 {
-    public class PriceOrder : IOrdering<Product>
+	public class PriceOrder : IOrdering<Product>
 	{
 		private int _maxId;
 		private decimal _maxPrice;

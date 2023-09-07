@@ -1,11 +1,10 @@
 ﻿using Microsoft.Extensions.Primitives;
 using WebApp.Database.Entities.Products;
-using WebApp.Helpers.Filtering;
-using WebApp.Helpers.Products.Filtering.OrderTypes;
+using WebApp.Utilities.Filtering.Products.OrderTypes;
 
-namespace WebApp.Helpers.Products.Filtering
+namespace WebApp.Utilities.Filtering.Products
 {
-    public class ProductOrderFactory
+	public class ProductOrderFactory
 	{
 		private static bool isReversed(Dictionary<string, StringValues> parameters)
 		{
@@ -24,10 +23,10 @@ namespace WebApp.Helpers.Products.Filtering
 			=> _factories = factories;
 
 		public IOrdering<Product> CreateOrdering(
-			int maxId, 
+			int maxId,
 			Dictionary<string, StringValues> parameters)
 		{
-			foreach(var factory in _factories)
+			foreach (var factory in _factories)
 			{
 				StringValues value;
 				if (parameters.TryGetValue(factory.Key, out value))

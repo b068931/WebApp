@@ -1,11 +1,9 @@
 ﻿using Microsoft.Extensions.Primitives;
-using System.ComponentModel;
 using WebApp.Database.Entities.Products;
-using WebApp.Helpers.Filtering;
 
-namespace WebApp.Helpers.Products.Filtering.OrderTypes
+namespace WebApp.Utilities.Filtering.Products.OrderTypes
 {
-    public class ViewsOrder : IOrdering<Product>
+	public class ViewsOrder : IOrdering<Product>
 	{
 		private int _maxId;
 		private int _maxViews;
@@ -20,7 +18,7 @@ namespace WebApp.Helpers.Products.Filtering.OrderTypes
 		public IQueryable<Product> Apply(IQueryable<Product> request)
 		{
 			request = _sortDirection.ApplyOrdering(e => e.ViewsCount, request);
-			if(_sortDirection.IsReversed)
+			if (_sortDirection.IsReversed)
 			{
 				request = request
 					.Where(e =>
@@ -42,7 +40,7 @@ namespace WebApp.Helpers.Products.Filtering.OrderTypes
 
 		public static IOrdering<Product> CreateInstance(int maxId, StringValues value, bool isReversed)
 			=> new ViewsOrder(
-				maxId, 
+				maxId,
 				int.Parse(value.ToString()),
 				new GenericComparer<int>(isReversed)
 			);

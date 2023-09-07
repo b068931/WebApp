@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.Primitives;
 using WebApp.Database.Entities.Products;
-using WebApp.Helpers.Filtering;
 
-namespace WebApp.Helpers.Products.Filtering.Filters
+namespace WebApp.Utilities.Filtering.Products.Filters
 {
-    public class MinDate : IFilter<Product>
+	public class MinDate : IFilter<Product>
 	{
 		private readonly DateOnly _minDate;
 		public MinDate(DateOnly minDate) => _minDate = minDate;

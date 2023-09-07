@@ -2,9 +2,9 @@
 using WebApp.Database;
 using WebApp.Database.Entities.Products;
 using WebApp.Database.Models;
-using WebApp.Helpers.Exceptions;
-using WebApp.Helpers.Filtering;
 using WebApp.Services.Database.Grouping;
+using WebApp.Utilities.Exceptions;
+using WebApp.Utilities.Filtering;
 using WebApp.ViewModels.Product;
 
 namespace WebApp.Services.Database.Products
