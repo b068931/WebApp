@@ -1,12 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using WebApp.Controllers.Abstract;
 using WebApp.Database.Entities.Products;
 using WebApp.Services.Database.Grouping;
 using WebApp.Services.Database.Products;
-using WebApp.Utilities;
 using WebApp.Utilities.Exceptions;
 using WebApp.Utilities.Filtering;
 using WebApp.Utilities.Filtering.Products;
@@ -14,17 +15,10 @@ using WebApp.Utilities.Filtering.Products.Filters;
 using WebApp.Utilities.Filtering.Products.OrderTypes;
 using WebApp.Utilities.Filtering.Products.SortTypes;
 using WebApp.ViewModels.Product;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.Primitives;
-using WebApp.Helpers.Filtering;
-using WebApp.Helpers.Exceptions;
-using WebApp.Database.Entities.Products;
-using WebApp.Services.Implementation.Grouping;
-using WebApp.Services.Implementation.Products;
 
 namespace WebApp.Controllers.Products
 {
-    [Route("/products")]
+	[Route("/products")]
 	[Authorize(Roles = "admin,user")]
 	public class ProductsController : ExtendedController
 	{
@@ -263,7 +257,7 @@ namespace WebApp.Controllers.Products
 			[FromRoute(Name = "productId")] int productId)
 		{
 			return PerformAction<IActionResult>(
-				() => View("ShowProduct", _products.GetProductShowVM(productId)), 
+				() => View("ShowProduct", _products.GetProductShowVM(GetUserId(), productId)),
 				null,
 				() => Redirect("/")
 			);
@@ -283,7 +277,7 @@ namespace WebApp.Controllers.Products
 			{
 				return GetProductCreateView();
 			}
-			
+
 			return PerformAction(
 				() =>
 				{
@@ -318,7 +312,7 @@ namespace WebApp.Controllers.Products
 					() => GetProductUpdateView(vm.Id)
 				);
 			}
-			
+
 			return PerformAction(
 				() =>
 				{

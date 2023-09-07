@@ -13,7 +13,7 @@ namespace WebApp.Controllers.Auth
 		private readonly SignInManager<ApplicationUser> _signIn;
 
 		public AuthController(
-			UserManager<ApplicationUser> users, 
+			UserManager<ApplicationUser> users,
 			SignInManager<ApplicationUser> signIn)
 		{
 			_users = users;
@@ -36,16 +36,16 @@ namespace WebApp.Controllers.Auth
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> Login(LoginVM loginVM)
 		{
-			if(ModelState.IsValid)
+			if (ModelState.IsValid)
 			{
 				var result =
 					await _signIn.PasswordSignInAsync(
 						loginVM.Email, loginVM.Password, true, false
 					);
 
-				if(result.Succeeded)
+				if (result.Succeeded)
 				{
-					if(!string.IsNullOrEmpty(loginVM.ReturnUrl) && Url.IsLocalUrl(loginVM.ReturnUrl))
+					if (!string.IsNullOrEmpty(loginVM.ReturnUrl) && Url.IsLocalUrl(loginVM.ReturnUrl))
 					{
 						return Redirect(loginVM.ReturnUrl);
 					}

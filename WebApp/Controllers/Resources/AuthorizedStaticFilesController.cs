@@ -19,7 +19,7 @@ namespace WebApp.Controllers.Resources
 					.ToArray()
 			);
 
-			if(System.IO.File.Exists(absolutePath))
+			if (System.IO.File.Exists(absolutePath))
 			{
 				return PhysicalFile(
 					absolutePath,
@@ -37,7 +37,7 @@ namespace WebApp.Controllers.Resources
 		}
 
 		public AuthorizedStaticFilesController(
-			IWebHostEnvironment environment, 
+			IWebHostEnvironment environment,
 			ILogger<AuthorizedStaticFilesController> logger)
 		{
 			_environment = environment;

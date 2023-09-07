@@ -4,7 +4,7 @@ using WebApp.Services.Database.Products;
 
 namespace WebApp.Controllers.Products
 {
-    [Route("/sizes")]
+	[Route("/sizes")]
 	[Authorize(Roles = "admin")]
 	public class SizesController : Controller
 	{

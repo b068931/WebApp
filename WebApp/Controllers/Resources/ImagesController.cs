@@ -9,13 +9,13 @@ using WebApp.Utilities.Exceptions;
 
 namespace WebApp.Controllers.Resources
 {
-    [Route("/images")]
+	[Route("/images")]
 	[AllowAnonymous]
 	public class ImagesController : Controller
-    {
-        private readonly ProductImagesManager _images;
-        private readonly BrandsManager _brands;
-        private readonly ILogger<CategoriesController> _logger;
+	{
+		private readonly ProductImagesManager _images;
+		private readonly BrandsManager _brands;
+		private readonly ILogger<CategoriesController> _logger;
 
 		private async Task<IActionResult> PerformAction(Func<Task<IActionResult>> action)
 		{

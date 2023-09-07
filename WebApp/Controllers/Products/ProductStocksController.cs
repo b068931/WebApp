@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using WebApp.Controllers.Abstract;
 using WebApp.Services.Database.Products;
 using WebApp.Utilities.Exceptions;
 using WebApp.ViewModels.Product;
@@ -75,7 +76,7 @@ namespace WebApp.Controllers.Products
 			[FromForm(Name = "stockSize")] int stockSize)
 		{
 			return PerformAction(
-				() => _products.CreateProductStocks(GetUserId(), productId, colourId, sizeId, stockSize), 
+				() => _products.CreateProductStocks(GetUserId(), productId, colourId, sizeId, stockSize),
 				productId
 			);
 		}
@@ -90,7 +91,7 @@ namespace WebApp.Controllers.Products
 			[FromForm(Name = "stockSize")] int stockSize)
 		{
 			return PerformAction(
-				() => _products.UpdateProductStocks(GetUserId(), stockId, colourId, sizeId, stockSize), 
+				() => _products.UpdateProductStocks(GetUserId(), stockId, colourId, sizeId, stockSize),
 				productId
 			);
 		}
@@ -102,7 +103,7 @@ namespace WebApp.Controllers.Products
 			[FromForm(Name = "stockId")] int stockId)
 		{
 			return PerformAction(
-				() => _products.DeleteProductStocks(GetUserId(), stockId), 
+				() => _products.DeleteProductStocks(GetUserId(), stockId),
 				productId
 			);
 		}

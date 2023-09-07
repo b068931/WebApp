@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using System.Security.Claims;
-using WebApp.Helpers.Exceptions;
+using WebApp.Utilities.Exceptions;
 
 namespace WebApp.Controllers.Abstract
 {

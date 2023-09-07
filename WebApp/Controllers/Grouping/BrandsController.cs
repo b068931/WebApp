@@ -6,12 +6,13 @@ using WebApp.Utilities.Exceptions;
 
 namespace WebApp.Controllers.Grouping
 {
-    [Route("/brands")]
+	[Route("/brands")]
 	[Authorize(Roles = "admin")]
 	public class BrandsController : Controller
-    {
-        private readonly ILogger<BrandsController> _logger;
-        private readonly BrandsManager _brands;
+	{
+		private readonly ILogger<BrandsController> _logger;
+		private readonly BrandsManager _brands;
+		private readonly JsonSerializerOptions _jsonOptions;
 
 		private IActionResult PerformAction(Action callback)
 		{

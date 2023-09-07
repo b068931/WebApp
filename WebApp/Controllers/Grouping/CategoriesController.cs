@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
-using WebApp.Utilities.Database.Grouping;
+using WebApp.Services.Database.Grouping;
 
 namespace WebApp.Controllers.Grouping
 {
-    [Route("/categories")]
+	[Route("/categories")]
 	[Authorize(Roles = "admin")]
 	public class CategoriesController : Controller
 	{

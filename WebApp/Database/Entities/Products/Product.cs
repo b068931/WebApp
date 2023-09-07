@@ -38,7 +38,7 @@ namespace WebApp.Database.Entities.Products
 
 		public List<ProductStock> Stocks { get; set; } = default!;
 
-        public List<ApplicationUser> ViewedByUsers { get; set; } = default!;
-        public List<ApplicationUser> RatedByUsers { get; set; } = default!;
-    }
+		public List<ApplicationUser> ViewedByUsers { get; set; } = default!;
+		public List<ApplicationUser> RatedByUsers { get; set; } = default!;
+	}
 }

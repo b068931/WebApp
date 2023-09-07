@@ -1,4 +1,4 @@
-﻿namespace WebApp.Helpers.Exceptions
+﻿namespace WebApp.Utilities.Exceptions
 {
 	[Serializable]
 	public class ServerInitializationException : Exception

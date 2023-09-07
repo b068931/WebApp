@@ -1,15 +1,15 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using WebApp.Database.Entities.Auth;
-using WebApp.Helpers.Exceptions;
+using WebApp.Utilities.Exceptions;
 
 namespace WebApp.Database
 {
 	public class DatabaseInitializer
 	{
 		private static string[] _baseRoles = { "admin", "user" };
-		private static (string handle, string name, string role)[] _baseUsers = 
-			{ 
-				("Admin", "Site Administration", "admin"), 
+		private static (string handle, string name, string role)[] _baseUsers =
+			{
+				("Admin", "Site Administration", "admin"),
 				("TestUser", "Dummy", "user")
 			};
 

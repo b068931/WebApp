@@ -4,7 +4,7 @@ using WebApp.Services.Database.Products;
 
 namespace WebApp.Controllers.Products
 {
-    [Route("/colours")]
+	[Route("/colours")]
 	[Authorize(Roles = "admin")]
 	public class ColoursController : Controller
 	{

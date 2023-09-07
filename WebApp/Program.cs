@@ -1,12 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WebApp.Database;
-using Microsoft.EntityFrameworkCore;
 using WebApp.Database.Entities.Auth;
-using Microsoft.AspNetCore.Authorization;
 using WebApp.Services.Database.Grouping;
 using WebApp.Services.Database.Products;
-using Microsoft.AspNetCore.Identity;
-using WebApp.Helpers.Exceptions;
+using WebApp.Utilities.Exceptions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -78,10 +77,10 @@ using (var scope = app.Services.CreateScope())
 			scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>(),
 			app.Configuration
 		);
-		
+
 		await initializer.InitializeAuthAsync();
 	}
-	catch(Exception exc)
+	catch (Exception exc)
 	{
 		throw new ServerInitializationException("Unable to initialize the database. This is required to create an admin account with a few initial roles.", exc);
 	}

@@ -26,7 +26,7 @@ namespace WebApp.Services.Database.Products
 			}
 		}
 		private WebApp.Database.Entities.Products.ProductStock FindOwnedProductStock(
-			int assumedOwner, 
+			int assumedOwner,
 			int stockId)
 		{
 			var result = _database.ProductStocks
@@ -276,7 +276,7 @@ namespace WebApp.Services.Database.Products
 		}
 		public void UpdateProductStocks(int actionPerformerId, int stockId, int colourId, int sizeId, int stockSize)
 		{
-			WebApp.Database.Entities.Products.ProductStock foundStock = 
+			WebApp.Database.Entities.Products.ProductStock foundStock =
 				FindOwnedProductStock(actionPerformerId, stockId);
 
 			foundStock.ColourId = colourId;
