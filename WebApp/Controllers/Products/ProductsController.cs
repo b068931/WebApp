@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using WebApp.Helpers;
 using WebApp.Helpers.Products.Filtering;
 using WebApp.Helpers.Products.Filtering.Filters;
 using WebApp.Helpers.Products.Filtering.OrderTypes;
@@ -15,9 +14,6 @@ using WebApp.Database.Entities.Products;
 using WebApp.Services.Database.Grouping;
 using WebApp.Services.Database.Products;
 using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Identity;
-using WebApp.Database.Entities.Auth;
 using WebApp.Controllers.Abstract;
 
 namespace WebApp.Controllers.Products
@@ -261,7 +257,7 @@ namespace WebApp.Controllers.Products
 			[FromRoute(Name = "productId")] int productId)
 		{
 			return PerformAction<IActionResult>(
-				() => View("ShowProduct", _products.GetProductShowVM(productId)), 
+				() => View("ShowProduct", _products.GetProductShowVM(GetUserId(), productId)), 
 				null,
 				() => Redirect("/")
 			);

@@ -15,46 +15,52 @@
 	}
 }
 
-<div id="productDeleteConfirmation" class="modal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Підтвердження видалення елементу</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-	  <div class="modal-body d-none">
-		  <form id="deleteConfirmationForm" action="/products/action/delete" method="post">
-			  @Html.AntiForgeryToken()
-			  <input type="hidden" value="@Model.Id" name="id" />
-		  </form>
-	  </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Відмінити</button>
-        <button form="deleteConfirmationForm" type="submit" class="btn btn-primary">Підтвердити</button>
-      </div>
-    </div>
-  </div>
-</div>
+@if (Model.DisplayEditing)
+{
+	<div id="productDeleteConfirmation" class="modal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Підтвердження видалення елементу</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body d-none">
+					<form id="deleteConfirmationForm" action="/products/action/delete" method="post">
+						@Html.AntiForgeryToken()
+						<input type="hidden" value="@Model.Id" name="id" />
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Відмінити</button>
+					<button form="deleteConfirmationForm" type="submit" class="btn btn-primary">Підтвердити</button>
+				</div>
+			</div>
+		</div>
+	</div>
+}
 
 <div class="my-3 mx-2">
-	<div class="d-flex flex-row w-100 border-bottom pb-3">
-		<button id="deleteProductButton" class="btn btn-outline-danger me-auto">Видалити</button>
+	@if (Model.DisplayEditing)
+	{
+		<div class="d-flex flex-row w-100 border-bottom pb-3">
+			<button id="deleteProductButton" class="btn btn-outline-danger me-auto">Видалити</button>
 
-		<form action="/products/action/update" method="get">
-			<input type="hidden" value="@Model.Id" name="id" />
-			<input type="submit" class="btn btn-outline-dark me-3" value="Змінити Головну Сторінку" />
-		</form>
+			<form action="/products/action/update" method="get">
+				<input type="hidden" value="@Model.Id" name="id" />
+				<input type="submit" class="btn btn-outline-dark me-3" value="Змінити Головну Сторінку" />
+			</form>
 
-		<form action="/product/stocks" method="get">
-			<input type="hidden" value="@Model.Id" name="id" />
-			<input type="submit" class="btn btn-outline-dark mx-3" value="Керувати Наявними" />
-		</form>
+			<form action="/product/stocks" method="get">
+				<input type="hidden" value="@Model.Id" name="id" />
+				<input type="submit" class="btn btn-outline-dark mx-3" value="Керувати Наявними" />
+			</form>
 
-		<form action="/products/images/action/update" method="get">
-			<input type="hidden" value="@Model.Id" name="id" />
-			<input type="submit" class="btn btn-outline-dark mx-3" value="Керувати Зображеннями" />
-		</form>
-	</div>
+			<form action="/products/images/action/update" method="get">
+				<input type="hidden" value="@Model.Id" name="id" />
+				<input type="submit" class="btn btn-outline-dark mx-3" value="Керувати Зображеннями" />
+			</form>
+		</div>
+	}
 
 	<div class="d-flex flex-row mt-5">
 		<div class="d-flex ms-3 w-50">
@@ -161,7 +167,7 @@
 		</div>
 	</div>
 
-	<div class="mt-5">
+	<div class="my-5">
 		<h3>Вся галерея зображень:</h3>
 		<div class="gallery d-flex flex-row flex-wrap justify-content-center w-100 p-4 rounded-1">
 			@for(int index = 0; index < Model.ProductImagesIds.Count; ++index)

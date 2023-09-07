@@ -183,7 +183,7 @@ namespace WebApp.Services.Database.Products
 					string.Format("Product with id {0} does not exist.", productId));
 		}
 
-		public ProductShow GetProductShowVM(int productId)
+		public ProductShow GetProductShowVM(int actionPerformer, int productId)
 		{
 			Product foundProduct = FindProduct(productId);
 			_database.Entry(foundProduct).Reference(e => e.Brand).Load();
@@ -191,6 +191,7 @@ namespace WebApp.Services.Database.Products
 			return new ProductShow()
 			{
 				Id = foundProduct.Id,
+				DisplayEditing = actionPerformer == foundProduct.ProductOwnerId,
 				Name = foundProduct.Name,
 				Description = foundProduct.Description,
 				Price = Math.Round(foundProduct.Price, 2),

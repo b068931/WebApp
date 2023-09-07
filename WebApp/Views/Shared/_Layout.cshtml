@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using System.Security.Claims;
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset="utf-8" />
@@ -38,15 +40,24 @@
 								<span role="button" class="language-blob">EN</span>
 							</div>
 
-							<a href="#" class="my-auto">
-								<img id="shoppingCart" src="/resources/shoppingcart.svg"/>
-							</a>
+							@if(User.Identity.IsAuthenticated)
+							{
+								<a href="#" class="my-auto">
+									<img id="shoppingCart" src="/resources/shoppingcart.svg"/>
+								</a>
 
-							<div id="languageSwitch" class="d-flex flex-row justify-content-start my-auto">
-								<a href="#" class="link_color">Вхід</a>
-								<span class="mx-1 align-self-center">/</span>
-								<a href="#" class="link_color">Реєстрація</a>
-							</div>
+								<a href="#" class="link_color ms-3 me-2 my-auto">
+									@User.FindFirstValue(ClaimTypes.Name)
+								</a>
+							}
+							else
+							{
+								<div class="d-flex flex-row justify-content-start my-auto">
+									<a href="/auth/login" class="link_color">Вхід</a>
+									<span class="mx-1 align-self-center">/</span>
+									<a href="/auth/register" class="link_color">Реєстрація</a>
+								</div>
+							}
 						</div>
 					</div>
 				</div>
@@ -95,7 +106,10 @@
 						<a class="link_underline" href="#">Політика кофіденційності</a>
 						<a class="link_underline mt-4" href="#">Договір-оферта</a>
 						<a class="link_underline mt-4" href="#">Контакти</a>
-						<a href="/admin" class="link_underline mt-4">Адмін панель</a>
+						@if(User.IsInRole("admin"))
+						{
+							<a href="/admin" class="link_underline mt-4">Адмін панель</a>
+						}
 					</div>
 					<div class="d-flex flex-column small-block">
 						<span>Ми у соц. мережах</span>
