@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using WebApp.Services.Implementation.Grouping;
+using WebApp.Services.Database.Grouping;
 using WebApp.ViewModels;
 
 namespace WebApp.Controllers
 {
-    public class HomeController : Controller
+	public class HomeController : Controller
 	{
 		private readonly CategoriesManager _categories;
 		private readonly BrandsManager _brands;
@@ -20,7 +20,7 @@ namespace WebApp.Controllers
 
 		public IActionResult Index()
 		{
-            return View("MainPage");
+			return View("MainPage");
 		}
 
 		[HttpGet("/aboutus")]

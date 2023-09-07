@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WebApp.Services.Implementation.Products;
+using WebApp.Services.Database.Products;
 
 namespace WebApp.Controllers.Products
 {
-    [Route("/colours")]
+	[Route("/colours")]
 	public class ColoursController : Controller
 	{
 		private readonly ColoursManager _colours;

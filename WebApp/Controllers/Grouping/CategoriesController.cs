@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
-using WebApp.Services.Implementation.Grouping;
+using WebApp.Services.Database.Grouping;
 
 namespace WebApp.Controllers.Grouping
 {
-    [Route("/categories")]
+	[Route("/categories")]
 	public class CategoriesController : Controller
 	{
 		private readonly CategoriesManager _categories;
@@ -13,7 +13,7 @@ namespace WebApp.Controllers.Grouping
 		private (string, string) GenerateAdminPageModel(string result)
 		{
 			return (
-				_categories.GetBrush().DrawCategories(_categories.GetBaseCategory()), 
+				_categories.GetBrush().DrawCategories(_categories.GetBaseCategory()),
 				result
 			);
 		}

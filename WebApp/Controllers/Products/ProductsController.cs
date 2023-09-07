@@ -1,23 +1,23 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using WebApp.Helpers;
-using WebApp.Helpers.Products.Filtering;
-using WebApp.Helpers.Products.Filtering.Filters;
-using WebApp.Helpers.Products.Filtering.OrderTypes;
-using WebApp.Helpers.Products.Filtering.SortTypes;
-using WebApp.ViewModels.Product;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Primitives;
-using WebApp.Helpers.Filtering;
-using WebApp.Helpers.Exceptions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using WebApp.Database.Entities.Products;
-using WebApp.Services.Implementation.Grouping;
-using WebApp.Services.Implementation.Products;
+using WebApp.Services.Database.Grouping;
+using WebApp.Services.Database.Products;
+using WebApp.Utilities;
+using WebApp.Utilities.Exceptions;
+using WebApp.Utilities.Filtering;
+using WebApp.Utilities.Filtering.Products;
+using WebApp.Utilities.Filtering.Products.Filters;
+using WebApp.Utilities.Filtering.Products.OrderTypes;
+using WebApp.Utilities.Filtering.Products.SortTypes;
+using WebApp.ViewModels.Product;
 
 namespace WebApp.Controllers.Products
 {
-    [Route("/products")]
+	[Route("/products")]
 	public class ProductsController : Controller
 	{
 		private readonly ProductFiltersFactory _filtersFactory;
@@ -86,7 +86,7 @@ namespace WebApp.Controllers.Products
 						Value = "stars"
 					}
 				},
-				Directions = new List<SelectListItem>() 
+				Directions = new List<SelectListItem>()
 				{
 					new SelectListItem()
 					{
@@ -101,7 +101,7 @@ namespace WebApp.Controllers.Products
 				}
 			};
 
-			if(selectedSortType != null)
+			if (selectedSortType != null)
 			{
 				foreach (var sortType in search.SortTypes)
 				{
@@ -112,11 +112,11 @@ namespace WebApp.Controllers.Products
 					}
 				}
 			}
-			if(selectedOrderType != null)
+			if (selectedOrderType != null)
 			{
-				foreach(var orderType in search.Directions)
+				foreach (var orderType in search.Directions)
 				{
-					if(orderType.Value == selectedOrderType)
+					if (orderType.Value == selectedOrderType)
 					{
 						orderType.Selected = true;
 						break;
@@ -128,8 +128,8 @@ namespace WebApp.Controllers.Products
 		}
 
 		private ResultT PerformAction<ResultT>(
-			Func<ResultT> action, 
-			Action<UserInteractionException>? onUserError, 
+			Func<ResultT> action,
+			Action<UserInteractionException>? onUserError,
 			Func<ResultT> onFail)
 		{
 			try
@@ -138,7 +138,7 @@ namespace WebApp.Controllers.Products
 			}
 			catch (UserInteractionException ex)
 			{
-				if(onUserError != null)
+				if (onUserError != null)
 				{
 					onUserError(ex);
 				}
@@ -150,7 +150,7 @@ namespace WebApp.Controllers.Products
 
 			return onFail();
 		}
-		
+
 		public ProductsController(
 			BrandsManager brands,
 			CategoriesManager categories,
@@ -217,13 +217,13 @@ namespace WebApp.Controllers.Products
 							.Where(e => e.Key != "maxid")
 							.ToDictionary(e => e.Key, e => e.Value);
 
-					List<IFilter<Product>> filters = 
+					List<IFilter<Product>> filters =
 						_filtersFactory.ParseFilters(searchParameters);
 
 					IOrdering<Product> paginator =
 						_ordersFactory.CreateOrdering(maxId, searchParameters);
 
-					List<Database.Models.ProductShowLightWeight> searchResult = 
+					List<Database.Models.ProductShowLightWeight> searchResult =
 						await _products.SearchAsync(filters, paginator);
 
 					string html = await ControllerExtenstions.RenderViewAsync(
@@ -254,7 +254,7 @@ namespace WebApp.Controllers.Products
 			[FromRoute(Name = "productId")] int productId)
 		{
 			return PerformAction<IActionResult>(
-				() => View("ShowProduct", _products.GetProductShowVM(productId)), 
+				() => View("ShowProduct", _products.GetProductShowVM(productId)),
 				null,
 				() => Redirect("/")
 			);
@@ -292,7 +292,7 @@ namespace WebApp.Controllers.Products
 		{
 			return PerformAction(
 				() => GetProductUpdateView(productId),
-				(ex) => ModelState.AddModelError(string.Empty, ex.Message), 
+				(ex) => ModelState.AddModelError(string.Empty, ex.Message),
 				() => GetProductCreateView()
 			);
 		}
@@ -382,11 +382,11 @@ namespace WebApp.Controllers.Products
 			return View(
 				"ShowProductsList",
 				GetSearchInitialization(
-					query, 
+					query,
 					categoryId,
-					brandId, 
+					brandId,
 					sortType,
-					orderType, 
+					orderType,
 					minDate,
 					minRatingsCount
 				)

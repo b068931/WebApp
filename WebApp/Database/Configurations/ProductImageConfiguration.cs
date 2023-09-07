@@ -1,11 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.Reflection.Emit;
 using WebApp.Database.Entities.Products;
 
 namespace WebApp.Database.Configurations
 {
-    public class ProductImageConfiguration : IEntityTypeConfiguration<ProductImage>
+	public class ProductImageConfiguration : IEntityTypeConfiguration<ProductImage>
 	{
 		public void Configure(EntityTypeBuilder<ProductImage> builder)
 		{

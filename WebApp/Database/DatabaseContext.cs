@@ -4,9 +4,9 @@ using WebApp.Database.Entities.Products;
 
 namespace WebApp.Database
 {
-    public class DatabaseContext : DbContext
+	public class DatabaseContext : DbContext
 	{
-		public DatabaseContext(DbContextOptions options) 
+		public DatabaseContext(DbContextOptions options)
 			: base(options)
 		{
 			Database.EnsureCreated();

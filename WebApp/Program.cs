@@ -1,7 +1,7 @@
-using WebApp.Database;
 using Microsoft.EntityFrameworkCore;
-using WebApp.Services.Implementation.Grouping;
-using WebApp.Services.Implementation.Products;
+using WebApp.Database;
+using WebApp.Services.Database.Grouping;
+using WebApp.Services.Database.Products;
 
 var builder = WebApplication.CreateBuilder(args);
 
