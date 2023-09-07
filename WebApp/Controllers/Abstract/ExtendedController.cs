@@ -46,9 +46,11 @@ namespace WebApp.Controllers.Abstract
 		}
 		protected int GetUserId()
 		{
-			return int.Parse(
-				User.FindFirstValue(ClaimTypes.NameIdentifier)
-			);
+			string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+			if (userId == null)
+				return 0;
+
+			return int.Parse(userId);
 		}
 	}
 }

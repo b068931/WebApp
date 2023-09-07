@@ -2,7 +2,6 @@ using WebApp.Database;
 using Microsoft.EntityFrameworkCore;
 using WebApp.Database.Entities.Auth;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using WebApp.Services.Database.Grouping;
 using WebApp.Services.Database.Products;
 using Microsoft.AspNetCore.Identity;
@@ -16,7 +15,7 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
 	options.UseSqlServer(builder.Configuration.GetConnectionString("Database") ?? throw new InvalidOperationException("Unable to find database connection string.")));
 
 builder.Services
-	.AddIdentityCore<ApplicationUser>(options =>
+	.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 	{
 		options.SignIn.RequireConfirmedAccount = true;
 
@@ -29,23 +28,20 @@ builder.Services
 		options.Password.RequireLowercase = false;
 		options.Password.RequireUppercase = false;
 	})
-	.AddRoles<ApplicationRole>()
-	.AddSignInManager()
 	.AddEntityFrameworkStores<DatabaseContext>();
 
-builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme)
-	.AddCookie(IdentityConstants.ApplicationScheme,
-		options =>
-		{
-			options.LoginPath = new PathString("/auth/login");
-			options.LogoutPath = new PathString("/auth/logout");
-			options.AccessDeniedPath = new PathString("/auth/noentry");
+builder.Services.ConfigureApplicationCookie(options =>
+{
+	options.LoginPath = new PathString("/auth/login");
+	options.LogoutPath = new PathString("/auth/logout");
+	options.LogoutPath = new PathString("/auth/logout");
+	options.AccessDeniedPath = new PathString("/auth/noentry");
 
-			options.ExpireTimeSpan = TimeSpan.FromDays(5);
-			options.SlidingExpiration = true;
+	options.ExpireTimeSpan = TimeSpan.FromDays(5);
+	options.SlidingExpiration = true;
 
-			options.ReturnUrlParameter = "return";
-		});
+	options.ReturnUrlParameter = "return";
+});
 
 builder.Services.AddAuthorization(options =>
 {

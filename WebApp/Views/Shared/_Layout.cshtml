@@ -46,6 +46,14 @@
 									<img id="shoppingCart" src="/resources/shoppingcart.svg"/>
 								</a>
 
+								<form method="post" action="/auth/logout" class="my-auto mx-3">
+									@Html.AntiForgeryToken()
+									<label role="button" for="exitAccountInput">
+										<img id="exitAccount" src="/resources/doorexit.svg"/>
+									</label>
+									<input id="exitAccountInput" type="submit" class="d-none" />
+								</form>
+
 								<a href="#" class="link_color ms-3 me-2 my-auto">
 									@User.FindFirstValue(ClaimTypes.Name)
 								</a>
