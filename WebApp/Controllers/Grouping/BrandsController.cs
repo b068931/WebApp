@@ -1,8 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 using System.Text.Json;
+using WebApp.Database.Models;
 using WebApp.Services.Database.Grouping;
 using WebApp.Utilities.Exceptions;
+using WebApp.Utilities.Other;
+using WebApp.ViewModels.Other;
 
 namespace WebApp.Controllers.Grouping
 {
@@ -10,32 +14,36 @@ namespace WebApp.Controllers.Grouping
 	[Authorize(Roles = "admin")]
 	public class BrandsController : Controller
 	{
-		private readonly ILogger<BrandsController> _logger;
 		private readonly BrandsManager _brands;
+		private readonly Performer<BrandsController> _performer;
 		private readonly JsonSerializerOptions _jsonOptions;
 
+		private ResultWithErrorVM<List<Brand>> GetViewModel(string error = "")
+		{
+			return new()
+			{
+				Result = _brands.GetAllBrands(),
+				Error = error
+			};
+		}
 		private IActionResult PerformAction(Action callback)
 		{
-			try
-			{
-				callback();
-			}
-			catch (UserInteractionException ex)
-			{
-				_logger.LogWarning(ex, "BrandsController incorrect action.");
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "BrandsController error.");
-			}
-
-			return Redirect("/brands");
+			return _performer.PerformActionMessage(
+				() =>
+				{
+					callback();
+					return View("AdminPage", GetViewModel());
+				},
+				(message) => View("AdminPage", GetViewModel(message))
+			);
 		}
 
-		public BrandsController(ILogger<BrandsController> logger, BrandsManager brands)
+		public BrandsController(
+			ILogger<BrandsController> logger, 
+			BrandsManager brands)
 		{
-			_logger = logger;
 			_brands = brands;
+			_performer = new Performer<BrandsController>(logger);
 			_jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
 		}
 
@@ -78,7 +86,7 @@ namespace WebApp.Controllers.Grouping
 
 		public IActionResult Index()
 		{
-			return View("AdminPage", _brands.GetAllBrands());
+			return View("AdminPage", GetViewModel());
 		}
 	}
 }

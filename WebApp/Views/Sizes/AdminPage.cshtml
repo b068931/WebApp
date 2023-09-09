@@ -1,6 +1,10 @@
-﻿@model List<WebApp.Database.Models.Size>
+﻿@model WebApp.ViewModels.Other.ResultWithErrorVM<List<WebApp.Database.Models.Size>>
 
 <div class="mt-3 mx-2">
+	@if(!string.IsNullOrEmpty(Model.Error))
+	{
+		<span class="text-danger mb-2">@Model.Error</span>
+	}
 	<a href="/admin" class="text-black mb-2">Назад</a>
 	<form id="confirmationForm" action="#" method="post" enctype="multipart/form-data">
 		@Html.AntiForgeryToken()
@@ -20,7 +24,7 @@
 	</div>
 	<hr />
 	<ul id="sizesList" class="list-group">
-		@foreach(var size in Model)
+		@foreach(var size in Model.Result)
 		{
 			<li data-myid="@size.Id" class="size-list-element d-flex list-group-item list-group-item-action list-group-item-light">
 				<div class="size-name my-auto me-auto">@size.Name</div>

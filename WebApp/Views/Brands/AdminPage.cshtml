@@ -1,6 +1,10 @@
-﻿@model List<WebApp.Database.Models.Brand>
+﻿@model WebApp.ViewModels.Other.ResultWithErrorVM<List<WebApp.Database.Models.Brand>>
 
 <div class="my-3 mx-2">
+	@if(!string.IsNullOrEmpty(Model.Error))
+	{
+		<span class="text-danger mb-2">@Model.Error</span>
+	}
 	<a href="/admin" class="text-black mb-2">Назад</a>
 	<form id="confirmationForm" action="#" method="post" enctype="multipart/form-data">
 		@Html.AntiForgeryToken()
@@ -22,7 +26,7 @@
 	</div>
 	<hr />
 	<ul id="brandsList" class="list-group">
-		@foreach(var brand in Model)
+		@foreach(var brand in Model.Result)
 		{
 			<li data-myid="@brand.Id" class="brand-list-element d-flex list-group-item list-group-item-action list-group-item-light">
 				<div class="my-auto me-auto">@brand.Name</div>

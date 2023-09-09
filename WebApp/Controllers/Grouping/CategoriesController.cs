@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using WebApp.Services.Database.Grouping;
+using WebApp.Utilities.Other;
+using WebApp.ViewModels.Other;
 
 namespace WebApp.Controllers.Grouping
 {
@@ -10,39 +12,39 @@ namespace WebApp.Controllers.Grouping
 	public class CategoriesController : Controller
 	{
 		private readonly CategoriesManager _categories;
-		private readonly ILogger<CategoriesController> _logger;
+		private readonly Performer<CategoriesController> _performer;
 
-		private (string, string) GenerateAdminPageModel(string result)
+		private ResultWithErrorVM<string> GenerateAdminPageModel(string error)
 		{
-			return (
-				_categories.GetBrush().DrawCategories(_categories.GetBaseCategory()),
-				result
-			);
+			return new()
+			{
+				Result = _categories.GetBrush().DrawCategories(_categories.GetBaseCategory()),
+				Error = error
+			};
 		}
 		private IActionResult PerformAction(Action callback, string operationName)
 		{
-			string result = "'" + operationName + "' operation success.";
-			try
-			{
-				callback();
-			}
-			catch (ArgumentOutOfRangeException ex)
-			{
-				result = ex.Message;
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "CategoriesController error. Unexpected exception ({0}).", operationName);
-				result = "Unknown exception.";
-			}
-
-			return View("AdminPage", GenerateAdminPageModel(result));
+			return _performer.PerformActionMessage(
+				() =>
+				{
+					callback();
+					return View(
+						"AdminPage", 
+						GenerateAdminPageModel(
+							string.Format("'{0}' operation success.", operationName)
+						)
+					);
+				},
+				(message) => View("AdminPage", GenerateAdminPageModel(message))
+			);
 		}
 
-		public CategoriesController(CategoriesManager categories, ILogger<CategoriesController> logger)
+		public CategoriesController(
+			CategoriesManager categories, 
+			ILogger<CategoriesController> logger)
 		{
 			_categories = categories;
-			_logger = logger;
+			_performer = new Performer<CategoriesController>(logger);
 		}
 
 		[HttpGet("base")]

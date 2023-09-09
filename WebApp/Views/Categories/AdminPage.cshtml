@@ -1,13 +1,13 @@
-﻿@model (string categoriesTree, string result)
+﻿@model WebApp.ViewModels.Other.ResultWithErrorVM<string>
 
 <div class="container border-bottom my-3">
 	<a href="/admin" class="text-black mt-2 mb-4">Назад</a>
 	<div class="row border-bottom border-top">
-		<span class="text-info">Status: <span id="statusField" class="text-black">@Model.result</span></span>
+		<span class="text-info">Status: <span id="statusField" class="text-black">@Model.Error</span></span>
 	</div>
 	<div class="row">
 		<div class="col border-end overflow-auto m-1">
-			@Html.Raw(Model.categoriesTree)
+			@Html.Raw(Model.Result)
 		</div>
 		<div class="col d-flex flex-column m-1 mb-2 mt-2">
 			<button id="switch" class="btn btn-lg btn-outline-primary mb-2">Switch Category's Popularity</button>

@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WebApp.Database.Models;
 using WebApp.Services.Database.Products;
+using WebApp.Utilities.Other;
+using WebApp.ViewModels.Other;
 
 namespace WebApp.Controllers.Products
 {
@@ -9,25 +12,32 @@ namespace WebApp.Controllers.Products
 	public class SizesController : Controller
 	{
 		private readonly SizesManager _sizes;
-		private readonly ILogger<SizesController> _logger;
+		private readonly Performer<SizesController> _performer;
+
+		private ResultWithErrorVM<List<Size>> GetViewModel(string error = "")
+		{
+			return new()
+			{
+				Result = _sizes.GetAllSizes(),
+				Error = error
+			};
+		}
 		private IActionResult PerformAction(Action callback)
 		{
-			try
-			{
-				callback();
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "SizesController error.");
-			}
-
-			return Redirect("/sizes");
+			return _performer.PerformActionMessage(
+				() =>
+				{
+					callback();
+					return View("AdminPage", GetViewModel());
+				},
+				(message) => View("AdminPage", GetViewModel(message))
+			);
 		}
 
 		public SizesController(SizesManager sizes, ILogger<SizesController> logger)
 		{
 			_sizes = sizes;
-			_logger = logger;
+			_performer = new Performer<SizesController>(logger);
 		}
 
 		[HttpPost("action/create")]
@@ -57,7 +67,7 @@ namespace WebApp.Controllers.Products
 
 		public IActionResult Index()
 		{
-			return View("AdminPage", _sizes.GetAllSizes());
+			return View("AdminPage", GetViewModel());
 		}
 	}
 }

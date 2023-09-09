@@ -6,6 +6,7 @@ using Newtonsoft.Json.Serialization;
 using WebApp.Controllers.Abstract;
 using WebApp.Services.Database.Products;
 using WebApp.Utilities.Exceptions;
+using WebApp.Utilities.Other;
 using WebApp.ViewModels.Product;
 
 namespace WebApp.Controllers.Products
@@ -16,48 +17,43 @@ namespace WebApp.Controllers.Products
 	{
 		private readonly ColoursManager _colours;
 		private readonly SizesManager _sizes;
-		private readonly ProductsManager _products;
-		private readonly ILogger<ProductStocksController> _logger;
+		private readonly ProductStocksManager _productStocks;
+		private readonly Performer<ProductStocksController> _performer;
 		private readonly JsonSerializerSettings _jsonSettings;
 
-		private IActionResult PerformAction(Action action, int productId)
+		private ProductStocksChange GetViewModel(int productId, string? error = null)
 		{
-			string? error = null;
-			try
-			{
-				action();
-			}
-			catch (UserInteractionException exc)
-			{
-				error = exc.Message;
-			}
-			catch (DbUpdateException)
-			{
-				error = "Ви не можете створювати продукти у наявності з однаковим кольором та розміром. " +
-					"Якщо ви вважаєте, що ця помилка не є правильною, то перезавантажте сторінку та спробуйте ще раз.";
-			}
-			catch (Exception exc)
-			{
-				error = "Unexpected error.";
-				_logger.LogError(exc, "ProductStocksController error. See exception for details.");
-			}
-
-			return View("Index", new ProductStocksChange()
+			return new ProductStocksChange()
 			{
 				ProductId = productId,
 				ErrorMessage = error,
-				Stocks = _products.GetProductStocks(productId),
+				Stocks = _productStocks.GetProductStocks(productId),
 				Colours = _colours.GetAllColours(),
 				Sizes = _sizes.GetAllSizes()
-			});
+			};
+		}
+		private IActionResult PerformAction(Action action, int productId)
+		{
+			return _performer.PerformActionMessage(
+				() =>
+				{
+					action();
+					return View("Index", GetViewModel(productId));
+				},
+				(message) => View("Index", GetViewModel(productId, message))
+			);
 		}
 
-		public ProductStocksController(ColoursManager colours, SizesManager sizes, ProductsManager products, ILogger<ProductStocksController> logger)
+		public ProductStocksController(
+			ColoursManager colours, 
+			SizesManager sizes, 
+			ProductStocksManager productStocks, 
+			ILogger<ProductStocksController> logger)
 		{
 			_colours = colours;
 			_sizes = sizes;
-			_products = products;
-			_logger = logger;
+			_productStocks = productStocks;
+			_performer = new Performer<ProductStocksController>(logger);
 			_jsonSettings = new JsonSerializerSettings()
 			{
 				ContractResolver = new DefaultContractResolver()
@@ -76,7 +72,7 @@ namespace WebApp.Controllers.Products
 			[FromForm(Name = "stockSize")] int stockSize)
 		{
 			return PerformAction(
-				() => _products.CreateProductStocks(GetUserId(), productId, colourId, sizeId, stockSize),
+				() => _productStocks.CreateProductStocks(GetUserId(), productId, colourId, sizeId, stockSize),
 				productId
 			);
 		}
@@ -91,7 +87,7 @@ namespace WebApp.Controllers.Products
 			[FromForm(Name = "stockSize")] int stockSize)
 		{
 			return PerformAction(
-				() => _products.UpdateProductStocks(GetUserId(), stockId, colourId, sizeId, stockSize),
+				() => _productStocks.UpdateProductStocks(GetUserId(), stockId, colourId, sizeId, stockSize),
 				productId
 			);
 		}
@@ -103,7 +99,7 @@ namespace WebApp.Controllers.Products
 			[FromForm(Name = "stockId")] int stockId)
 		{
 			return PerformAction(
-				() => _products.DeleteProductStocks(GetUserId(), stockId),
+				() => _productStocks.DeleteProductStocks(GetUserId(), stockId),
 				productId
 			);
 		}
@@ -114,7 +110,7 @@ namespace WebApp.Controllers.Products
 			[FromQuery(Name = "productId")] int productId)
 		{
 			return Content(
-						JsonConvert.SerializeObject(_products.GetProductStocks(productId), _jsonSettings),
+						JsonConvert.SerializeObject(_productStocks.GetProductStocks(productId), _jsonSettings),
 						"application/json"
 					);
 		}
@@ -126,7 +122,7 @@ namespace WebApp.Controllers.Products
 			{
 				ProductId = productId,
 				ErrorMessage = null,
-				Stocks = _products.GetProductStocks(productId),
+				Stocks = _productStocks.GetProductStocks(productId),
 				Colours = _colours.GetAllColours(),
 				Sizes = _sizes.GetAllSizes()
 			});

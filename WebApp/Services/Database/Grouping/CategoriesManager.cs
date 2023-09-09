@@ -3,25 +3,26 @@ using Microsoft.EntityFrameworkCore;
 using WebApp.Database;
 using WebApp.Database.Entities.Grouping;
 using WebApp.Database.Models;
-using WebApp.Utilities;
+using WebApp.Utilities.Exceptions;
+using WebApp.Utilities.Other;
 using WebApp.ViewModels.Categories;
 
 namespace WebApp.Services.Database.Grouping
 {
-	public class CategoriesManager
+    public class CategoriesManager
 	{
 		private readonly DatabaseContext _database;
 
 		private Category FindCategory(int categoryId)
 		{
 			return _database.Categories.Find(categoryId) ??
-				throw new ArgumentOutOfRangeException(string.Format("Category with id {0} does not exist.", categoryId));
+				throw new UserInteractionException(string.Format("Category with id {0} does not exist.", categoryId));
 		}
 		private Category FindChildWithParentCategory(int categoryId)
 		{
 			return _database.Categories
 				.Include(e => e.Parent)
-				.FirstOrDefault(e => e.Id == categoryId) ?? throw new ArgumentOutOfRangeException(string.Format("Category with id {0} does not exist.", categoryId));
+				.FirstOrDefault(e => e.Id == categoryId) ?? throw new UserInteractionException(string.Format("Category with id {0} does not exist.", categoryId));
 		}
 
 		private void LoadCategoryChildren(Category category)

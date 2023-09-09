@@ -50,12 +50,14 @@ builder.Services.AddAuthorization(options =>
 		.Build();
 });
 
-builder.Services.AddScoped<BrandsManager>();
-builder.Services.AddScoped<CategoriesManager>();
-builder.Services.AddScoped<ProductImagesManager>();
-builder.Services.AddScoped<ProductsManager>();
-builder.Services.AddScoped<ColoursManager>();
-builder.Services.AddScoped<SizesManager>();
+builder.Services
+	.AddScoped<BrandsManager>()
+	.AddScoped<CategoriesManager>()
+	.AddScoped<ProductImagesManager>()
+	.AddScoped<ProductsManager>()
+	.AddScoped<ColoursManager>()
+	.AddScoped<SizesManager>()
+	.AddScoped<ProductStocksManager>();
 
 var app = builder.Build();
 

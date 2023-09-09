@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WebApp.Database.Entities.Products;
+using WebApp.Database.Models;
 using WebApp.Services.Database.Products;
+using WebApp.Utilities.Other;
+using WebApp.ViewModels.Other;
 
 namespace WebApp.Controllers.Products
 {
@@ -9,25 +13,34 @@ namespace WebApp.Controllers.Products
 	public class ColoursController : Controller
 	{
 		private readonly ColoursManager _colours;
-		private readonly ILogger<ColoursController> _logger;
-		private IActionResult PerformAction(Action callback)
+		private readonly Performer<ColoursController> _performer;
+		
+		private ResultWithErrorVM<List<Database.Models.Colour>> GetViewModel(string error = "")
 		{
-			try
+			return new()
 			{
-				callback();
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "ColoursController error.");
-			}
-
-			return Redirect("/colours");
+				Result = _colours.GetAllColours(),
+				Error = error
+			};
+		}
+		private IActionResult PerformAction(Action action)
+		{
+			return _performer.PerformActionMessage(
+				() =>
+				{
+					action();
+					return View("AdminPage", GetViewModel());
+				},
+				(message) => View("AdminPage", GetViewModel(message))
+			);
 		}
 
-		public ColoursController(ColoursManager colours, ILogger<ColoursController> logger)
+		public ColoursController(
+			ColoursManager colours, 
+			ILogger<ColoursController> logger)
 		{
 			_colours = colours;
-			_logger = logger;
+			_performer = new Performer<ColoursController>(logger);
 		}
 
 		[HttpPost("action/create")]
@@ -59,7 +72,7 @@ namespace WebApp.Controllers.Products
 
 		public IActionResult Index()
 		{
-			return View("AdminPage", _colours.GetAllColours());
+			return View("AdminPage", GetViewModel());
 		}
 	}
 }

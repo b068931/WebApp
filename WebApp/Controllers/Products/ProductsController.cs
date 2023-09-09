@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Build.Experimental.ProjectCache;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -14,6 +15,7 @@ using WebApp.Utilities.Filtering.Products;
 using WebApp.Utilities.Filtering.Products.Filters;
 using WebApp.Utilities.Filtering.Products.OrderTypes;
 using WebApp.Utilities.Filtering.Products.SortTypes;
+using WebApp.Utilities.Other;
 using WebApp.ViewModels.Product;
 
 namespace WebApp.Controllers.Products
@@ -31,7 +33,7 @@ namespace WebApp.Controllers.Products
 		private readonly CategoriesManager _categories;
 		private readonly ProductImagesManager _images;
 		private readonly ProductsManager _products;
-		private readonly ILogger<ProductsController> _logger;
+		private readonly Performer<ProductsController> _performer;
 		private readonly JsonSerializerSettings _jsonSettings;
 
 		private IActionResult GetProductCreateView()
@@ -129,30 +131,6 @@ namespace WebApp.Controllers.Products
 			return search;
 		}
 
-		private ResultT PerformAction<ResultT>(
-			Func<ResultT> action,
-			Action<UserInteractionException>? onUserError,
-			Func<ResultT> onFail)
-		{
-			try
-			{
-				return action();
-			}
-			catch (UserInteractionException ex)
-			{
-				if (onUserError != null)
-				{
-					onUserError(ex);
-				}
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "ProductsController error.");
-			}
-
-			return onFail();
-		}
-
 		public ProductsController(
 			BrandsManager brands,
 			CategoriesManager categories,
@@ -168,7 +146,7 @@ namespace WebApp.Controllers.Products
 			_products = products;
 			_colours = colours;
 			_sizes = sizes;
-			_logger = logger;
+			_performer = new Performer<ProductsController>(logger);
 			_jsonSettings = new JsonSerializerSettings()
 			{
 				ContractResolver = new DefaultContractResolver()
@@ -212,7 +190,7 @@ namespace WebApp.Controllers.Products
 			[FromQuery(Name = "maxid")] int maxId,
 			[FromQuery(Name = "includesearchresult")] bool isSearchResultIncluded = true)
 		{
-			return PerformAction<Task<IActionResult>>(
+			return _performer.PerformActionMessageAsync(
 				async () =>
 				{
 					Dictionary<string, StringValues> searchParameters =
@@ -246,8 +224,7 @@ namespace WebApp.Controllers.Products
 						"application/json"
 					);
 				},
-				null,
-				async () => await Task.Run(() => BadRequest())
+				(message) => Task.Run(() => (IActionResult)BadRequest(message))
 			);
 		}
 
@@ -256,9 +233,8 @@ namespace WebApp.Controllers.Products
 		public IActionResult Show(
 			[FromRoute(Name = "productId")] int productId)
 		{
-			return PerformAction<IActionResult>(
+			return _performer.PerformInertAction(
 				() => View("ShowProduct", _products.GetProductShowVM(GetUserId(), productId)),
-				null,
 				() => Redirect("/")
 			);
 		}
@@ -278,7 +254,7 @@ namespace WebApp.Controllers.Products
 				return GetProductCreateView();
 			}
 
-			return PerformAction(
+			return _performer.PerformAction(
 				() =>
 				{
 					Product createdProduct = _products.CreateProduct(GetUserId(), vm);
@@ -293,7 +269,7 @@ namespace WebApp.Controllers.Products
 		public IActionResult Update(
 			[FromQuery(Name = "id")] int productId)
 		{
-			return PerformAction(
+			return _performer.PerformAction(
 				() => GetProductUpdateView(productId),
 				(ex) => ModelState.AddModelError(string.Empty, ex.Message),
 				() => GetProductCreateView()
@@ -306,14 +282,14 @@ namespace WebApp.Controllers.Products
 		{
 			if (!ModelState.IsValid)
 			{
-				return PerformAction(
+				return _performer.PerformAction(
 					() => GetProductUpdateView(vm.Id),
 					(ex) => ModelState.AddModelError(string.Empty, ex.Message),
 					() => GetProductUpdateView(vm.Id)
 				);
 			}
 
-			return PerformAction(
+			return _performer.PerformAction(
 				() =>
 				{
 					_products.UpdateProduct(GetUserId(), vm);
@@ -338,7 +314,7 @@ namespace WebApp.Controllers.Products
 			[FromForm(Name = "productId")] int productId,
 			[FromForm(Name = "deleteImages")] List<int> imagesToDelete)
 		{
-			return PerformAction<IActionResult>(
+			return _performer.PerformAction(
 				() =>
 				{
 					Product associatedProduct = _products.FindOwnedProduct(GetUserId(), productId);
@@ -362,13 +338,12 @@ namespace WebApp.Controllers.Products
 		public IActionResult Delete(
 			[FromForm(Name = "id")] int idToDelete)
 		{
-			return PerformAction(
+			return _performer.PerformInertAction(
 				() =>
 				{
 					_products.DeleteProduct(GetUserId(), idToDelete);
 					return Redirect("/");
 				},
-				null,
 				() => Redirect("/")
 			);
 		}

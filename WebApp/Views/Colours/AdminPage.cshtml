@@ -1,6 +1,10 @@
-﻿@model List<WebApp.Database.Models.Colour>
+﻿@model WebApp.ViewModels.Other.ResultWithErrorVM<List<WebApp.Database.Models.Colour>>
 
 <div class="my-3 mx-2">
+	@if(!string.IsNullOrEmpty(Model.Error))
+	{
+		<span class="text-danger mb-2">@Model.Error</span>	
+	}
 	<a href="/admin" class="text-black mb-2">Назад</a>
 	<form id="confirmationForm" action="#" method="post" enctype="multipart/form-data">
 		@Html.AntiForgeryToken()
@@ -26,7 +30,7 @@
 	</div>
 	<hr />
 	<ul id="coloursList" class="list-group">
-		@foreach(var colour in Model)
+		@foreach(var colour in Model.Result)
 		{
 			<li data-myid="@colour.Id" class="colour-list-element d-flex list-group-item list-group-item-action list-group-item-light">
 				<div class="me-auto d-flex flex-row">

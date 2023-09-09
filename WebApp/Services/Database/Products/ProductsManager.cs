@@ -25,26 +25,6 @@ namespace WebApp.Services.Database.Products
 				throw new UserInteractionException("Invalid category provided. Reload the page.");
 			}
 		}
-		private WebApp.Database.Entities.Products.ProductStock FindOwnedProductStock(
-			int assumedOwner,
-			int stockId)
-		{
-			var result = _database.ProductStocks
-				.Include(e => e.Product)
-				.Select(e => new
-				{
-					OwnerId = e.Product.ProductOwnerId,
-					FoundStock = e
-				})
-				.FirstOrDefault(e => e.FoundStock.Id == stockId) ?? throw new UserInteractionException(
-					string.Format("Product stock with id {0} does not exist", stockId)
-				);
-
-			if (result.OwnerId != assumedOwner)
-				throw new UserInteractionException("You are not the owner of the product.");
-
-			return result.FoundStock;
-		}
 
 		private Product AddNewProduct(int ownerId, ProductCreate vm)
 		{
@@ -159,13 +139,6 @@ namespace WebApp.Services.Database.Products
 			_sizes = sizes;
 		}
 
-		public bool BelongsTo(int productId, int assumedOwnerId)
-		{
-			return _database.Products
-				.Where(e => e.Id == productId && e.ProductOwnerId == assumedOwnerId)
-				.Any();
-		}
-
 		public Product FindOwnedProduct(int assumedOwner, int productId)
 		{
 			Product foundProduct = FindProduct(productId);
@@ -232,66 +205,6 @@ namespace WebApp.Services.Database.Products
 				AvailableCategories = _categories.GetSelectList(),
 				AvailableBrands = _brands.GetSelectList()
 			};
-		}
-
-		public List<WebApp.Database.Models.ProductStock> GetProductStocks(int productId)
-		{
-			return _database.ProductStocks
-				.Include(e => e.Colour)
-				.Include(e => e.Size)
-				.Where(e => e.ProductId == productId)
-				.Select(e => new WebApp.Database.Models.ProductStock()
-				{
-					Id = e.Id,
-					ProductAmount = e.ProductAmount,
-					Colour = new WebApp.Database.Models.Colour()
-					{
-						Id = e.Colour.Id,
-						Name = e.Colour.Name,
-						HexCode = e.Colour.HexCode
-					},
-					Size = new WebApp.Database.Models.Size()
-					{
-						Id = e.Size.Id,
-						Name = e.Size.SizeName
-					}
-				})
-				.ToList();
-		}
-		public void CreateProductStocks(int actionPerformerId, int productId, int colourId, int sizeId, int stockSize)
-		{
-			if (!BelongsTo(productId, actionPerformerId))
-				throw new UserInteractionException("You are not the owner of the product.");
-
-			WebApp.Database.Entities.Products.ProductStock newStock = new WebApp.Database.Entities.Products.ProductStock()
-			{
-				ProductAmount = stockSize,
-				ProductId = productId,
-				ColourId = colourId,
-				SizeId = sizeId
-			};
-
-			_database.ProductStocks.Add(newStock);
-			_database.SaveChanges();
-		}
-		public void UpdateProductStocks(int actionPerformerId, int stockId, int colourId, int sizeId, int stockSize)
-		{
-			WebApp.Database.Entities.Products.ProductStock foundStock =
-				FindOwnedProductStock(actionPerformerId, stockId);
-
-			foundStock.ColourId = colourId;
-			foundStock.SizeId = sizeId;
-			foundStock.ProductAmount = stockSize;
-
-			_database.SaveChanges();
-		}
-		public void DeleteProductStocks(int actionPerformerId, int stockId)
-		{
-			_database.ProductStocks.Remove(
-				FindOwnedProductStock(actionPerformerId, stockId)
-			);
-
-			_database.SaveChanges();
 		}
 
 		public async Task<List<ProductShowLightWeight>> SearchAsync(

@@ -44,6 +44,7 @@ namespace WebApp.Controllers.Abstract
 				return writer.GetStringBuilder().ToString();
 			}
 		}
+
 		protected int GetUserId()
 		{
 			string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
