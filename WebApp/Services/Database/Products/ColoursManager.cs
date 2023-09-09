@@ -8,9 +8,9 @@ namespace WebApp.Services.Database.Products
 	public class ColoursManager
 	{
 		private readonly DatabaseContext _database;
-		private WebApp.Database.Entities.Products.Colour FindColour(int id)
+		private async Task<WebApp.Database.Entities.Products.Colour> FindColourAsync(int id)
 		{
-			return _database.ProductColours.Find(id) ??
+			return await _database.ProductColours.FindAsync(id) ??
 					throw new UserInteractionException(
 						string.Format("Colour with id {0} does not exist.", id)
 					);
@@ -21,7 +21,7 @@ namespace WebApp.Services.Database.Products
 			_database = database;
 		}
 
-		public List<WebApp.Database.Models.Colour> GetAllColours()
+		public Task<List<WebApp.Database.Models.Colour>> GetAllColoursAsync()
 		{
 			return _database.ProductColours
 				.AsNoTracking()
@@ -31,9 +31,9 @@ namespace WebApp.Services.Database.Products
 					Name = e.Name,
 					HexCode = e.HexCode
 				})
-				.ToList();
+				.ToListAsync();
 		}
-		public List<SelectListItem> GetSelectList()
+		public Task<List<SelectListItem>> GetSelectListAsync()
 		{
 			return _database.ProductColours
 				.AsNoTracking()
@@ -42,10 +42,10 @@ namespace WebApp.Services.Database.Products
 					Text = e.Name,
 					Value = e.Id.ToString()
 				})
-				.ToList();
+				.ToListAsync();
 		}
 
-		public void CreateColour(string name, string hexCode)
+		public Task CreateColourAsync(string name, string hexCode)
 		{
 			WebApp.Database.Entities.Products.Colour newColour = new WebApp.Database.Entities.Products.Colour()
 			{
@@ -54,20 +54,23 @@ namespace WebApp.Services.Database.Products
 			};
 
 			_database.ProductColours.Add(newColour);
-			_database.SaveChanges();
+			return _database.SaveChangesAsync();
 		}
-		public void UpdateColour(int id, string name, string hexCode)
+		public async Task UpdateColourAsync(int id, string name, string hexCode)
 		{
-			WebApp.Database.Entities.Products.Colour foundColour = FindColour(id);
+			WebApp.Database.Entities.Products.Colour foundColour = await FindColourAsync(id);
 			foundColour.Name = name;
 			foundColour.HexCode = hexCode;
 
-			_database.SaveChanges();
+			await _database.SaveChangesAsync();
 		}
-		public void DeleteColour(int id)
+		public async Task DeleteColourAsync(int id)
 		{
-			_database.ProductColours.Remove(FindColour(id));
-			_database.SaveChanges();
+			_database.ProductColours.Remove(
+				await FindColourAsync(id)
+			);
+
+			await _database.SaveChangesAsync();
 		}
 	}
 }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Build.Experimental.ProjectCache;
+using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -9,19 +9,19 @@ using WebApp.Controllers.Abstract;
 using WebApp.Database.Entities.Products;
 using WebApp.Services.Database.Grouping;
 using WebApp.Services.Database.Products;
+using WebApp.Utilities.CustomRequirements.SameAuthor;
 using WebApp.Utilities.Exceptions;
 using WebApp.Utilities.Filtering;
 using WebApp.Utilities.Filtering.Products;
 using WebApp.Utilities.Filtering.Products.Filters;
 using WebApp.Utilities.Filtering.Products.OrderTypes;
-using WebApp.Utilities.Filtering.Products.SortTypes;
 using WebApp.Utilities.Other;
 using WebApp.ViewModels.Product;
 
 namespace WebApp.Controllers.Products
 {
 	[Route("/products")]
-	[Authorize(Roles = "admin,user")]
+	[Authorize(Policy = "PublicContentPolicy")]
 	public class ProductsController : ExtendedController
 	{
 		private readonly ProductFiltersFactory _filtersFactory;
@@ -29,22 +29,33 @@ namespace WebApp.Controllers.Products
 
 		private readonly ColoursManager _colours;
 		private readonly SizesManager _sizes;
+
 		private readonly BrandsManager _brands;
 		private readonly CategoriesManager _categories;
+
 		private readonly ProductImagesManager _images;
 		private readonly ProductsManager _products;
+
 		private readonly Performer<ProductsController> _performer;
 		private readonly JsonSerializerSettings _jsonSettings;
 
-		private IActionResult GetProductCreateView()
+		private async Task<Author> GetTrueAuthorAsync(int productId)
 		{
-			return View("ProductCreationForm", _products.GetProductCreateVM());
+			return new Author()
+			{
+				Id = (await _products.FindProductAsync(productId)).ProductOwnerId
+			};
 		}
-		private IActionResult GetProductUpdateView(int productId)
+
+		private async Task<IActionResult> GetProductCreateViewAsync()
 		{
-			return View("ProductUpdateForm", _products.GetProductUpdateVM(productId));
+			return View("ProductCreationForm", await _products.GetProductCreateVMAsync());
 		}
-		private ProductsSearchInitializator GetSearchInitialization(
+		private async Task<IActionResult> GetProductUpdateViewAsync(int productId)
+		{
+			return View("ProductUpdateForm", await _products.GetProductUpdateVMAsync(productId));
+		}
+		private async Task<ProductsSearchInitializator> GetSearchInitializationAsync(
 			string? query,
 			int? selectedCategory,
 			int? selectedBrand,
@@ -58,10 +69,10 @@ namespace WebApp.Controllers.Products
 				Query = query ?? string.Empty,
 				MinDate = minDate ?? string.Empty,
 				MinRatingsCount = minRatingsCount ?? 0,
-				Categories = _categories.GetSelectListWithSelectedId(selectedCategory ?? 0),
-				Brands = _brands.GetSelectListWithSelectedId(selectedBrand ?? 0),
-				Colours = _colours.GetSelectList(),
-				Sizes = _sizes.GetSelectList(),
+				Categories = await _categories.GetSelectListWithSelectedIdAsync(selectedCategory ?? 0),
+				Brands = await _brands.GetSelectListWithSelectedIdAsync(selectedBrand ?? 0),
+				Colours = await _colours.GetSelectListAsync(),
+				Sizes = await _sizes.GetSelectListAsync(),
 				SortTypes = new List<SelectListItem>()
 				{
 					new SelectListItem()
@@ -138,7 +149,7 @@ namespace WebApp.Controllers.Products
 			ProductsManager products,
 			ColoursManager colours,
 			SizesManager sizes,
-			ILogger<ProductsController> logger)
+			Performer<ProductsController> performer)
 		{
 			_brands = brands;
 			_categories = categories;
@@ -146,7 +157,7 @@ namespace WebApp.Controllers.Products
 			_products = products;
 			_colours = colours;
 			_sizes = sizes;
-			_performer = new Performer<ProductsController>(logger);
+			_performer = performer;
 			_jsonSettings = new JsonSerializerSettings()
 			{
 				ContractResolver = new DefaultContractResolver()
@@ -224,132 +235,160 @@ namespace WebApp.Controllers.Products
 						"application/json"
 					);
 				},
-				(message) => Task.Run(() => (IActionResult)BadRequest(message))
+				(message) => BadRequest(message)
 			);
 		}
 
 		[HttpGet("product/{productId}")]
 		[AllowAnonymous]
-		public IActionResult Show(
+		public Task<IActionResult> Show(
 			[FromRoute(Name = "productId")] int productId)
 		{
-			return _performer.PerformInertAction(
-				() => View("ShowProduct", _products.GetProductShowVM(GetUserId(), productId)),
+			return _performer.PerformInertActionAsync(
+				async () => View(
+					"ShowProduct",
+					await _products.GetProductShowVMAsync(GetUserId(), productId)
+				),
 				() => Redirect("/")
 			);
 		}
 
 		[HttpGet("action/create")]
-		public IActionResult Create()
+		public Task<IActionResult> Create()
 		{
-			return GetProductCreateView();
+			return GetProductCreateViewAsync();
 		}
 
 		[HttpPost("action/create")]
 		[ValidateAntiForgeryToken]
-		public IActionResult Create(ProductCreate vm)
+		public Task<IActionResult> Create(ProductCreate vm)
 		{
 			if (!ModelState.IsValid)
 			{
-				return GetProductCreateView();
+				return GetProductCreateViewAsync();
 			}
 
-			return _performer.PerformAction(
-				() =>
+			return _performer.PerformActionAsync(
+				async () =>
 				{
-					Product createdProduct = _products.CreateProduct(GetUserId(), vm);
+					Product createdProduct = await _products.CreateProductAsync(GetUserId(), vm);
 					return Redirect("/products/product/" + createdProduct.Id);
 				},
 				(ex) => ModelState.AddModelError(string.Empty, ex.Message),
-				() => GetProductCreateView()
+				() => GetProductCreateViewAsync()
 			);
 		}
 
 		[HttpGet("action/update")]
-		public IActionResult Update(
+		public Task<IActionResult> Update(
 			[FromQuery(Name = "id")] int productId)
 		{
-			return _performer.PerformAction(
-				() => GetProductUpdateView(productId),
+			return _performer.PerformActionAsync(
+				() => _performer.EnforceSameAuthorWrapperAsync(
+					() => GetTrueAuthorAsync(productId),
+					User,
+					() => GetProductUpdateViewAsync(productId)
+				),
 				(ex) => ModelState.AddModelError(string.Empty, ex.Message),
-				() => GetProductCreateView()
+				() => GetProductCreateViewAsync()
 			);
 		}
 
 		[HttpPost("action/update")]
 		[ValidateAntiForgeryToken]
-		public IActionResult Update(ProductUpdate vm)
+		public Task<IActionResult> Update(ProductUpdate vm)
 		{
-			if (!ModelState.IsValid)
-			{
-				return _performer.PerformAction(
-					() => GetProductUpdateView(vm.Id),
-					(ex) => ModelState.AddModelError(string.Empty, ex.Message),
-					() => GetProductUpdateView(vm.Id)
-				);
-			}
+			return _performer.PerformActionAsync(
+				() => _performer.EnforceSameAuthorWrapperAsync(
+					() => GetTrueAuthorAsync(vm.Id),
+					User,
+					async () =>
+					{
+						if (!ModelState.IsValid)
+						{
+							return await GetProductUpdateViewAsync(vm.Id);
+						}
 
-			return _performer.PerformAction(
-				() =>
-				{
-					_products.UpdateProduct(GetUserId(), vm);
-					return Redirect("/products/product/" + vm.Id);
-				},
+						await _products.UpdateProductAsync(vm);
+						return Redirect("/products/product/" + vm.Id);
+					}
+				),
 				(ex) => ModelState.AddModelError(string.Empty, ex.Message),
-				() => GetProductUpdateView(vm.Id)
+				() => GetProductUpdateViewAsync(vm.Id)
 			);
 		}
 
 		[HttpGet("images/action/update")]
-		public IActionResult UpdateImages(
+		public Task<IActionResult> UpdateImages(
 			[FromQuery(Name = "id")] int productId)
 		{
-			return View("ProductImagesUpdateForm", (_images.GetProductImages(productId), productId));
+			return _performer.PerformInertActionAsync(
+				() => _performer.EnforceSameAuthorWrapperAsync(
+					() => GetTrueAuthorAsync(productId),
+					User,
+					async () => View(
+						"ProductImagesUpdateForm",
+						(await _images.GetProductImagesAsync(productId), productId)
+					)
+				),
+				() => Redirect("/products/product/" + productId)
+			);
 		}
 
 		[HttpPost("images/action/update")]
 		[ValidateAntiForgeryToken]
-		public IActionResult UpdateImages(
+		public Task<IActionResult> UpdateImages(
 			[FromForm(Name = "newMainImageId")] int mainImageId,
 			[FromForm(Name = "productId")] int productId,
 			[FromForm(Name = "deleteImages")] List<int> imagesToDelete)
 		{
-			return _performer.PerformAction(
-				() =>
-				{
-					Product associatedProduct = _products.FindOwnedProduct(GetUserId(), productId);
-					if (mainImageId != 0)
-						_products.ChangeMainImage(productId, mainImageId);
+			return _performer.PerformActionAsync(
+				() => _performer.EnforceSameAuthorWrapperAsync(
+					() => GetTrueAuthorAsync(productId),
+					User,
+					async () =>
+					{
+						Product associatedProduct = await _products.FindProductAsync(productId);
+						if (mainImageId != 0)
+							await _products.ChangeMainImage(productId, mainImageId);
 
-					if (imagesToDelete.Contains(_products.GetProductMainImage(productId)))
-						throw new UserInteractionException("Ви не можете видалити головне зображення вашого продукту.");
-					else
-						_images.DeleteImages(imagesToDelete);
+						if (imagesToDelete.Contains(await _products.GetProductMainImage(productId)))
+							throw new UserInteractionException("Ви не можете видалити головне зображення вашого продукту.");
+						else
+							await _images.DeleteImagesAsync(imagesToDelete);
 
-					return Redirect("/products/product/" + productId);
-				},
+						return Redirect("/products/product/" + productId);
+					}
+				),
 				(ex) => ModelState.AddModelError("", ex.Message),
-				() => View("ProductImagesUpdateForm", (_images.GetProductImages(productId), productId))
+				async () => View(
+					"ProductImagesUpdateForm",
+					(await _images.GetProductImagesAsync(productId), productId)
+				)
 			);
 		}
 
 		[HttpPost("action/delete")]
 		[ValidateAntiForgeryToken]
-		public IActionResult Delete(
+		public Task<IActionResult> Delete(
 			[FromForm(Name = "id")] int idToDelete)
 		{
-			return _performer.PerformInertAction(
-				() =>
-				{
-					_products.DeleteProduct(GetUserId(), idToDelete);
-					return Redirect("/");
-				},
+			return _performer.PerformInertActionAsync(
+				() => _performer.EnforceSameAuthorWrapperAsync(
+					() => GetTrueAuthorAsync(idToDelete),
+					User,
+					async () =>
+					{
+						await _products.DeleteProductAsync(idToDelete);
+						return Redirect("/");
+					}
+				),
 				() => Redirect("/")
 			);
 		}
 
 		[AllowAnonymous]
-		public IActionResult Index(
+		public async Task<IActionResult> Index(
 			[FromQuery(Name = "query")] string? query,
 			[FromQuery(Name = "brand")] int? brandId,
 			[FromQuery(Name = "category")] int? categoryId,
@@ -360,7 +399,7 @@ namespace WebApp.Controllers.Products
 		{
 			return View(
 				"ShowProductsList",
-				GetSearchInitialization(
+				await GetSearchInitializationAsync(
 					query,
 					categoryId,
 					brandId,

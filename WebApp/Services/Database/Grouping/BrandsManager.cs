@@ -12,15 +12,11 @@ namespace WebApp.Services.Database.Grouping
 
 		private readonly DatabaseContext _database;
 
-		private Brand FindBrand(int id)
+		private async Task<Brand> FindBrand(int id)
 		{
-			return _database.Brands.Find(id) ?? throw new ArgumentOutOfRangeException(string.Format("Brand with id {0} does not exist.", id));
+			return await _database.Brands.FindAsync(id) ?? throw new ArgumentOutOfRangeException(string.Format("Brand with id {0} does not exist.", id));
 		}
-		private BrandImage FindBrandImage(int id)
-		{
-			return _database.BrandImages.Find(id) ?? throw new ArgumentOutOfRangeException(string.Format("Brand image with id {0} does not exist.", id));
-		}
-		private BrandImage GenerateBrandImageFromFile(IFormFile brandImageFile)
+		private async Task<BrandImage> GenerateBrandImageFromFileAsync(IFormFile brandImageFile)
 		{
 			if (brandImageFile.Length > MaxImageSize)
 			{
@@ -33,7 +29,7 @@ namespace WebApp.Services.Database.Grouping
 			brandImage.ContentType = brandImageFile.ContentType;
 			using (var memory = new MemoryStream())
 			{
-				brandImageFile.CopyTo(memory);
+				await brandImageFile.CopyToAsync(memory);
 				brandImage.Data = memory.ToArray();
 			}
 
@@ -45,7 +41,7 @@ namespace WebApp.Services.Database.Grouping
 			_database = database;
 		}
 
-		public List<WebApp.Database.Models.Brand> GetAllBrands()
+		public Task<List<WebApp.Database.Models.Brand>> GetAllBrandsAsync()
 		{
 			return _database.Brands
 					.AsNoTracking()
@@ -55,69 +51,76 @@ namespace WebApp.Services.Database.Grouping
 						Name = e.Name,
 						ImageId = e.ImageId ?? 0
 					})
-					.ToList();
+					.ToListAsync();
 		}
-		public List<SelectListItem> GetSelectList()
+		public Task<List<SelectListItem>> GetSelectListAsync()
 		{
 			return _database.Brands
 				.AsNoTracking()
 				.Select(e => new SelectListItem() { Value = e.Id.ToString(), Text = e.Name })
-				.ToList();
+				.ToListAsync();
 		}
-		public List<SelectListItem> GetSelectListWithSelectedId(int brandId)
+		public Task<List<SelectListItem>> GetSelectListWithSelectedIdAsync(int brandId)
 		{
-			List<SelectListItem> brands = GetSelectList();
-			foreach (var brand in brands)
+			return GetSelectListAsync()
+			.ContinueWith(next =>
 			{
-				if (brand.Value == brandId.ToString())
+				var brands = next.Result;
+				foreach (var brand in brands)
 				{
-					brand.Selected = true;
-					break;
+					if (brand.Value == brandId.ToString())
+					{
+						brand.Selected = true;
+						break;
+					}
 				}
-			}
 
-			return brands;
+				return brands;
+			});
 		}
 
-		public void CreateBrand(string newBrandName, IFormFile brandImageFile)
+		public async Task CreateBrandAsync(string newBrandName, IFormFile brandImageFile)
 		{
 			Brand newBrand = new Brand { Name = newBrandName };
-			newBrand.Image = GenerateBrandImageFromFile(brandImageFile);
+			newBrand.Image = await GenerateBrandImageFromFileAsync(brandImageFile);
 
 			_database.Brands.Add(newBrand);
-			_database.SaveChanges();
+			await _database.SaveChangesAsync();
 		}
-		public void UpdateBrand(int id, string newName, IFormFile? brandImage)
+		public async Task UpdateBrandAsync(int id, string newName, IFormFile? brandImage)
 		{
-			Brand foundBrand = FindBrand(id);
+			Brand foundBrand = await FindBrand(id);
 			using (var transaction = _database.Database.BeginTransaction())
 			{
 				if (brandImage != null)
 				{
-					BrandImage newImage = GenerateBrandImageFromFile(brandImage);
+					BrandImage newImage = await GenerateBrandImageFromFileAsync(brandImage);
 					_database.BrandImages.Add(newImage);
-					_database.SaveChanges();
+					await _database.SaveChangesAsync();
 
 					BrandImage previousImage = new BrandImage() { Id = foundBrand.ImageId ?? throw new ArgumentNullException("This should not happen.") };
 					_database.BrandImages.Attach(previousImage);
 					_database.BrandImages.Remove(previousImage);
-					_database.SaveChanges();
+					await _database.SaveChangesAsync();
 
 					foundBrand.ImageId = newImage.Id;
 				}
 
 				foundBrand.Name = newName;
-				_database.SaveChanges();
+				await _database.SaveChangesAsync();
 
 				transaction.Commit();
 			}
 		}
-		public void DeleteBrand(int id)
+		public async Task DeleteBrandAsync(int id)
 		{
-			_database.Brands.Remove(FindBrand(id));
-			_database.SaveChanges();
+			_database.Brands.Remove(
+				await FindBrand(id)
+			);
+
+			await _database.SaveChangesAsync();
 		}
-		public async Task<BrandImage> GetBrandImage(int brandImageId)
+		public async Task<BrandImage> GetBrandImageAsync(int brandImageId)
 		{
 			return await _database.BrandImages.FindAsync(brandImageId) ??
 				throw new ArgumentOutOfRangeException(

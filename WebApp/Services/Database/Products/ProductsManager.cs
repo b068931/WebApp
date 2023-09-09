@@ -18,17 +18,17 @@ namespace WebApp.Services.Database.Products
 		private readonly ColoursManager _colours;
 		private readonly SizesManager _sizes;
 
-		private void ValidateCategoryId(int categoryId)
+		private async Task ValidateCategoryId(int categoryId)
 		{
-			if (!_categories.CheckIfLast(categoryId))
+			if (!await _categories.CheckIfLastAsync(categoryId))
 			{
 				throw new UserInteractionException("Invalid category provided. Reload the page.");
 			}
 		}
 
-		private Product AddNewProduct(int ownerId, ProductCreate vm)
+		private async Task<Product> AddNewProductAsync(int ownerId, ProductCreate vm)
 		{
-			ValidateCategoryId(vm.CategoryId);
+			await ValidateCategoryId(vm.CategoryId);
 			Product newProduct = new Product()
 			{
 				ProductOwnerId = ownerId,
@@ -41,14 +41,14 @@ namespace WebApp.Services.Database.Products
 			};
 
 			_database.Products.Add(newProduct);
-			_database.SaveChanges();
+			await _database.SaveChangesAsync();
 
 			return newProduct;
 		}
-		private void ChangeProduct(int assumedOwner, ProductUpdate vm)
+		private async Task ChangeProductAsync(ProductUpdate vm)
 		{
-			ValidateCategoryId(vm.CategoryId);
-			Product updateProduct = FindOwnedProduct(assumedOwner, vm.Id);
+			await ValidateCategoryId(vm.CategoryId);
+			Product updateProduct = await FindProductAsync(vm.Id);
 
 			updateProduct.Id = vm.Id;
 			updateProduct.Name = vm.Name;
@@ -58,16 +58,10 @@ namespace WebApp.Services.Database.Products
 			updateProduct.CategoryId = vm.CategoryId;
 			updateProduct.BrandId = vm.BrandId == 0 ? null : vm.BrandId;
 
-			_database.SaveChanges();
+			await _database.SaveChangesAsync();
 		}
 
-		private Product FindProduct(int productId)
-		{
-			return _database.Products.Find(productId) ??
-				throw new UserInteractionException(
-					string.Format("Product with id {0} does not exist.", productId));
-		}
-		private async Task<List<ProductShowLightWeight>> PerformSearchAsync(
+		private Task<List<ProductShowLightWeight>> PerformSearchAsync(
 			List<IFilter<Product>> filters,
 			IOrdering<Product> paginator,
 			int pageSize)
@@ -86,41 +80,43 @@ namespace WebApp.Services.Database.Products
 				request = filter.Apply(request);
 			}
 
-			List<Product> searchResult = await request
-			   .Take(pageSize) //Mapping Product to ProductShowLightWeight is done in memory. Here we take only pageSize elements from database (and all their stocks information) I don't think that this result would take up THAT much memory.
-			   .ToListAsync();
-
-			return searchResult
-				.Select(e => new ProductShowLightWeight()
-				{
-					Id = e.Id,
-					Name = e.Name,
-					Price = Math.Round(e.Price, 2),
-					Discount = e.Discount,
-					TruePrice = Math.Round(e.TruePrice, 2),
-					TrueRating = e.TrueRating,
-					ViewsCount = e.ViewsCount,
-					MainImageId = e.MainImageId ?? 0,
-					Date = e.Created,
-					AvailableColours = e.Stocks
-						.DistinctBy(e => e.ColourId)
-						.Select(e => new WebApp.Database.Models.Colour()
+			//Mapping Product to ProductShowLightWeight is done in memory. Here we take only pageSize elements from database (and all their stocks information) I don't think that this result would take up THAT much memory.
+			return request
+				.Take(pageSize)
+				.ToListAsync()
+				.ContinueWith(next =>
+					next.Result
+						.Select(e => new ProductShowLightWeight()
 						{
-							Id = e.Colour.Id,
-							Name = e.Colour.Name,
-							HexCode = e.Colour.HexCode
-						})
-						.ToList(),
-					AvailableSizes = e.Stocks
-						.DistinctBy(e => e.SizeId)
-						.Select(e => new WebApp.Database.Models.Size()
-						{
-							Id = e.Size.Id,
-							Name = e.Size.SizeName
+							Id = e.Id,
+							Name = e.Name,
+							Price = Math.Round(e.Price, 2),
+							Discount = e.Discount,
+							TruePrice = Math.Round(e.TruePrice, 2),
+							TrueRating = e.TrueRating,
+							ViewsCount = e.ViewsCount,
+							MainImageId = e.MainImageId ?? 0,
+							Date = e.Created,
+							AvailableColours = e.Stocks
+								.DistinctBy(e => e.ColourId)
+								.Select(e => new WebApp.Database.Models.Colour()
+								{
+									Id = e.Colour.Id,
+									Name = e.Colour.Name,
+									HexCode = e.Colour.HexCode
+								})
+								.ToList(),
+							AvailableSizes = e.Stocks
+								.DistinctBy(e => e.SizeId)
+								.Select(e => new WebApp.Database.Models.Size()
+								{
+									Id = e.Size.Id,
+									Name = e.Size.SizeName
+								})
+								.ToList()
 						})
 						.ToList()
-				})
-				.ToList();
+			);
 		}
 
 		public ProductsManager(
@@ -139,27 +135,25 @@ namespace WebApp.Services.Database.Products
 			_sizes = sizes;
 		}
 
-		public Product FindOwnedProduct(int assumedOwner, int productId)
+		public async Task<Product> FindProductAsync(int productId)
 		{
-			Product foundProduct = FindProduct(productId);
-			if (foundProduct.ProductOwnerId != assumedOwner)
-				throw new UserInteractionException("You are not the owner of this product.");
-
-			return foundProduct;
+			return await _database.Products.FindAsync(productId) ??
+				throw new UserInteractionException(
+					string.Format("Product with id {0} does not exist.", productId));
 		}
-		public int GetProductMainImage(int productId)
+		public async Task<int> GetProductMainImage(int productId)
 		{
-			return _database.Products
+			return await _database.Products
 				.Where(e => e.Id == productId)
 				.Select(e => e.MainImageId)
-				.First() ?? throw new UserInteractionException(
+				.FirstAsync() ?? throw new UserInteractionException(
 					string.Format("Product with id {0} does not exist.", productId));
 		}
 
-		public ProductShow GetProductShowVM(int actionPerformer, int productId)
+		public async Task<ProductShow> GetProductShowVMAsync(int actionPerformer, int productId)
 		{
-			Product foundProduct = FindProduct(productId);
-			_database.Entry(foundProduct).Reference(e => e.Brand).Load();
+			Product foundProduct = await FindProductAsync(productId);
+			await _database.Entry(foundProduct).Reference(e => e.Brand).LoadAsync();
 
 			return new ProductShow()
 			{
@@ -177,14 +171,14 @@ namespace WebApp.Services.Database.Products
 					? null
 					: (foundProduct.Brand.Name, foundProduct.Brand.ImageId ?? 0),
 				MainImageId = foundProduct.MainImageId ?? 0,
-				ProductImagesIds = _images.GetProductImages(productId),
-				AvailableColours = _colours.GetAllColours(),
-				AvailableSizes = _sizes.GetAllSizes()
+				ProductImagesIds = await _images.GetProductImagesAsync(productId),
+				AvailableColours = await _colours.GetAllColoursAsync(),
+				AvailableSizes = await _sizes.GetAllSizesAsync()
 			};
 		}
-		public ProductUpdate GetProductUpdateVM(int productId)
+		public async Task<ProductUpdate> GetProductUpdateVMAsync(int productId)
 		{
-			Product foundProduct = FindProduct(productId);
+			Product foundProduct = await FindProductAsync(productId);
 			return new ProductUpdate()
 			{
 				Id = foundProduct.Id,
@@ -194,37 +188,40 @@ namespace WebApp.Services.Database.Products
 				Discount = foundProduct.Discount,
 				BrandId = foundProduct.BrandId ?? 0,
 				CategoryId = foundProduct.CategoryId,
-				AvailableCategories = _categories.GetSelectListWithSelectedId(foundProduct.CategoryId),
-				AvailableBrands = foundProduct.BrandId == null ? _brands.GetSelectList() : _brands.GetSelectListWithSelectedId(foundProduct.BrandId.Value)
+				AvailableCategories =
+					await _categories.GetSelectListWithSelectedIdAsync(foundProduct.CategoryId),
+				AvailableBrands = foundProduct.BrandId == null
+					? await _brands.GetSelectListAsync()
+					: await _brands.GetSelectListWithSelectedIdAsync(foundProduct.BrandId.Value)
 			};
 		}
-		public ProductCreate GetProductCreateVM()
+		public async Task<ProductCreate> GetProductCreateVMAsync()
 		{
 			return new ProductCreate()
 			{
-				AvailableCategories = _categories.GetSelectList(),
-				AvailableBrands = _brands.GetSelectList()
+				AvailableCategories = await _categories.GetSelectListAsync(),
+				AvailableBrands = await _brands.GetSelectListAsync()
 			};
 		}
 
-		public async Task<List<ProductShowLightWeight>> SearchAsync(
+		public Task<List<ProductShowLightWeight>> SearchAsync(
 			List<IFilter<Product>> filters,
 			IOrdering<Product> paginator)
 		{
-			return await PerformSearchAsync(filters, paginator, 8);
+			return PerformSearchAsync(filters, paginator, 8);
 		}
 
-		public Product CreateProduct(int ownerId, ProductCreate vm)
+		public async Task<Product> CreateProductAsync(int ownerId, ProductCreate vm)
 		{
 			using (var transaction = _database.Database.BeginTransaction())
 			{
-				Product createdProduct = AddNewProduct(ownerId, vm);
+				Product createdProduct = await AddNewProductAsync(ownerId, vm);
 				if (vm.ProductImages != null)
 				{
-					List<ProductImage> loadedImages = _images.AddImagesToProduct(createdProduct.Id, vm.ProductImages);
+					List<ProductImage> loadedImages = await _images.AddImagesToProductAsync(createdProduct.Id, vm.ProductImages);
 					createdProduct.MainImageId = loadedImages[0].Id;
 
-					_database.SaveChanges();
+					await _database.SaveChangesAsync();
 				}
 				else
 				{
@@ -235,31 +232,31 @@ namespace WebApp.Services.Database.Products
 				return createdProduct;
 			}
 		}
-		public void UpdateProduct(int actionPerformerId, ProductUpdate vm)
+		public async Task UpdateProductAsync(ProductUpdate vm)
 		{
 			using (var transaction = _database.Database.BeginTransaction())
 			{
-				ChangeProduct(actionPerformerId, vm);
+				await ChangeProductAsync(vm);
 				if (vm.ProductImages != null)
-					_images.AddImagesToProduct(vm.Id, vm.ProductImages);
+					await _images.AddImagesToProductAsync(vm.Id, vm.ProductImages);
 
 				transaction.Commit();
 			}
 		}
-		public void DeleteProduct(int actionPerformerId, int productId)
+		public async Task DeleteProductAsync(int productId)
 		{
 			_database.Products.Remove(
-				FindOwnedProduct(actionPerformerId, productId)
+				await FindProductAsync(productId)
 			);
 
-			_database.SaveChanges();
+			await _database.SaveChangesAsync();
 		}
-		public void ChangeMainImage(int productId, int newMainImageId)
+		public async Task ChangeMainImage(int productId, int newMainImageId)
 		{
-			Product foundProduct = FindProduct(productId);
+			Product foundProduct = await FindProductAsync(productId);
 			foundProduct.MainImageId = newMainImageId;
 
-			_database.SaveChanges();
+			await _database.SaveChangesAsync();
 		}
 	}
 }

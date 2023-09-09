@@ -1,4 +1,5 @@
-﻿using WebApp.Database;
+﻿using Microsoft.EntityFrameworkCore;
+using WebApp.Database;
 using WebApp.Database.Entities.Products;
 using WebApp.Utilities.Exceptions;
 
@@ -24,7 +25,7 @@ namespace WebApp.Services.Database.Products
 				}
 			}
 		}
-		private List<ProductImage> CreateImageEntities(int productId, List<IFormFile> images)
+		private async Task<List<ProductImage>> CreateImageEntitiesAsync(int productId, List<IFormFile> images)
 		{
 			List<ProductImage> newImages = new List<ProductImage>();
 			foreach (var imageFile in images)
@@ -37,7 +38,7 @@ namespace WebApp.Services.Database.Products
 
 				using (var memory = new MemoryStream())
 				{
-					imageFile.CopyTo(memory);
+					await imageFile.CopyToAsync(memory);
 					newImage.Data = memory.ToArray();
 				}
 
@@ -52,33 +53,33 @@ namespace WebApp.Services.Database.Products
 			_database = database;
 		}
 
-		public List<ProductImage> AddImagesToProduct(int productId, List<IFormFile> images)
+		public async Task<List<ProductImage>> AddImagesToProductAsync(int productId, List<IFormFile> images)
 		{
 			ValidateImages(images);
-			List<ProductImage> loadedImages = CreateImageEntities(productId, images);
+			List<ProductImage> loadedImages = await CreateImageEntitiesAsync(productId, images);
 
 			_database.ProductImages.AddRange(loadedImages);
-			_database.SaveChanges();
+			await _database.SaveChangesAsync();
 
 			return loadedImages;
 		}
-		public void DeleteImages(List<int> imagesToDeleteIds)
+		public Task DeleteImagesAsync(List<int> imagesToDeleteIds)
 		{
 			_database.ProductImages.RemoveRange(
 				_database.ProductImages.Where(e => imagesToDeleteIds.Contains(e.Id))
 			);
 
-			_database.SaveChanges();
+			return _database.SaveChangesAsync();
 		}
 
-		public List<int> GetProductImages(int productId)
+		public Task<List<int>> GetProductImagesAsync(int productId)
 		{
 			return _database.ProductImages
 				.Where(e => e.ProductId == productId)
 				.Select(e => e.Id)
-				.ToList();
+				.ToListAsync();
 		}
-		public async Task<ProductImage> FindImage(int imageId)
+		public async Task<ProductImage> FindImageAsync(int imageId)
 		{
 			return await _database.ProductImages.FindAsync(imageId) ??
 				throw new ArgumentOutOfRangeException(

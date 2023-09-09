@@ -9,9 +9,9 @@ namespace WebApp.Services.Database.Products
 	public class SizesManager
 	{
 		private readonly DatabaseContext _database;
-		Size FindSize(int id)
+		private async Task<Size> FindSizeAsync(int id)
 		{
-			return _database.ProductSizes.Find(id) ??
+			return await _database.ProductSizes.FindAsync(id) ??
 				throw new UserInteractionException(
 					string.Format("Size with id {0} does not exist.", id)
 				);
@@ -22,7 +22,7 @@ namespace WebApp.Services.Database.Products
 			_database = database;
 		}
 
-		public List<WebApp.Database.Models.Size> GetAllSizes()
+		public Task<List<WebApp.Database.Models.Size>> GetAllSizesAsync()
 		{
 			return _database.ProductSizes
 				.AsNoTracking()
@@ -31,9 +31,9 @@ namespace WebApp.Services.Database.Products
 					Id = e.Id,
 					Name = e.SizeName
 				})
-				.ToList();
+				.ToListAsync();
 		}
-		public List<SelectListItem> GetSelectList()
+		public Task<List<SelectListItem>> GetSelectListAsync()
 		{
 			return _database.ProductSizes
 				.AsNoTracking()
@@ -42,10 +42,10 @@ namespace WebApp.Services.Database.Products
 					Text = e.SizeName,
 					Value = e.Id.ToString()
 				})
-				.ToList();
+				.ToListAsync();
 		}
 
-		public void CreateSize(string sizeName)
+		public Task CreateSizeAsync(string sizeName)
 		{
 			Size newSize = new Size()
 			{
@@ -53,19 +53,22 @@ namespace WebApp.Services.Database.Products
 			};
 
 			_database.ProductSizes.Add(newSize);
-			_database.SaveChanges();
+			return _database.SaveChangesAsync();
 		}
-		public void UpdateSize(int id, string sizeName)
+		public async Task UpdateSizeAsync(int id, string sizeName)
 		{
-			Size foundSize = FindSize(id);
+			Size foundSize = await FindSizeAsync(id);
 			foundSize.SizeName = sizeName;
 
-			_database.SaveChanges();
+			await _database.SaveChangesAsync();
 		}
-		public void DeleteSize(int id)
+		public async Task DeleteSizeAsync(int id)
 		{
-			_database.ProductSizes.Remove(FindSize(id));
-			_database.SaveChanges();
+			_database.ProductSizes.Remove(
+				await FindSizeAsync(id)
+			);
+
+			await _database.SaveChangesAsync();
 		}
 	}
 }

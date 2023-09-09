@@ -8,124 +8,126 @@ using WebApp.ViewModels.Other;
 namespace WebApp.Controllers.Grouping
 {
 	[Route("/categories")]
-	[Authorize(Roles = "admin")]
+	[Authorize(Policy = "CriticalSiteContentPolicy")]
 	public class CategoriesController : Controller
 	{
 		private readonly CategoriesManager _categories;
 		private readonly Performer<CategoriesController> _performer;
 
-		private ResultWithErrorVM<string> GenerateAdminPageModel(string error)
+		private async Task<ResultWithErrorVM<string>> GenerateAdminPageModelAsync(string error)
 		{
 			return new()
 			{
-				Result = _categories.GetBrush().DrawCategories(_categories.GetBaseCategory()),
+				Result = _categories.GetBrush().DrawCategories(
+					await _categories.GetBaseCategoryAsync()
+				),
 				Error = error
 			};
 		}
-		private IActionResult PerformAction(Action callback, string operationName)
+		private Task<IActionResult> PerformActionAsync(Func<Task> callback, string operationName)
 		{
-			return _performer.PerformActionMessage(
-				() =>
+			return _performer.PerformActionMessageAsync(
+				async () =>
 				{
-					callback();
+					await callback();
 					return View(
-						"AdminPage", 
-						GenerateAdminPageModel(
+						"AdminPage",
+						await GenerateAdminPageModelAsync(
 							string.Format("'{0}' operation success.", operationName)
 						)
 					);
 				},
-				(message) => View("AdminPage", GenerateAdminPageModel(message))
+				async (message) => View("AdminPage", await GenerateAdminPageModelAsync(message))
 			);
 		}
 
 		public CategoriesController(
-			CategoriesManager categories, 
-			ILogger<CategoriesController> logger)
+			CategoriesManager categories,
+			Performer<CategoriesController> performer)
 		{
 			_categories = categories;
-			_performer = new Performer<CategoriesController>(logger);
+			_performer = performer;
 		}
 
 		[HttpGet("base")]
 		[AllowAnonymous]
-		public JsonResult GetBaseCategories()
+		public async Task<JsonResult> GetBaseCategories()
 		{
 			return Json(
-				_categories.GetCategoriesOnParent(null),
+				await _categories.GetCategoriesOnParentAsync(null),
 				new JsonSerializerOptions(JsonSerializerDefaults.Web)
 			);
 		}
 
 		[HttpGet("category/{parentId}/children")]
 		[AllowAnonymous]
-		public JsonResult GetChildren(
+		public async Task<JsonResult> GetChildren(
 			[FromRoute(Name = "parentId")] int parentId)
 		{
 			return Json(
-				_categories.GetCategoriesOnParent(parentId),
+				await _categories.GetCategoriesOnParentAsync(parentId),
 				new JsonSerializerOptions(JsonSerializerDefaults.Web)
 			);
 		}
 
 		[HttpPost("action/switch")]
 		[ValidateAntiForgeryToken]
-		public IActionResult SwitchPopularity(
+		public Task<IActionResult> SwitchPopularity(
 			[FromForm(Name = "categoryId")] int categoryId)
 		{
-			return PerformAction(() => _categories.SwitchPopularity(categoryId), "switch popularity");
+			return PerformActionAsync(() => _categories.SwitchPopularityAsync(categoryId), "switch popularity");
 		}
 
 		[HttpPost("action/create")]
 		[ValidateAntiForgeryToken]
-		public IActionResult Create(
+		public Task<IActionResult> Create(
 			[FromForm(Name = "categoryName")] string newCategoryName,
 			[FromForm(Name = "parentId")] int parentId)
 		{
-			return PerformAction(
-				() => _categories.CreateCategory(parentId == 0 ? null : parentId, newCategoryName),
+			return PerformActionAsync(
+				() => _categories.CreateCategoryAsync(parentId == 0 ? null : parentId, newCategoryName),
 				"create"
 			);
 		}
 
 		[HttpPost("action/rename")]
 		[ValidateAntiForgeryToken]
-		public IActionResult Rename(
+		public Task<IActionResult> Rename(
 			[FromForm(Name = "categoryId")] int categoryId,
 			[FromForm(Name = "categoryName")] string newName)
 		{
-			return PerformAction(() => _categories.RenameCategory(categoryId, newName), "rename");
+			return PerformActionAsync(() => _categories.RenameCategoryAsync(categoryId, newName), "rename");
 		}
 
 		[HttpPost("action/move")]
 		[ValidateAntiForgeryToken]
-		public IActionResult Rename(
+		public Task<IActionResult> Rename(
 			[FromForm(Name = "categoryId")] int categoryId,
 			[FromForm(Name = "parentId")] int parentId)
 		{
-			return PerformAction(() => _categories.MoveCategory(categoryId, parentId), "move");
+			return PerformActionAsync(() => _categories.MoveCategoryAsync(categoryId, parentId), "move");
 		}
 
 		[HttpPost("action/salvage")]
 		[ValidateAntiForgeryToken]
-		public IActionResult Salvage(
+		public Task<IActionResult> Salvage(
 			[FromForm(Name = "categoryId")] int categoryId,
 			[FromForm(Name = "parentId")] int destinationId)
 		{
-			return PerformAction(() => _categories.SalvageCategory(categoryId, destinationId), "salvage");
+			return PerformActionAsync(() => _categories.SalvageCategoryAsync(categoryId, destinationId), "salvage");
 		}
 
 		[HttpPost("action/delete")]
 		[ValidateAntiForgeryToken]
-		public IActionResult Delete(
+		public Task<IActionResult> Delete(
 			[FromForm(Name = "categoryId")] int categoryId)
 		{
-			return PerformAction(() => _categories.DeleteCategory(categoryId), "delete");
+			return PerformActionAsync(() => _categories.DeleteCategoryAsync(categoryId), "delete");
 		}
 
-		public IActionResult Index()
+		public async Task<IActionResult> Index()
 		{
-			return View("AdminPage", GenerateAdminPageModel("..."));
+			return View("AdminPage", await GenerateAdminPageModelAsync("..."));
 		}
 	}
 }

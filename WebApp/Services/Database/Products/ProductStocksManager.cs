@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebApp.Database;
+using WebApp.Database.Entities.Products;
 using WebApp.Utilities.Exceptions;
 
 namespace WebApp.Services.Database.Products
@@ -7,38 +8,21 @@ namespace WebApp.Services.Database.Products
 	public class ProductStocksManager
 	{
 		private readonly DatabaseContext _database;
-		private WebApp.Database.Entities.Products.ProductStock FindOwnedProductStock(
-			int assumedOwner,
-			int stockId)
+
+		private async Task<bool> StockAlreadyExistsAsync(int productId, int colourId, int sizeId)
 		{
-			var result = _database.ProductStocks
-				.Include(e => e.Product)
-				.Select(e => new
-				{
-					OwnerId = e.Product.ProductOwnerId,
-					FoundStock = e
-				})
-				.FirstOrDefault(e => e.FoundStock.Id == stockId) ?? throw new UserInteractionException(
+			return await _database.ProductStocks
+				.Where(e => e.ProductId == productId && e.ColourId == colourId && e.SizeId == sizeId)
+				.AnyAsync();
+		}
+		private async Task<ProductStock> FindProductStockAsync(int stockId)
+		{
+			ProductStock result = await _database.ProductStocks
+				.FindAsync(stockId) ?? throw new UserInteractionException(
 					string.Format("Product stock with id {0} does not exist", stockId)
 				);
 
-			if (result.OwnerId != assumedOwner)
-				throw new UserInteractionException("You are not the owner of the product.");
-
-			return result.FoundStock;
-		}
-
-		private bool BelongsTo(int productId, int assumedOwnerId)
-		{
-			return _database.Products
-				.Where(e => e.Id == productId && e.ProductOwnerId == assumedOwnerId)
-				.Any();
-		}
-		private bool StockAlreadyExists(int productId, int colourId, int sizeId)
-		{
-			return _database.ProductStocks
-				.Where(e => e.ProductId == productId && e.ColourId == colourId && e.SizeId == sizeId)
-				.Any();
+			return result;
 		}
 
 		public ProductStocksManager(DatabaseContext database)
@@ -46,9 +30,10 @@ namespace WebApp.Services.Database.Products
 			_database = database;
 		}
 
-		public List<WebApp.Database.Models.ProductStock> GetProductStocks(int productId)
+		public async Task<List<WebApp.Database.Models.ProductStock>> GetProductStocksAsync(int productId)
 		{
-			return _database.ProductStocks
+			return await _database.ProductStocks
+				.AsNoTracking()
 				.Include(e => e.Colour)
 				.Include(e => e.Size)
 				.Where(e => e.ProductId == productId)
@@ -68,17 +53,14 @@ namespace WebApp.Services.Database.Products
 						Name = e.Size.SizeName
 					}
 				})
-				.ToList();
+				.ToListAsync();
 		}
-		public void CreateProductStocks(int actionPerformerId, int productId, int colourId, int sizeId, int stockSize)
+		public async Task CreateProductStocksAsync(int productId, int colourId, int sizeId, int stockSize)
 		{
-			if (!BelongsTo(productId, actionPerformerId))
-				throw new UserInteractionException("You are not the owner of the product.");
-
-			if (StockAlreadyExists(productId, colourId, sizeId))
+			if (await StockAlreadyExistsAsync(productId, colourId, sizeId))
 				throw new UserInteractionException("Така інформація у наявності цього продукта вже існує.");
 
-			WebApp.Database.Entities.Products.ProductStock newStock = new WebApp.Database.Entities.Products.ProductStock()
+			ProductStock newStock = new ProductStock()
 			{
 				ProductAmount = stockSize,
 				ProductId = productId,
@@ -87,26 +69,25 @@ namespace WebApp.Services.Database.Products
 			};
 
 			_database.ProductStocks.Add(newStock);
-			_database.SaveChanges();
+			await _database.SaveChangesAsync();
 		}
-		public void UpdateProductStocks(int actionPerformerId, int stockId, int colourId, int sizeId, int stockSize)
+		public async Task UpdateProductStocksAsync(int stockId, int colourId, int sizeId, int stockSize)
 		{
-			WebApp.Database.Entities.Products.ProductStock foundStock =
-				FindOwnedProductStock(actionPerformerId, stockId);
+			ProductStock foundStock = await FindProductStockAsync(stockId);
 
 			foundStock.ColourId = colourId;
 			foundStock.SizeId = sizeId;
 			foundStock.ProductAmount = stockSize;
 
-			_database.SaveChanges();
+			await _database.SaveChangesAsync();
 		}
-		public void DeleteProductStocks(int actionPerformerId, int stockId)
+		public async Task DeleteProductStocksAsync(int stockId)
 		{
 			_database.ProductStocks.Remove(
-				FindOwnedProductStock(actionPerformerId, stockId)
+				await FindProductStockAsync(stockId)
 			);
 
-			_database.SaveChanges();
+			await _database.SaveChangesAsync();
 		}
 	}
 }

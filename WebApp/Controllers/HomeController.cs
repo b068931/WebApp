@@ -27,17 +27,17 @@ namespace WebApp.Controllers
 
 		[HttpGet("/aboutus")]
 		[AllowAnonymous]
-		public IActionResult AboutUs()
+		public async Task<IActionResult> AboutUs()
 		{
 			return View("AboutUs", new AboutUsVM()
 			{
-				PopularCategories = _categories.GetPopularCategories(),
-				Brands = _brands.GetAllBrands()
+				PopularCategories = await _categories.GetPopularCategoriesAsync(),
+				Brands = await _brands.GetAllBrandsAsync()
 			});
 		}
 
 		[HttpGet("/admin")]
-		[Authorize(Roles = "admin")]
+		[Authorize(Policy = "CriticalSiteContentPolicy")]
 		public IActionResult AdminPanel()
 		{
 			return View("AdminPanel");

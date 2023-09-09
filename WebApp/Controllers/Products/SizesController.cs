@@ -8,66 +8,68 @@ using WebApp.ViewModels.Other;
 namespace WebApp.Controllers.Products
 {
 	[Route("/sizes")]
-	[Authorize(Roles = "admin")]
+	[Authorize(Policy = "CriticalSiteContentPolicy")]
 	public class SizesController : Controller
 	{
 		private readonly SizesManager _sizes;
 		private readonly Performer<SizesController> _performer;
 
-		private ResultWithErrorVM<List<Size>> GetViewModel(string error = "")
+		private async Task<ResultWithErrorVM<List<Size>>> GetViewModel(string error = "")
 		{
 			return new()
 			{
-				Result = _sizes.GetAllSizes(),
+				Result = await _sizes.GetAllSizesAsync(),
 				Error = error
 			};
 		}
-		private IActionResult PerformAction(Action callback)
+		private Task<IActionResult> PerformActionAsync(Func<Task> callback)
 		{
-			return _performer.PerformActionMessage(
-				() =>
+			return _performer.PerformActionMessageAsync(
+				async () =>
 				{
-					callback();
-					return View("AdminPage", GetViewModel());
+					await callback();
+					return View("AdminPage", await GetViewModel());
 				},
-				(message) => View("AdminPage", GetViewModel(message))
+				async (message) => View("AdminPage", await GetViewModel(message))
 			);
 		}
 
-		public SizesController(SizesManager sizes, ILogger<SizesController> logger)
+		public SizesController(
+			SizesManager sizes,
+			Performer<SizesController> performer)
 		{
 			_sizes = sizes;
-			_performer = new Performer<SizesController>(logger);
+			_performer = performer;
 		}
 
 		[HttpPost("action/create")]
 		[ValidateAntiForgeryToken]
-		public IActionResult Create(
+		public Task<IActionResult> Create(
 			[FromForm(Name = "sizeName")] string sizeName)
 		{
-			return PerformAction(() => _sizes.CreateSize(sizeName));
+			return PerformActionAsync(() => _sizes.CreateSizeAsync(sizeName));
 		}
 
 		[HttpPost("action/update")]
 		[ValidateAntiForgeryToken]
-		public IActionResult Update(
+		public Task<IActionResult> Update(
 			[FromForm(Name = "sizeId")] int id,
 			[FromForm(Name = "sizeName")] string sizeName)
 		{
-			return PerformAction(() => _sizes.UpdateSize(id, sizeName));
+			return PerformActionAsync(() => _sizes.UpdateSizeAsync(id, sizeName));
 		}
 
 		[HttpPost("action/delete")]
 		[ValidateAntiForgeryToken]
-		public IActionResult Delete(
+		public Task<IActionResult> Delete(
 			[FromForm(Name = "sizeId")] int id)
 		{
-			return PerformAction(() => _sizes.DeleteSize(id));
+			return PerformActionAsync(() => _sizes.DeleteSizeAsync(id));
 		}
 
-		public IActionResult Index()
+		public async Task<IActionResult> Index()
 		{
-			return View("AdminPage", GetViewModel());
+			return View("AdminPage", await GetViewModel());
 		}
 	}
 }

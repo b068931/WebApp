@@ -5,7 +5,9 @@ using WebApp.Database;
 using WebApp.Database.Entities.Auth;
 using WebApp.Services.Database.Grouping;
 using WebApp.Services.Database.Products;
+using WebApp.Utilities.CustomRequirements.SameAuthor;
 using WebApp.Utilities.Exceptions;
+using WebApp.Utilities.Other;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +47,30 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddAuthorization(options =>
 {
+	options.AddPolicy("CriticalSiteContentPolicy", policy =>
+	{
+		policy
+			.RequireAuthenticatedUser()
+			.RequireRole("admin");
+	});
+
+	options.AddPolicy("PublicContentPolicy", policy =>
+	{
+		policy
+			.RequireAuthenticatedUser()
+			.RequireRole("admin", "user");
+	});
+
+	options.AddPolicy("MyContentPolicy", policy =>
+	{
+		policy
+			.RequireAuthenticatedUser()
+			.RequireRole("admin", "user")
+			.AddRequirements(
+				new SameAuthorRequirement()
+			);
+	});
+
 	options.FallbackPolicy = new AuthorizationPolicyBuilder()
 		.RequireAuthenticatedUser()
 		.Build();
@@ -57,7 +83,12 @@ builder.Services
 	.AddScoped<ProductsManager>()
 	.AddScoped<ColoursManager>()
 	.AddScoped<SizesManager>()
-	.AddScoped<ProductStocksManager>();
+	.AddScoped<ProductStocksManager>()
+	.AddScoped(typeof(Performer<>));
+
+//Add custom requirements.
+builder.Services
+	.AddScoped<IAuthorizationHandler, SameAuthorAuthorizationHandler>();
 
 var app = builder.Build();
 

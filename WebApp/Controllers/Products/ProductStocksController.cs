@@ -1,59 +1,72 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using WebApp.Controllers.Abstract;
 using WebApp.Services.Database.Products;
-using WebApp.Utilities.Exceptions;
+using WebApp.Utilities.CustomRequirements.SameAuthor;
 using WebApp.Utilities.Other;
 using WebApp.ViewModels.Product;
 
 namespace WebApp.Controllers.Products
 {
 	[Route("/product/stocks")]
-	[Authorize(Roles = "admin,user")]
+	[Authorize(Policy = "PublicContentPolicy")]
 	public class ProductStocksController : ExtendedController
 	{
 		private readonly ColoursManager _colours;
 		private readonly SizesManager _sizes;
+
 		private readonly ProductStocksManager _productStocks;
+		private readonly ProductsManager _products;
+
 		private readonly Performer<ProductStocksController> _performer;
 		private readonly JsonSerializerSettings _jsonSettings;
 
-		private ProductStocksChange GetViewModel(int productId, string? error = null)
+		private async Task<ProductStocksChange> GetViewModelAsync(int productId, string? error = null)
 		{
 			return new ProductStocksChange()
 			{
 				ProductId = productId,
 				ErrorMessage = error,
-				Stocks = _productStocks.GetProductStocks(productId),
-				Colours = _colours.GetAllColours(),
-				Sizes = _sizes.GetAllSizes()
+				Stocks = await _productStocks.GetProductStocksAsync(productId),
+				Colours = await _colours.GetAllColoursAsync(),
+				Sizes = await _sizes.GetAllSizesAsync()
 			};
 		}
-		private IActionResult PerformAction(Action action, int productId)
+		private Task<IActionResult> PerformActionAsync(
+			Func<Task> action,
+			int productId)
 		{
-			return _performer.PerformActionMessage(
-				() =>
-				{
-					action();
-					return View("Index", GetViewModel(productId));
-				},
-				(message) => View("Index", GetViewModel(productId, message))
+			return _performer.PerformActionMessageAsync(
+				() => _performer.EnforceSameAuthorWrapperAsync(
+					async () => new Author()
+					{
+						Id = (await _products.FindProductAsync(productId)).ProductOwnerId
+					},
+					User,
+					async () =>
+					{
+						await action();
+						return View("Index", await GetViewModelAsync(productId));
+					}
+				),
+				async (message) => View("Index", await GetViewModelAsync(productId, message))
 			);
 		}
 
 		public ProductStocksController(
-			ColoursManager colours, 
-			SizesManager sizes, 
-			ProductStocksManager productStocks, 
-			ILogger<ProductStocksController> logger)
+			ColoursManager colours,
+			SizesManager sizes,
+			ProductStocksManager productStocks,
+			ProductsManager products,
+			Performer<ProductStocksController> performer)
 		{
 			_colours = colours;
 			_sizes = sizes;
 			_productStocks = productStocks;
-			_performer = new Performer<ProductStocksController>(logger);
+			_products = products;
+			_performer = performer;
 			_jsonSettings = new JsonSerializerSettings()
 			{
 				ContractResolver = new DefaultContractResolver()
@@ -65,66 +78,69 @@ namespace WebApp.Controllers.Products
 
 		[HttpPost("action/create")]
 		[ValidateAntiForgeryToken]
-		public IActionResult Create(
+		public Task<IActionResult> Create(
 			[FromForm(Name = "productId")] int productId,
 			[FromForm(Name = "stockColour")] int colourId,
 			[FromForm(Name = "stockProductsSize")] int sizeId,
 			[FromForm(Name = "stockSize")] int stockSize)
 		{
-			return PerformAction(
-				() => _productStocks.CreateProductStocks(GetUserId(), productId, colourId, sizeId, stockSize),
+			return PerformActionAsync(
+				() => _productStocks.CreateProductStocksAsync(productId, colourId, sizeId, stockSize),
 				productId
 			);
 		}
 
 		[HttpPost("action/update/{stockId}")]
 		[ValidateAntiForgeryToken]
-		public IActionResult Update(
+		public Task<IActionResult> Update(
 			[FromForm(Name = "productId")] int productId,
 			[FromRoute(Name = "stockId")] int stockId,
 			[FromForm(Name = "stockColour")] int colourId,
 			[FromForm(Name = "stockProductsSize")] int sizeId,
 			[FromForm(Name = "stockSize")] int stockSize)
 		{
-			return PerformAction(
-				() => _productStocks.UpdateProductStocks(GetUserId(), stockId, colourId, sizeId, stockSize),
+			return PerformActionAsync(
+				() => _productStocks.UpdateProductStocksAsync(stockId, colourId, sizeId, stockSize),
 				productId
 			);
 		}
 
 		[HttpPost("action/delete")]
 		[ValidateAntiForgeryToken]
-		public IActionResult Delete(
+		public Task<IActionResult> Delete(
 			[FromForm(Name = "productId")] int productId,
 			[FromForm(Name = "stockId")] int stockId)
 		{
-			return PerformAction(
-				() => _productStocks.DeleteProductStocks(GetUserId(), stockId),
+			return PerformActionAsync(
+				() => _productStocks.DeleteProductStocksAsync(stockId),
 				productId
 			);
 		}
 
 		[HttpGet("json")]
 		[AllowAnonymous]
-		public IActionResult GetProductStocksJson(
+		public async Task<IActionResult> GetProductStocksJson(
 			[FromQuery(Name = "productId")] int productId)
 		{
 			return Content(
-						JsonConvert.SerializeObject(_productStocks.GetProductStocks(productId), _jsonSettings),
+						JsonConvert.SerializeObject(
+							await _productStocks.GetProductStocksAsync(productId),
+							_jsonSettings
+						),
 						"application/json"
 					);
 		}
 
-		public IActionResult Index(
+		public async Task<IActionResult> Index(
 			[FromQuery(Name = "id")] int productId)
 		{
 			return View("Index", new ProductStocksChange()
 			{
 				ProductId = productId,
 				ErrorMessage = null,
-				Stocks = _productStocks.GetProductStocks(productId),
-				Colours = _colours.GetAllColours(),
-				Sizes = _sizes.GetAllSizes()
+				Stocks = await _productStocks.GetProductStocksAsync(productId),
+				Colours = await _colours.GetAllColoursAsync(),
+				Sizes = await _sizes.GetAllSizesAsync()
 			});
 		}
 	}

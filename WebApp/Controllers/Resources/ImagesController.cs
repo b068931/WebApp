@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WebApp.Controllers.Grouping;
-using WebApp.Database.Entities.Grouping;
-using WebApp.Database.Entities.Products;
 using WebApp.Services.Database.Grouping;
 using WebApp.Services.Database.Products;
-using WebApp.Utilities.Exceptions;
+using WebApp.Utilities.Other;
 
 namespace WebApp.Controllers.Resources
 {
@@ -15,58 +12,53 @@ namespace WebApp.Controllers.Resources
 	{
 		private readonly ProductImagesManager _images;
 		private readonly BrandsManager _brands;
-		private readonly ILogger<CategoriesController> _logger;
+		private readonly Performer<ImagesController> _performer;
 
-		private async Task<IActionResult> PerformAction(Func<Task<IActionResult>> action)
+		private Task<IActionResult> PerformAction(Func<Task<IActionResult>> action)
 		{
-			try
-			{
-				return await action();
-			}
-			catch (UserInteractionException ex)
-			{
-				return BadRequest(ex.Message);
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "ProductsImagesController error.");
-				return StatusCode(StatusCodes.Status500InternalServerError, "Oops.");
-			}
+			return _performer.PerformActionMessageAsync(
+				() => action(),
+				(message) => BadRequest(message)
+			);
 		}
 
-		private async Task<IActionResult> GetProductImageFileResult(int imageToReturn)
+		private Task<IActionResult> GetProductImageFileResultAsync(int imageToReturn)
 		{
-			ProductImage foundImage = await _images.FindImage(imageToReturn);
-			return new FileStreamResult(new MemoryStream(foundImage.Data), foundImage.ContentType);
+			return _images.FindImageAsync(imageToReturn)
+				.ContinueWith<IActionResult>(next =>
+					new FileStreamResult(new MemoryStream(next.Result.Data), next.Result.ContentType)
+				);
 		}
-		private async Task<IActionResult> GetBrandImageFileResult(int imageToReturn)
+		private Task<IActionResult> GetBrandImageFileResultAsync(int imageToReturn)
 		{
-			BrandImage foundImage = await _brands.GetBrandImage(imageToReturn);
-			return new FileStreamResult(new MemoryStream(foundImage.Data), foundImage.ContentType);
+			return _brands.GetBrandImageAsync(imageToReturn)
+				.ContinueWith<IActionResult>(next =>
+					new FileStreamResult(new MemoryStream(next.Result.Data), next.Result.ContentType)
+				);
 		}
 
 		public ImagesController(
 			ProductImagesManager images,
 			BrandsManager brands,
-			ILogger<CategoriesController> logger)
+			Performer<ImagesController> performer)
 		{
 			_images = images;
 			_brands = brands;
-			_logger = logger;
+			_performer = performer;
 		}
 
 		[HttpGet("image/{imageId}")]
-		public async Task<IActionResult> GetImage(
+		public Task<IActionResult> GetImage(
 			[FromRoute(Name = "imageId")] int imageToReturn)
 		{
-			return await PerformAction(() => GetProductImageFileResult(imageToReturn));
+			return PerformAction(() => GetProductImageFileResultAsync(imageToReturn));
 		}
 
 		[HttpGet("brandImage/{imageId}")]
-		public async Task<IActionResult> GetBrandImage(
+		public Task<IActionResult> GetBrandImage(
 			[FromRoute(Name = "imageId")] int imageToReturn)
 		{
-			return await PerformAction(() => GetBrandImageFileResult(imageToReturn));
+			return PerformAction(() => GetBrandImageFileResultAsync(imageToReturn));
 		}
 	}
 }

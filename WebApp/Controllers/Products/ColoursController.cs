@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WebApp.Database.Entities.Products;
-using WebApp.Database.Models;
 using WebApp.Services.Database.Products;
 using WebApp.Utilities.Other;
 using WebApp.ViewModels.Other;
@@ -9,70 +7,70 @@ using WebApp.ViewModels.Other;
 namespace WebApp.Controllers.Products
 {
 	[Route("/colours")]
-	[Authorize(Roles = "admin")]
+	[Authorize(Policy = "CriticalSiteContentPolicy")]
 	public class ColoursController : Controller
 	{
 		private readonly ColoursManager _colours;
 		private readonly Performer<ColoursController> _performer;
-		
-		private ResultWithErrorVM<List<Database.Models.Colour>> GetViewModel(string error = "")
+
+		private async Task<ResultWithErrorVM<List<Database.Models.Colour>>> GetViewModel(string error = "")
 		{
 			return new()
 			{
-				Result = _colours.GetAllColours(),
+				Result = await _colours.GetAllColoursAsync(),
 				Error = error
 			};
 		}
-		private IActionResult PerformAction(Action action)
+		private Task<IActionResult> PerformActionAsync(Func<Task> action)
 		{
-			return _performer.PerformActionMessage(
-				() =>
+			return _performer.PerformActionMessageAsync(
+				async () =>
 				{
-					action();
-					return View("AdminPage", GetViewModel());
+					await action();
+					return View("AdminPage", await GetViewModel());
 				},
-				(message) => View("AdminPage", GetViewModel(message))
+				async (message) => View("AdminPage", await GetViewModel(message))
 			);
 		}
 
 		public ColoursController(
-			ColoursManager colours, 
-			ILogger<ColoursController> logger)
+			ColoursManager colours,
+			Performer<ColoursController> performer)
 		{
 			_colours = colours;
-			_performer = new Performer<ColoursController>(logger);
+			_performer = performer;
 		}
 
 		[HttpPost("action/create")]
 		[ValidateAntiForgeryToken]
-		public IActionResult Create(
+		public Task<IActionResult> Create(
 			[FromForm(Name = "colourName")] string name,
 			[FromForm(Name = "colourHex")] string colour)
 		{
-			return PerformAction(() => _colours.CreateColour(name, colour));
+			return PerformActionAsync(() => _colours.CreateColourAsync(name, colour));
 		}
 
 		[HttpPost("action/update")]
 		[ValidateAntiForgeryToken]
-		public IActionResult Update(
+		public Task<IActionResult> Update(
 			[FromForm(Name = "colourId")] int id,
 			[FromForm(Name = "colourName")] string name,
 			[FromForm(Name = "colourHex")] string colour)
 		{
-			return PerformAction(() => _colours.UpdateColour(id, name, colour));
+			return PerformActionAsync(() => _colours.UpdateColourAsync(id, name, colour));
 		}
 
 		[HttpPost("action/delete")]
 		[ValidateAntiForgeryToken]
-		public IActionResult Delete(
+		public Task<IActionResult> Delete(
 			[FromForm(Name = "colourId")] int id)
 		{
-			return PerformAction(() => _colours.DeleteColour(id));
+			return PerformActionAsync(() => _colours.DeleteColourAsync(id));
 		}
 
-		public IActionResult Index()
+		public async Task<IActionResult> Index()
 		{
-			return View("AdminPage", GetViewModel());
+			return View("AdminPage", await GetViewModel());
 		}
 	}
 }

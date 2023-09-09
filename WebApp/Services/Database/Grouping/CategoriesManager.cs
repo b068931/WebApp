@@ -9,20 +9,20 @@ using WebApp.ViewModels.Categories;
 
 namespace WebApp.Services.Database.Grouping
 {
-    public class CategoriesManager
+	public class CategoriesManager
 	{
 		private readonly DatabaseContext _database;
 
-		private Category FindCategory(int categoryId)
+		private async Task<Category> FindCategoryAsync(int categoryId)
 		{
-			return _database.Categories.Find(categoryId) ??
+			return await _database.Categories.FindAsync(categoryId) ??
 				throw new UserInteractionException(string.Format("Category with id {0} does not exist.", categoryId));
 		}
-		private Category FindChildWithParentCategory(int categoryId)
+		private async Task<Category> FindChildWithParentCategoryAsync(int categoryId)
 		{
-			return _database.Categories
+			return await _database.Categories
 				.Include(e => e.Parent)
-				.FirstOrDefault(e => e.Id == categoryId) ?? throw new UserInteractionException(string.Format("Category with id {0} does not exist.", categoryId));
+				.FirstOrDefaultAsync(e => e.Id == categoryId) ?? throw new UserInteractionException(string.Format("Category with id {0} does not exist.", categoryId));
 		}
 
 		private void LoadCategoryChildren(Category category)
@@ -91,20 +91,28 @@ namespace WebApp.Services.Database.Grouping
 		{
 			return new CategoriesDrawer(10, "|\t", '|', "\n", _database);
 		}
-		public List<SelectListItem> GetSelectList()
+		public async Task<List<SelectListItem>> GetSelectListAsync()
 		{
-			List<Category> categories = _database.Categories
+			List<Category> categories = await _database.Categories
 				.AsNoTracking()
 				.Where(e => e.IsLast)
-				.ToList();
+				.ToListAsync();
 
-			return categories
-				.Select(e => new SelectListItem() { Value = e.Id.ToString(), Text = BackTrackCategory(e.Id) })
-				.ToList();
+			List<SelectListItem> categoriesSelectList = new List<SelectListItem>();
+			foreach (var category in categories)
+			{
+				categoriesSelectList.Add(new SelectListItem()
+				{
+					Value = category.Id.ToString(),
+					Text = await BackTrackCategoryAsync(category.Id)
+				});
+			}
+
+			return categoriesSelectList;
 		}
-		public List<SelectListItem> GetSelectListWithSelectedId(int categoryId)
+		public async Task<List<SelectListItem>> GetSelectListWithSelectedIdAsync(int categoryId)
 		{
-			List<SelectListItem> categories = GetSelectList();
+			List<SelectListItem> categories = await GetSelectListAsync();
 			foreach (var category in categories)
 			{
 				if (category.Value == categoryId.ToString())
@@ -117,19 +125,19 @@ namespace WebApp.Services.Database.Grouping
 			return categories;
 		}
 
-		public Category GetBaseCategory()
+		public async Task<Category> GetBaseCategoryAsync()
 		{
 			Category fakeBaseCategoriesCategory = new Category()
 			{
 				Id = 0,
 				Name = "[Base Categories]",
 				IsLast = false,
-				Children = _database.Categories.Where(e => e.ParentId == null).ToList()
+				Children = await _database.Categories.Where(e => e.ParentId == null).ToListAsync()
 			};
 
 			return fakeBaseCategoriesCategory;
 		}
-		public List<CategoryJson> GetCategoriesOnParent(int? parentId)
+		public Task<List<CategoryJson>> GetCategoriesOnParentAsync(int? parentId)
 		{
 			return _database.Categories
 				.AsNoTracking()
@@ -143,15 +151,15 @@ namespace WebApp.Services.Database.Grouping
 						IsPopular = e.IsPopular
 					}
 				)
-				.ToList();
+				.ToListAsync();
 		}
-		public List<CategoryVM> GetPopularCategories()
+		public async Task<List<CategoryVM>> GetPopularCategoriesAsync()
 		{
-			List<Category> popularCategories = _database.Categories
+			List<Category> popularCategories = await _database.Categories
 				.AsNoTracking()
 				.Include(e => e.Children)
 				.Where(e => e.IsPopular && !e.IsLast)
-				.ToList();
+				.ToListAsync();
 
 			List<CategoryVM> result = new List<CategoryVM>();
 			foreach (var category in popularCategories)
@@ -169,31 +177,31 @@ namespace WebApp.Services.Database.Grouping
 			return result;
 		}
 
-		public bool CheckIfLast(int categoryId)
+		public Task<bool> CheckIfLastAsync(int categoryId)
 		{
 			return _database.Categories
 				.Where(e => e.Id == categoryId && e.IsLast)
-				.Count() > 0;
+				.AnyAsync();
 		}
-		public void SwitchPopularity(int categoryId)
+		public async Task SwitchPopularityAsync(int categoryId)
 		{
-			Category foundCategory = FindCategory(categoryId);
+			Category foundCategory = await FindCategoryAsync(categoryId);
 			foundCategory.IsPopular ^= true;
 
-			_database.SaveChanges();
+			await _database.SaveChangesAsync();
 		}
-		public string BackTrackCategory(int categoryId)
+		public async Task<string> BackTrackCategoryAsync(int categoryId)
 		{
 			string fullCategoryName = "";
-			Category? foundCategory = FindCategory(categoryId);
+			Category? foundCategory = await FindCategoryAsync(categoryId);
 
 			do
 			{
 				fullCategoryName = foundCategory.Name + "/" + fullCategoryName;
 
-				_database.Entry(foundCategory)
+				await _database.Entry(foundCategory)
 					.Reference(e => e.Parent)
-					.Load();
+					.LoadAsync();
 
 				foundCategory = foundCategory.Parent;
 			} while (foundCategory != null);
@@ -201,11 +209,11 @@ namespace WebApp.Services.Database.Grouping
 			return fullCategoryName;
 		}
 
-		public void CreateCategory(int? parentId, string newCategoryName)
+		public async Task CreateCategoryAsync(int? parentId, string newCategoryName)
 		{
 			if (parentId != null)
 			{
-				Category parent = FindCategory(parentId.Value);
+				Category parent = await FindCategoryAsync(parentId.Value);
 				parent.IsLast = false;
 			}
 
@@ -218,11 +226,11 @@ namespace WebApp.Services.Database.Grouping
 				}
 			);
 
-			_database.SaveChanges();
+			await _database.SaveChangesAsync();
 		}
-		public void DeleteCategory(int categoryId)
+		public async Task DeleteCategoryAsync(int categoryId)
 		{
-			Category foundCategory = FindChildWithParentCategory(categoryId);
+			Category foundCategory = await FindChildWithParentCategoryAsync(categoryId);
 			Category? parent = foundCategory.Parent;
 			if (parent != null)
 			{
@@ -234,11 +242,11 @@ namespace WebApp.Services.Database.Grouping
 			}
 
 			RecursiveRemoveCategory(foundCategory);
-			_database.SaveChanges();
+			await _database.SaveChangesAsync();
 		}
-		public void MoveCategory(int categoryId, int newParentId)
+		public async Task MoveCategoryAsync(int categoryId, int newParentId)
 		{
-			Category foundCategory = FindChildWithParentCategory(categoryId);
+			Category foundCategory = await FindChildWithParentCategoryAsync(categoryId);
 			if (foundCategory.Parent != null)
 			{
 				Category oldParent = foundCategory.Parent;
@@ -256,37 +264,35 @@ namespace WebApp.Services.Database.Grouping
 			}
 			else
 			{
-				Category newParent = FindCategory(newParentId);
+				Category newParent = await FindCategoryAsync(newParentId);
 				newParent.IsLast = false;
 
 				foundCategory.ParentId = newParentId;
 			}
 
-			_database.SaveChanges();
+			await _database.SaveChangesAsync();
 		}
-		public void RenameCategory(int categoryId, string newName)
+		public async Task RenameCategoryAsync(int categoryId, string newName)
 		{
-			Category foundCategory = FindCategory(categoryId);
+			Category foundCategory = await FindCategoryAsync(categoryId);
 			foundCategory.Name = newName;
 
-			_database.SaveChanges();
+			await _database.SaveChangesAsync();
 		}
-		public void SalvageCategory(int categoryId, int destinationId)
+		public async Task SalvageCategoryAsync(int categoryId, int destinationId)
 		{
-			using (var transaction = _database.Database.BeginTransaction())
+			using var transaction = _database.Database.BeginTransaction();
+			try
 			{
-				try
-				{
-					Category foundCategory = FindCategory(categoryId);
-					RecursiveSalvageCategory(foundCategory, destinationId);
+				Category foundCategory = await FindCategoryAsync(categoryId);
+				RecursiveSalvageCategory(foundCategory, destinationId);
 
-					transaction.Commit();
-				}
-				catch (Exception)
-				{
-					transaction.Rollback();
-					throw;
-				}
+				await transaction.CommitAsync();
+			}
+			catch (Exception)
+			{
+				await transaction.RollbackAsync();
+				throw;
 			}
 		}
 	}

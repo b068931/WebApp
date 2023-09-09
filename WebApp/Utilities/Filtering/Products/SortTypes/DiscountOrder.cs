@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Primitives;
 using WebApp.Database.Entities.Products;
 
-namespace WebApp.Utilities.Filtering.Products.SortTypes
+namespace WebApp.Utilities.Filtering.Products.OrderTypes
 {
 	public class DiscountOrder : IOrdering<Product>
 	{

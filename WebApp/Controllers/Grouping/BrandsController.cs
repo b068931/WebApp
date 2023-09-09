@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 using System.Text.Json;
 using WebApp.Database.Models;
 using WebApp.Services.Database.Grouping;
@@ -11,56 +10,56 @@ using WebApp.ViewModels.Other;
 namespace WebApp.Controllers.Grouping
 {
 	[Route("/brands")]
-	[Authorize(Roles = "admin")]
+	[Authorize(Policy = "CriticalSiteContentPolicy")]
 	public class BrandsController : Controller
 	{
 		private readonly BrandsManager _brands;
 		private readonly Performer<BrandsController> _performer;
 		private readonly JsonSerializerOptions _jsonOptions;
 
-		private ResultWithErrorVM<List<Brand>> GetViewModel(string error = "")
+		private async Task<ResultWithErrorVM<List<Brand>>> GetViewModelAsync(string error = "")
 		{
 			return new()
 			{
-				Result = _brands.GetAllBrands(),
+				Result = await _brands.GetAllBrandsAsync(),
 				Error = error
 			};
 		}
-		private IActionResult PerformAction(Action callback)
+		private Task<IActionResult> PerformActionAsync(Func<Task> callback)
 		{
-			return _performer.PerformActionMessage(
-				() =>
+			return _performer.PerformActionMessageAsync(
+				async () =>
 				{
-					callback();
-					return View("AdminPage", GetViewModel());
+					await callback();
+					return View("AdminPage", await GetViewModelAsync());
 				},
-				(message) => View("AdminPage", GetViewModel(message))
+				async (message) => View("AdminPage", await GetViewModelAsync(message))
 			);
 		}
 
 		public BrandsController(
-			ILogger<BrandsController> logger, 
-			BrandsManager brands)
+			BrandsManager brands,
+			Performer<BrandsController> performer)
 		{
 			_brands = brands;
-			_performer = new Performer<BrandsController>(logger);
+			_performer = performer;
 			_jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
 		}
 
 		[HttpGet("/brands/json")]
-		public JsonResult GetAll()
+		public async Task<JsonResult> GetAll()
 		{
-			return Json(_brands.GetAllBrands(), _jsonOptions);
+			return Json(await _brands.GetAllBrandsAsync(), _jsonOptions);
 		}
 
 		[HttpPost("action/create")]
 		[ValidateAntiForgeryToken]
-		public IActionResult Create(
+		public Task<IActionResult> Create(
 			[FromForm(Name = "brandName")] string newBrandName,
 			[FromForm(Name = "brandImage")] IFormFile brandImage)
 		{
-			return PerformAction(
-				() => _brands.CreateBrand(newBrandName, brandImage ??
+			return PerformActionAsync(
+				() => _brands.CreateBrandAsync(newBrandName, brandImage ??
 					throw new UserInteractionException("Trying to create a brand with no image.")
 				)
 			);
@@ -68,25 +67,29 @@ namespace WebApp.Controllers.Grouping
 
 		[HttpPost("action/update")]
 		[ValidateAntiForgeryToken]
-		public IActionResult Update(
+		public Task<IActionResult> Update(
 			[FromForm(Name = "brandId")] int idToRename,
 			[FromForm(Name = "brandName")] string newName,
 			[FromForm(Name = "brandImage")] IFormFile? brandImage)
 		{
-			return PerformAction(() => _brands.UpdateBrand(idToRename, newName, brandImage));
+			return PerformActionAsync(
+				() => _brands.UpdateBrandAsync(idToRename, newName, brandImage)
+			);
 		}
 
 		[HttpPost("action/delete")]
 		[ValidateAntiForgeryToken]
-		public IActionResult Delete(
+		public Task<IActionResult> Delete(
 			[FromForm(Name = "brandId")] int idToDelete)
 		{
-			return PerformAction(() => _brands.DeleteBrand(idToDelete));
+			return PerformActionAsync(
+				() => _brands.DeleteBrandAsync(idToDelete)
+			);
 		}
 
-		public IActionResult Index()
+		public async Task<IActionResult> Index()
 		{
-			return View("AdminPage", GetViewModel());
+			return View("AdminPage", await GetViewModelAsync());
 		}
 	}
 }

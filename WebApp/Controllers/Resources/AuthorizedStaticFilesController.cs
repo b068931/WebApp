@@ -52,7 +52,7 @@ namespace WebApp.Controllers.Resources
 		}
 
 		[HttpGet("admin/js/{filename}")]
-		[Authorize(Roles = "admin")]
+		[Authorize(Policy = "CriticalSiteContentPolicy")]
 		public IActionResult AdminAuthorizedJavascript(
 			[FromRoute(Name = "filename")] string fileName)
 		{
