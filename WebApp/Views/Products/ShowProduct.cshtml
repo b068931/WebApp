@@ -104,12 +104,15 @@
 					{
 						<span role="button">★</span>
 					}
-					@for(int counter = Model.Rating; counter < 10; ++counter)
+					@for(int counter = Model.Rating; counter < WebApp.ViewModels.Product.ProductShow.MaxStarsRating; ++counter)
 					{
 						<span role="button">☆</span>
 					}
 					<span class="text-muted">(@Model.ReviewsCount)</span>
 				</div>
+			</p>
+			<p>
+				<span class="fw-bold">Автор: </span>@Model.AuthorName
 			</p>
 			<p>
 				<span class="fw-bold">Короткий опис: </span>@shortDescription

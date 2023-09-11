@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using WebApp.Database.Entities.Products;
 
-namespace WebApp.Database.Configurations
+namespace WebApp.Database.Configurations.Products
 {
 	public class SizeConfiguration : IEntityTypeConfiguration<Size>
 	{

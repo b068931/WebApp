@@ -4,8 +4,11 @@ namespace WebApp.ViewModels.Product
 {
 	public class ProductShow
 	{
+		public const int MaxStarsRating = 10;
+
 		public int Id { get; set; }
 		public bool DisplayEditing { get; set; }
+		public string AuthorName { get; set; } = default!;
 
 		public string Name { get; set; } = default!;
 		public string Description { get; set; } = default!;

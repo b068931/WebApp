@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WebApp.Database.Configurations;
+using WebApp.Database.Configurations.Products;
 using WebApp.Database.Entities.Auth;
 using WebApp.Database.Entities.Grouping;
 

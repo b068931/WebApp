@@ -3,6 +3,7 @@ using WebApp.Database;
 using WebApp.Database.Entities.Products;
 using WebApp.Database.Models;
 using WebApp.Services.Database.Grouping;
+using WebApp.Services.Database.Maintenance;
 using WebApp.Utilities.Exceptions;
 using WebApp.Utilities.Filtering;
 using WebApp.ViewModels.Product;
@@ -17,6 +18,7 @@ namespace WebApp.Services.Database.Products
 		private readonly CategoriesManager _categories;
 		private readonly ColoursManager _colours;
 		private readonly SizesManager _sizes;
+		private readonly UserInteractionManager _interactions;
 
 		private async Task ValidateCategoryId(int categoryId)
 		{
@@ -125,7 +127,8 @@ namespace WebApp.Services.Database.Products
 			BrandsManager brands,
 			CategoriesManager categories,
 			ColoursManager colours,
-			SizesManager sizes)
+			SizesManager sizes,
+			UserInteractionManager interactions)
 		{
 			_database = database;
 			_images = images;
@@ -133,6 +136,7 @@ namespace WebApp.Services.Database.Products
 			_categories = categories;
 			_colours = colours;
 			_sizes = sizes;
+			_interactions = interactions;
 		}
 
 		public async Task<Product> FindProductAsync(int productId)
@@ -152,13 +156,29 @@ namespace WebApp.Services.Database.Products
 
 		public async Task<ProductShow> GetProductShowVMAsync(int actionPerformer, int productId)
 		{
-			Product foundProduct = await FindProductAsync(productId);
-			await _database.Entry(foundProduct).Reference(e => e.Brand).LoadAsync();
+			Product foundProduct = await _database.Products
+				.Include(e => e.Brand)
+				.Include(e => e.ProductOwner)
+				.FirstOrDefaultAsync(e => e.Id == productId) ?? throw new UserInteractionException(
+					string.Format("Product with id {0} does not exist.", productId));
+
+			if (foundProduct.ProductOwnerId != actionPerformer)
+			{
+				bool firstTime =
+					await _interactions.RememberViewedProductAsync(actionPerformer, productId); ;
+
+				if (firstTime)
+				{
+					foundProduct.ViewsCount += 1;
+					await _database.SaveChangesAsync();
+				}
+			}
 
 			return new ProductShow()
 			{
 				Id = foundProduct.Id,
 				DisplayEditing = actionPerformer == foundProduct.ProductOwnerId,
+				AuthorName = foundProduct.ProductOwner.UserName,
 				Name = foundProduct.Name,
 				Description = foundProduct.Description,
 				Price = Math.Round(foundProduct.Price, 2),
@@ -251,12 +271,34 @@ namespace WebApp.Services.Database.Products
 
 			await _database.SaveChangesAsync();
 		}
+
 		public async Task ChangeMainImage(int productId, int newMainImageId)
 		{
 			Product foundProduct = await FindProductAsync(productId);
 			foundProduct.MainImageId = newMainImageId;
 
 			await _database.SaveChangesAsync();
+		}
+		public async Task RateProduct(int actionPerformer, int productId, int stars)
+		{
+			if (stars > ProductShow.MaxStarsRating)
+				throw new UserInteractionException("Maximum rating for the product is: " + ProductShow.MaxStarsRating);
+
+			bool firstTime =
+				await _interactions.RememberRatedProductAsync(actionPerformer, productId);
+
+			if (firstTime)
+			{
+				Product foundProduct = await FindProductAsync(productId);
+				foundProduct.StarsCount += stars;
+				foundProduct.RatingsCount += 1;
+
+				await _database.SaveChangesAsync();
+			}
+			else
+			{
+				throw new UserInteractionException("Ви вже оцінювали цей продукт.");
+			}
 		}
 	}
 }

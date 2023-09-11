@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WebApp.Database.Configurations;
+using WebApp.Database.Configurations.Grouping;
 
 namespace WebApp.Database.Entities.Grouping
 {

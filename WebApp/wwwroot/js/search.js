@@ -119,7 +119,7 @@
 		}
 
 		var minRatingsCount = $("#minRatingsCount").val();
-		if (minRatingsCount != "") {
+		if (minRatingsCount != "0") {
 			newSearchQuery["minratingscount"] = minRatingsCount;
 		}
 

@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using WebApp.Database.Entities.Grouping;
 
-namespace WebApp.Database.Configurations
+namespace WebApp.Database.Configurations.Grouping
 {
 	public class CategoryConfiguration : IEntityTypeConfiguration<Category>
 	{

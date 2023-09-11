@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using WebApp.Database.Configurations;
+using WebApp.Database.Configurations.Auth;
 using WebApp.Database.Entities.Products;
 
 namespace WebApp.Database.Entities.Auth

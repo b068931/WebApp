@@ -7,7 +7,7 @@ using WebApp.Utilities.Exceptions;
 
 namespace WebApp.Controllers.Abstract
 {
-	public class ExtendedController : Controller
+	public abstract class ExtendedController : Controller
 	{
 		protected async Task<string> RenderViewAsync<TModel>(string viewName, TModel model, bool partial = false)
 		{

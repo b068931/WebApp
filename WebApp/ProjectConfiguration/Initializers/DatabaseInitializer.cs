@@ -2,7 +2,7 @@
 using WebApp.Database.Entities.Auth;
 using WebApp.Utilities.Exceptions;
 
-namespace WebApp.Database
+namespace WebApp.ProjectConfiguration.Initializers
 {
 	public class DatabaseInitializer
 	{

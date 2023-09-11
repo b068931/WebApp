@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using WebApp.Database.Entities.Auth;
 using WebApp.Database.Entities.Grouping;
 using WebApp.Database.Entities.Products;
+using WebApp.Database.Entities.UserInteractions;
 
 namespace WebApp.Database
 {
@@ -19,6 +20,10 @@ namespace WebApp.Database
 
 		public DbSet<Product> Products { get; set; }
 		public DbSet<ProductStock> ProductStocks { get; set; }
+
+		public DbSet<ViewedProductsInformation> ViewedProducts { get; set; }
+		public DbSet<RatedProductsInformation> RatedProducts { get; set; }
+
 		public DbSet<Colour> ProductColours { get; set; }
 		public DbSet<Size> ProductSizes { get; set; }
 

@@ -3,7 +3,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WebApp.Database;
 using WebApp.Database.Entities.Auth;
+using WebApp.ProjectConfiguration.Initializers;
+using WebApp.ProjectConfiguration.Options;
+using WebApp.Services.Background;
 using WebApp.Services.Database.Grouping;
+using WebApp.Services.Database.Maintenance;
 using WebApp.Services.Database.Products;
 using WebApp.Utilities.CustomRequirements.SameAuthor;
 using WebApp.Utilities.Exceptions;
@@ -76,6 +80,12 @@ builder.Services.AddAuthorization(options =>
 		.Build();
 });
 
+//Add app settings.
+builder.Services.Configure<UserInteractionOptions>(
+	builder.Configuration.GetSection(UserInteractionOptions.FieldName)
+);
+
+//Add custom services.
 builder.Services
 	.AddScoped<BrandsManager>()
 	.AddScoped<CategoriesManager>()
@@ -84,7 +94,9 @@ builder.Services
 	.AddScoped<ColoursManager>()
 	.AddScoped<SizesManager>()
 	.AddScoped<ProductStocksManager>()
-	.AddScoped(typeof(Performer<>));
+	.AddScoped<UserInteractionManager>()
+	.AddScoped(typeof(Performer<>))
+	.AddHostedService<UserInteractionInformationCleanUpService>();
 
 //Add custom requirements.
 builder.Services
