@@ -162,10 +162,10 @@ namespace WebApp.Services.Database.Products
 				.FirstOrDefaultAsync(e => e.Id == productId) ?? throw new UserInteractionException(
 					string.Format("Product with id {0} does not exist.", productId));
 
-			if (foundProduct.ProductOwnerId != actionPerformer)
+			if (actionPerformer != 0 && foundProduct.ProductOwnerId != actionPerformer)
 			{
 				bool firstTime =
-					await _interactions.RememberViewedProductAsync(actionPerformer, productId); ;
+					await _interactions.RememberViewedProductAsync(actionPerformer, productId);
 
 				if (firstTime)
 				{
