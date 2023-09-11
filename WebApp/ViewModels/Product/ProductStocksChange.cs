@@ -6,10 +6,10 @@ namespace WebApp.ViewModels.Product
 	{
 		public int ProductId { get; set; }
 
-		public List<ProductStock> Stocks { get; set; } = default!;
+		public List<ProductStockModel> Stocks { get; set; } = default!;
 		public string? ErrorMessage { get; set; }
 
-		public List<Colour> Colours { get; set; } = default!;
-		public List<Size> Sizes { get; set; } = default!;
+		public List<ColourModel> Colours { get; set; } = default!;
+		public List<SizeModel> Sizes { get; set; } = default!;
 	}
 }

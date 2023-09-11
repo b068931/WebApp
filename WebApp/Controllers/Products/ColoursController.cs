@@ -13,7 +13,7 @@ namespace WebApp.Controllers.Products
 		private readonly ColoursManager _colours;
 		private readonly Performer<ColoursController> _performer;
 
-		private async Task<ResultWithErrorVM<List<Database.Models.Colour>>> GetViewModel(string error = "")
+		private async Task<ResultWithErrorVM<List<Database.Models.ColourModel>>> GetViewModel(string error = "")
 		{
 			return new()
 			{

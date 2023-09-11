@@ -215,7 +215,7 @@ namespace WebApp.Controllers.Products
 					IOrdering<Product> paginator =
 						_ordersFactory.CreateOrdering(maxId, searchParameters);
 
-					List<Database.Models.ProductShowLightWeight> searchResult =
+					List<Database.Models.ProductPreview> searchResult =
 						await _products.SearchAsync(filters, paginator);
 
 					string html = await RenderViewAsync(

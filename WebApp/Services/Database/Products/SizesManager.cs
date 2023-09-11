@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using WebApp.Database;
 using WebApp.Database.Entities.Products;
+using WebApp.Database.Models;
 using WebApp.Utilities.Exceptions;
 
 namespace WebApp.Services.Database.Products
@@ -22,11 +23,11 @@ namespace WebApp.Services.Database.Products
 			_database = database;
 		}
 
-		public Task<List<WebApp.Database.Models.Size>> GetAllSizesAsync()
+		public Task<List<SizeModel>> GetAllSizesAsync()
 		{
 			return _database.ProductSizes
 				.AsNoTracking()
-				.Select(e => new WebApp.Database.Models.Size()
+				.Select(e => new SizeModel()
 				{
 					Id = e.Id,
 					Name = e.SizeName

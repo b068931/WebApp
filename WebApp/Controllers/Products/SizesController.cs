@@ -14,7 +14,7 @@ namespace WebApp.Controllers.Products
 		private readonly SizesManager _sizes;
 		private readonly Performer<SizesController> _performer;
 
-		private async Task<ResultWithErrorVM<List<Size>>> GetViewModel(string error = "")
+		private async Task<ResultWithErrorVM<List<SizeModel>>> GetViewModel(string error = "")
 		{
 			return new()
 			{

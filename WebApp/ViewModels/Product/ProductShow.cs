@@ -24,7 +24,7 @@ namespace WebApp.ViewModels.Product
 		public int MainImageId { get; set; }
 		public List<int> ProductImagesIds { get; set; } = default!;
 
-		public List<Colour> AvailableColours { get; set; } = default!;
-		public List<Size> AvailableSizes { get; set; } = default!;
+		public List<ColourModel> AvailableColours { get; set; } = default!;
+		public List<SizeModel> AvailableSizes { get; set; } = default!;
 	}
 }

@@ -137,13 +137,13 @@ namespace WebApp.Services.Database.Grouping
 
 			return fakeBaseCategoriesCategory;
 		}
-		public Task<List<CategoryJson>> GetCategoriesOnParentAsync(int? parentId)
+		public Task<List<CategoryJsonModel>> GetCategoriesOnParentAsync(int? parentId)
 		{
 			return _database.Categories
 				.AsNoTracking()
 				.Where(e => e.ParentId == parentId)
 				.Select(e =>
-					new CategoryJson()
+					new CategoryJsonModel()
 					{
 						Id = e.Id,
 						Name = e.Name,
@@ -281,7 +281,7 @@ namespace WebApp.Services.Database.Grouping
 		}
 		public async Task SalvageCategoryAsync(int categoryId, int destinationId)
 		{
-			using var transaction = _database.Database.BeginTransaction();
+			using var transaction = await _database.Database.BeginTransactionAsync();
 			try
 			{
 				Category foundCategory = await FindCategoryAsync(categoryId);

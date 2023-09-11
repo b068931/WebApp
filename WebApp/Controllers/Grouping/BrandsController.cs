@@ -17,7 +17,7 @@ namespace WebApp.Controllers.Grouping
 		private readonly Performer<BrandsController> _performer;
 		private readonly JsonSerializerOptions _jsonOptions;
 
-		private async Task<ResultWithErrorVM<List<Brand>>> GetViewModelAsync(string error = "")
+		private async Task<ResultWithErrorVM<List<BrandModel>>> GetViewModelAsync(string error = "")
 		{
 			return new()
 			{

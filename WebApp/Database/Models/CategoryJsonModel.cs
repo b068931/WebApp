@@ -1,10 +1,11 @@
 ﻿namespace WebApp.Database.Models
 {
-	public class Brand
+	public class CategoryJsonModel
 	{
 		public int Id { get; set; }
-
 		public string Name { get; set; } = default!;
-		public int ImageId { get; set; }
+
+		public bool IsLast { get; set; }
+		public bool IsPopular { get; set; }
 	}
 }

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WebApp.Database;
+using WebApp.Database.Entities.Products;
+using WebApp.Database.Models;
 using WebApp.Utilities.Exceptions;
 
 namespace WebApp.Services.Database.Products
@@ -8,7 +10,7 @@ namespace WebApp.Services.Database.Products
 	public class ColoursManager
 	{
 		private readonly DatabaseContext _database;
-		private async Task<WebApp.Database.Entities.Products.Colour> FindColourAsync(int id)
+		private async Task<Colour> FindColourAsync(int id)
 		{
 			return await _database.ProductColours.FindAsync(id) ??
 					throw new UserInteractionException(
@@ -21,11 +23,11 @@ namespace WebApp.Services.Database.Products
 			_database = database;
 		}
 
-		public Task<List<WebApp.Database.Models.Colour>> GetAllColoursAsync()
+		public Task<List<ColourModel>> GetAllColoursAsync()
 		{
 			return _database.ProductColours
 				.AsNoTracking()
-				.Select(e => new WebApp.Database.Models.Colour
+				.Select(e => new ColourModel
 				{
 					Id = e.Id,
 					Name = e.Name,
@@ -47,7 +49,7 @@ namespace WebApp.Services.Database.Products
 
 		public Task CreateColourAsync(string name, string hexCode)
 		{
-			WebApp.Database.Entities.Products.Colour newColour = new WebApp.Database.Entities.Products.Colour()
+			Colour newColour = new Colour()
 			{
 				Name = name,
 				HexCode = hexCode
@@ -58,7 +60,7 @@ namespace WebApp.Services.Database.Products
 		}
 		public async Task UpdateColourAsync(int id, string name, string hexCode)
 		{
-			WebApp.Database.Entities.Products.Colour foundColour = await FindColourAsync(id);
+			Colour foundColour = await FindColourAsync(id);
 			foundColour.Name = name;
 			foundColour.HexCode = hexCode;
 

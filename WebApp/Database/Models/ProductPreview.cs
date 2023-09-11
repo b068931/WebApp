@@ -2,7 +2,7 @@
 
 namespace WebApp.Database.Models
 {
-	public class ProductShowLightWeight
+	public class ProductPreview
 	{
 		public int Id { get; set; }
 
@@ -21,9 +21,9 @@ namespace WebApp.Database.Models
 		public DateOnly Date { get; set; }
 
 		[JsonIgnore]
-		public List<Colour> AvailableColours { get; set; } = default!;
+		public List<ColourModel> AvailableColours { get; set; } = default!;
 
 		[JsonIgnore]
-		public List<Size> AvailableSizes { get; set; } = default!;
+		public List<SizeModel> AvailableSizes { get; set; } = default!;
 	}
 }

@@ -61,7 +61,7 @@ namespace WebApp.Services.Database.Products
 			await _database.SaveChangesAsync();
 		}
 
-		private Task<List<ProductShowLightWeight>> PerformSearchAsync(
+		private Task<List<ProductPreview>> PerformSearchAsync(
 			List<IFilter<Product>> filters,
 			IOrdering<Product> paginator,
 			int pageSize)
@@ -86,7 +86,7 @@ namespace WebApp.Services.Database.Products
 				.ToListAsync()
 				.ContinueWith(next =>
 					next.Result
-						.Select(e => new ProductShowLightWeight()
+						.Select(e => new ProductPreview()
 						{
 							Id = e.Id,
 							Name = e.Name,
@@ -99,7 +99,7 @@ namespace WebApp.Services.Database.Products
 							Date = e.Created,
 							AvailableColours = e.Stocks
 								.DistinctBy(e => e.ColourId)
-								.Select(e => new WebApp.Database.Models.Colour()
+								.Select(e => new ColourModel()
 								{
 									Id = e.Colour.Id,
 									Name = e.Colour.Name,
@@ -108,7 +108,7 @@ namespace WebApp.Services.Database.Products
 								.ToList(),
 							AvailableSizes = e.Stocks
 								.DistinctBy(e => e.SizeId)
-								.Select(e => new WebApp.Database.Models.Size()
+								.Select(e => new SizeModel()
 								{
 									Id = e.Size.Id,
 									Name = e.Size.SizeName
@@ -204,7 +204,7 @@ namespace WebApp.Services.Database.Products
 			};
 		}
 
-		public Task<List<ProductShowLightWeight>> SearchAsync(
+		public Task<List<ProductPreview>> SearchAsync(
 			List<IFilter<Product>> filters,
 			IOrdering<Product> paginator)
 		{

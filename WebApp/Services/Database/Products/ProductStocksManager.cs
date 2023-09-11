@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebApp.Database;
 using WebApp.Database.Entities.Products;
+using WebApp.Database.Models;
 using WebApp.Utilities.Exceptions;
 
 namespace WebApp.Services.Database.Products
@@ -30,24 +31,24 @@ namespace WebApp.Services.Database.Products
 			_database = database;
 		}
 
-		public async Task<List<WebApp.Database.Models.ProductStock>> GetProductStocksAsync(int productId)
+		public async Task<List<ProductStockModel>> GetProductStocksAsync(int productId)
 		{
 			return await _database.ProductStocks
 				.AsNoTracking()
 				.Include(e => e.Colour)
 				.Include(e => e.Size)
 				.Where(e => e.ProductId == productId)
-				.Select(e => new WebApp.Database.Models.ProductStock()
+				.Select(e => new ProductStockModel()
 				{
 					Id = e.Id,
 					ProductAmount = e.ProductAmount,
-					Colour = new WebApp.Database.Models.Colour()
+					Colour = new ColourModel()
 					{
 						Id = e.Colour.Id,
 						Name = e.Colour.Name,
 						HexCode = e.Colour.HexCode
 					},
-					Size = new WebApp.Database.Models.Size()
+					Size = new SizeModel()
 					{
 						Id = e.Size.Id,
 						Name = e.Size.SizeName

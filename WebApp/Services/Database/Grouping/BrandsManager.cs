@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using WebApp.Database;
 using WebApp.Database.Entities.Grouping;
+using WebApp.Database.Models;
 using WebApp.Utilities.Exceptions;
 
 namespace WebApp.Services.Database.Grouping
@@ -41,11 +42,11 @@ namespace WebApp.Services.Database.Grouping
 			_database = database;
 		}
 
-		public Task<List<WebApp.Database.Models.Brand>> GetAllBrandsAsync()
+		public Task<List<BrandModel>> GetAllBrandsAsync()
 		{
 			return _database.Brands
 					.AsNoTracking()
-					.Select(e => new WebApp.Database.Models.Brand()
+					.Select(e => new BrandModel()
 					{
 						Id = e.Id,
 						Name = e.Name,
