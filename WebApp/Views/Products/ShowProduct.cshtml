@@ -68,14 +68,14 @@
 				<div class="d-flex justify-content-center align-content-center flex-column p-1 pt-0" style="max-width:125px;">
 					@for(int index = 0; (index < 3) && (index < Model.ProductImagesIds.Count); ++index)
 					{
-						<img tabindex="0" width="40" height="40" src="/images/image/@Model.ProductImagesIds[index]" class="rounded-1 min-image m-2" role="button"/>
+						<img tabindex="0" width="40" height="40" src="/images/image/@Model.ProductImagesIds[index]" class="d-none rounded-1 min-image m-2" role="button"/>
 					}
 				</div>
 			</div>
 			<div class="flex-fill align-self-start">
 				<div class="col d-flex">
 					<div id="shownImageScrollContainer" class="my-2 mx-auto" style="max-width:27rem;max-height:40rem;">
-						<img id="shownImage" class="rounded-1" src="/images/image/@Model.MainImageId" style="cursor:zoom-in;"/>
+						<img id="shownImage" class="d-none rounded-1" src="/images/image/@Model.MainImageId" style="cursor:zoom-in;"/>
 					</div>
 				</div>
 			</div>
@@ -122,7 +122,7 @@
 		@if(Model.BrandInfo != null)
 		{
 			<div class="d-flex flex-column ms-auto">
-				<img id="brandImage" width="200" height="80" src="/images/brandImage/@Model.BrandInfo.Value.ImageId" alt="@Model.BrandInfo.Value.Name"/>
+				<img id="brandImage" width="200" height="80" class="d-none" src="/images/brandImage/@Model.BrandInfo.Value.ImageId" alt="@Model.BrandInfo.Value.Name"/>
 			</div>
 		}
 	</div>

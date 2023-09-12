@@ -1,23 +1,20 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using WebApp.Database.Entities.Auth;
+using WebApp.ProjectConfiguration.Options.Auth;
 using WebApp.Utilities.Exceptions;
 
 namespace WebApp.ProjectConfiguration.Initializers
 {
 	public class DatabaseInitializer
 	{
-		private static string[] _baseRoles = { "admin", "user" };
-		private static (string handle, string name, string role)[] _baseUsers =
-			{
-				("Admin", "Site Administration", "admin"),
-				("TestUser", "Dummy", "user")
-			};
-
 		private readonly UserManager<ApplicationUser> _users;
 		private readonly RoleManager<ApplicationRole> _roles;
 		private readonly IConfiguration _configuration;
 
-		public DatabaseInitializer(UserManager<ApplicationUser> users, RoleManager<ApplicationRole> roles, IConfiguration configuration)
+		public DatabaseInitializer(
+			UserManager<ApplicationUser> users, 
+			RoleManager<ApplicationRole> roles, 
+			IConfiguration configuration)
 		{
 			_users = users;
 			_roles = roles;
@@ -69,7 +66,7 @@ namespace WebApp.ProjectConfiguration.Initializers
 				}
 			}
 		}
-		private async Task InitializeRoles(string[] roles)
+		private async Task InitializeRoles(IEnumerable<string> roles)
 		{
 			foreach (var role in roles)
 			{
@@ -79,18 +76,18 @@ namespace WebApp.ProjectConfiguration.Initializers
 				}
 			}
 		}
-		private async Task InitializeUsers((string handle, string name, string role)[] users)
+		private async Task InitializeUsers(IEnumerable<ConfiguredUser> users)
 		{
 			foreach (var user in users)
 			{
-				await PopulateUserAsync(user.handle, user.name, user.role);
+				await PopulateUserAsync(user.SecretsHandle, user.Name, user.Role);
 			}
 		}
 
-		public async Task InitializeAuthAsync()
+		public async Task InitializeAuthAsync(AuthConfiguration preaddedInformation)
 		{
-			await InitializeRoles(_baseRoles);
-			await InitializeUsers(_baseUsers);
+			await InitializeRoles(preaddedInformation.PreaddedRoles);
+			await InitializeUsers(preaddedInformation.PreaddedUsers);
 		}
 	}
 }

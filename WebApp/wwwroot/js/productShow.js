@@ -10,11 +10,15 @@
 
     $(".min-image").each(function (index, element) {
         if ($(this).prop("complete") === true) {
-            $(this).makeImageFitBoxRems(previewImageWidth, previewImageHeight);
+            $(this)
+                .makeImageFitBoxRems(previewImageWidth, previewImageHeight)
+                .removeClass("d-none");
         }
         else {
             $(this).on("load", function () {
-                $(this).makeImageFitBoxRems(previewImageWidth, previewImageHeight);
+                $(this)
+                    .makeImageFitBoxRems(previewImageWidth, previewImageHeight)
+                    .removeClass("d-none");
             });
         }
 
@@ -44,11 +48,15 @@
     }
 
     if ($("#brandImage").prop("complete") === true) {
-        $("#brandImage").makeImageFitBoxRems(brandImageWidth, brandImageHeight);
+        $("#brandImage")
+            .makeImageFitBoxRems(brandImageWidth, brandImageHeight)
+            .removeClass("d-none");
     }
     else {
         $("#brandImage").on("load", function () {
-            $(this).makeImageFitBoxRems(brandImageWidth, brandImageHeight);
+            $(this)
+                .makeImageFitBoxRems(brandImageWidth, brandImageHeight)
+                .removeClass("d-none");
         });
     }
 
@@ -57,7 +65,8 @@
             .makeImageFitBoxRems(shownImageWidth, shownImageHeight)
             .on("click", function () {
                 toggleZoom($(this));
-            });
+            })
+            .removeClass("d-none");
     }
     else {
         $("#shownImage")
@@ -70,7 +79,8 @@
             })
             .on("click", function () {
                 toggleZoom($(this));
-            });
+            })
+            .removeClass("d-none");
     }
 
     $("#descriptionShow")

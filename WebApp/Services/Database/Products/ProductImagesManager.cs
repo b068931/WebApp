@@ -63,10 +63,12 @@ namespace WebApp.Services.Database.Products
 
 			return loadedImages;
 		}
-		public Task DeleteImagesAsync(List<int> imagesToDeleteIds)
+		public Task DeleteImagesAsync(int productId, List<int> imagesToDeleteIds)
 		{
 			_database.ProductImages.RemoveRange(
-				_database.ProductImages.Where(e => imagesToDeleteIds.Contains(e.Id))
+				_database.ProductImages
+					.Where(e => imagesToDeleteIds.Contains(e.Id))
+					.Where(e => e.ProductId == productId)
 			);
 
 			return _database.SaveChangesAsync();

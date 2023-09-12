@@ -5,6 +5,7 @@ using WebApp.Database;
 using WebApp.Database.Entities.Auth;
 using WebApp.ProjectConfiguration.Initializers;
 using WebApp.ProjectConfiguration.Options;
+using WebApp.ProjectConfiguration.Options.Auth;
 using WebApp.Services.Background;
 using WebApp.Services.Database.Grouping;
 using WebApp.Services.Database.Maintenance;
@@ -117,13 +118,16 @@ using (var scope = app.Services.CreateScope())
 {
 	try
 	{
+		AuthConfiguration authConfig = new AuthConfiguration();
+		app.Configuration.GetSection(AuthConfiguration.FieldName).Bind(authConfig);
+
 		DatabaseInitializer initializer = new DatabaseInitializer(
 			scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>(),
 			scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>(),
 			app.Configuration
 		);
 
-		await initializer.InitializeAuthAsync();
+		await initializer.InitializeAuthAsync(authConfig);
 	}
 	catch (Exception exc)
 	{

@@ -355,7 +355,7 @@ namespace WebApp.Controllers.Products
 						if (imagesToDelete.Contains(await _products.GetProductMainImage(productId)))
 							throw new UserInteractionException("Ви не можете видалити головне зображення вашого продукту.");
 						else
-							await _images.DeleteImagesAsync(imagesToDelete);
+							await _images.DeleteImagesAsync(associatedProduct.Id, imagesToDelete);
 
 						return Redirect("/products/product/" + productId);
 					}
