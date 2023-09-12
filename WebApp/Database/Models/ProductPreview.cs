@@ -7,7 +7,7 @@ namespace WebApp.Database.Models
 		public int Id { get; set; }
 
 		[JsonIgnore]
-		public int MainImageId { get; set; }
+		public string MainImage { get; set; } = default!;
 		[JsonIgnore]
 		public string Name { get; set; } = default!;
 

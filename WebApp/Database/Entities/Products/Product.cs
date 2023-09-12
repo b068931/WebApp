@@ -27,7 +27,7 @@ namespace WebApp.Database.Entities.Products
 		public Brand? Brand { get; set; }
 
 		public int? MainImageId { get; set; }
-		public ProductImage? MainImage { get; set; }
+		public ProductImage? MainImage { get; set; } = default!;
 		public List<ProductImage> Images { get; set; } = default!;
 
 		public int CategoryId { get; set; }

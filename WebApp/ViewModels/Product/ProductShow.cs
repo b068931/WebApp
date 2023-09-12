@@ -1,4 +1,5 @@
 ﻿using WebApp.Database.Models;
+using WebApp.Services.Database.Products;
 
 namespace WebApp.ViewModels.Product
 {
@@ -24,8 +25,8 @@ namespace WebApp.ViewModels.Product
 
 		public (string Name, int ImageId)? BrandInfo { get; set; }
 
-		public int MainImageId { get; set; }
-		public List<int> ProductImagesIds { get; set; } = default!;
+		public string MainImage { get; set; } = default!;
+		public List<ProductImageModel> ProductImages { get; set; } = default!;
 
 		public List<ColourModel> AvailableColours { get; set; } = default!;
 		public List<SizeModel> AvailableSizes { get; set; } = default!;

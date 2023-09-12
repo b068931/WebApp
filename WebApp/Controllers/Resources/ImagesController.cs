@@ -10,7 +10,6 @@ namespace WebApp.Controllers.Resources
 	[AllowAnonymous]
 	public class ImagesController : Controller
 	{
-		private readonly ProductImagesManager _images;
 		private readonly BrandsManager _brands;
 		private readonly Performer<ImagesController> _performer;
 
@@ -21,14 +20,6 @@ namespace WebApp.Controllers.Resources
 				(message) => BadRequest(message)
 			);
 		}
-
-		private Task<IActionResult> GetProductImageFileResultAsync(int imageToReturn)
-		{
-			return _images.FindImageAsync(imageToReturn)
-				.ContinueWith<IActionResult>(next =>
-					new FileStreamResult(new MemoryStream(next.Result.Data), next.Result.ContentType)
-				);
-		}
 		private Task<IActionResult> GetBrandImageFileResultAsync(int imageToReturn)
 		{
 			return _brands.GetBrandImageAsync(imageToReturn)
@@ -38,20 +29,11 @@ namespace WebApp.Controllers.Resources
 		}
 
 		public ImagesController(
-			ProductImagesManager images,
 			BrandsManager brands,
 			Performer<ImagesController> performer)
 		{
-			_images = images;
 			_brands = brands;
 			_performer = performer;
-		}
-
-		[HttpGet("image/{imageId}")]
-		public Task<IActionResult> GetImage(
-			[FromRoute(Name = "imageId")] int imageToReturn)
-		{
-			return PerformAction(() => GetProductImageFileResultAsync(imageToReturn));
 		}
 
 		[HttpGet("brandImage/{imageId}")]

@@ -28,7 +28,7 @@ namespace WebApp.Services.Database.Products
 			}
 		}
 
-		private async Task<Product> AddNewProductAsync(int ownerId, ProductCreate vm)
+		private async Task<Product> CreateProductEntityAsync(int ownerId, ProductCreate vm)
 		{
 			await ValidateCategoryId(vm.CategoryId);
 			Product newProduct = new Product()
@@ -70,6 +70,7 @@ namespace WebApp.Services.Database.Products
 		{
 			IQueryable<Product> request = _database.Products
 				.AsNoTracking()
+				.Include(e => e.MainImage)
 				.Include(e => e.Stocks)
 					.ThenInclude(e => e.Colour)
 				.Include(e => e.Stocks)
@@ -97,7 +98,7 @@ namespace WebApp.Services.Database.Products
 							TruePrice = Math.Round(e.TruePrice, 2),
 							TrueRating = e.TrueRating,
 							ViewsCount = e.ViewsCount,
-							MainImageId = e.MainImageId ?? 0,
+							MainImage = e.MainImage?.StorageRelativeLocation ?? "",
 							Date = e.Created,
 							AvailableColours = e.Stocks
 								.DistinctBy(e => e.ColourId)
@@ -150,14 +151,15 @@ namespace WebApp.Services.Database.Products
 			return await _database.Products
 				.Where(e => e.Id == productId)
 				.Select(e => e.MainImageId)
-				.FirstAsync() ?? throw new UserInteractionException(
-					string.Format("Product with id {0} does not exist.", productId));
+				.FirstOrDefaultAsync() ?? 
+					throw new UserInteractionException(string.Format("Product with id {0} does not exist.", productId));
 		}
 
 		public async Task<ProductShow> GetProductShowVMAsync(int actionPerformer, int productId)
 		{
 			Product foundProduct = await _database.Products
 				.Include(e => e.Brand)
+				.Include(e => e.MainImage)
 				.Include(e => e.ProductOwner)
 				.FirstOrDefaultAsync(e => e.Id == productId) ?? throw new UserInteractionException(
 					string.Format("Product with id {0} does not exist.", productId));
@@ -190,8 +192,8 @@ namespace WebApp.Services.Database.Products
 				BrandInfo = foundProduct.Brand == null
 					? null
 					: (foundProduct.Brand.Name, foundProduct.Brand.ImageId ?? 0),
-				MainImageId = foundProduct.MainImageId ?? 0,
-				ProductImagesIds = await _images.GetProductImagesAsync(productId),
+				MainImage = foundProduct.MainImage?.StorageRelativeLocation ?? "",
+				ProductImages = await _images.GetProductImagesAsync(productId),
 				AvailableColours = await _colours.GetAllColoursAsync(),
 				AvailableSizes = await _sizes.GetAllSizesAsync()
 			};
@@ -235,12 +237,13 @@ namespace WebApp.Services.Database.Products
 		{
 			using (var transaction = _database.Database.BeginTransaction())
 			{
-				Product createdProduct = await AddNewProductAsync(ownerId, vm);
+				Product newProduct = await CreateProductEntityAsync(ownerId, vm);
 				if (vm.ProductImages != null)
 				{
-					List<ProductImage> loadedImages = await _images.AddImagesToProductAsync(createdProduct.Id, vm.ProductImages);
-					createdProduct.MainImageId = loadedImages[0].Id;
+					List<ProductImage> images =
+						await _images.AddImagesToProductAsync(newProduct.Id, vm.ProductImages);
 
+					newProduct.MainImageId = newProduct.Images[0].Id;
 					await _database.SaveChangesAsync();
 				}
 				else
@@ -249,7 +252,7 @@ namespace WebApp.Services.Database.Products
 				}
 
 				transaction.Commit();
-				return createdProduct;
+				return newProduct;
 			}
 		}
 		public async Task UpdateProductAsync(ProductUpdate vm)

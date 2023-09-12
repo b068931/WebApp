@@ -16,7 +16,7 @@ namespace WebApp.Database.Configurations.Products
 				.HasOne(e => e.Product)
 				.WithMany(e => e.Images)
 				.HasForeignKey(e => e.ProductId)
-				.OnDelete(DeleteBehavior.Cascade);
+				.OnDelete(DeleteBehavior.Restrict);
 		}
 	}
 }

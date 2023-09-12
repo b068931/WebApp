@@ -1,14 +1,18 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebApp.Database;
 using WebApp.Database.Entities.Products;
+using WebApp.Database.Models;
 using WebApp.Utilities.Exceptions;
 
 namespace WebApp.Services.Database.Products
 {
 	public class ProductImagesManager
 	{
-		private static readonly int MaxFileSize = 10485760;
+		private const int MaxFileSize = 4194304;
+		private const string ImagesStorageRelativePath = "images/";
+
 		private readonly DatabaseContext _database;
+		private readonly IWebHostEnvironment _environment;
 
 		private void ValidateImages(List<IFormFile> images)
 		{
@@ -27,19 +31,30 @@ namespace WebApp.Services.Database.Products
 		}
 		private async Task<List<ProductImage>> CreateImageEntitiesAsync(int productId, List<IFormFile> images)
 		{
+			ValidateImages(images);
+
 			List<ProductImage> newImages = new List<ProductImage>();
 			foreach (var imageFile in images)
 			{
+				string imageName = Path.ChangeExtension(
+					Path.Combine(ImagesStorageRelativePath, Guid.NewGuid().ToString()),
+					Path.GetExtension(imageFile.FileName)
+				);
+
 				ProductImage newImage = new ProductImage()
 				{
 					ProductId = productId,
-					ContentType = imageFile.ContentType
+					StorageRelativeLocation = "/" + imageName
 				};
 
-				using (var memory = new MemoryStream())
+				string fileName = Path.Combine(
+					_environment.WebRootPath,
+					imageName
+				);
+
+				using (var destination = File.Create(fileName))
 				{
-					await imageFile.CopyToAsync(memory);
-					newImage.Data = memory.ToArray();
+					await imageFile.CopyToAsync(destination);
 				}
 
 				newImages.Add(newImage);
@@ -48,14 +63,16 @@ namespace WebApp.Services.Database.Products
 			return newImages;
 		}
 
-		public ProductImagesManager(DatabaseContext database)
+		public ProductImagesManager(
+			DatabaseContext database, 
+			IWebHostEnvironment environment)
 		{
 			_database = database;
+			_environment = environment;
 		}
 
 		public async Task<List<ProductImage>> AddImagesToProductAsync(int productId, List<IFormFile> images)
 		{
-			ValidateImages(images);
 			List<ProductImage> loadedImages = await CreateImageEntitiesAsync(productId, images);
 
 			_database.ProductImages.AddRange(loadedImages);
@@ -63,29 +80,34 @@ namespace WebApp.Services.Database.Products
 
 			return loadedImages;
 		}
-		public Task DeleteImagesAsync(int productId, List<int> imagesToDeleteIds)
+		public async Task DeleteImagesAsync(int productId, List<int> imagesToDeleteIds)
 		{
-			_database.ProductImages.RemoveRange(
-				_database.ProductImages
-					.Where(e => imagesToDeleteIds.Contains(e.Id))
-					.Where(e => e.ProductId == productId)
-			);
+			List<ProductImage> productImages = await _database.ProductImages
+				.Where(e => imagesToDeleteIds.Contains(e.Id))
+				.Where(e => e.ProductId == productId)
+				.ToListAsync();
 
-			return _database.SaveChangesAsync();
+			foreach(var image in productImages)
+			{
+				File.Delete(
+					_environment.WebRootPath + image.StorageRelativeLocation
+				);
+			}
+
+			_database.ProductImages.RemoveRange(productImages);
+			await _database.SaveChangesAsync();
 		}
 
-		public Task<List<int>> GetProductImagesAsync(int productId)
+		public Task<List<ProductImageModel>> GetProductImagesAsync(int productId)
 		{
 			return _database.ProductImages
 				.Where(e => e.ProductId == productId)
-				.Select(e => e.Id)
+				.Select(e => new ProductImageModel()
+				{
+					Id = e.Id,
+					Path = e.StorageRelativeLocation
+				})
 				.ToListAsync();
-		}
-		public async Task<ProductImage> FindImageAsync(int imageId)
-		{
-			return await _database.ProductImages.FindAsync(imageId) ??
-				throw new ArgumentOutOfRangeException(
-					string.Format("Image with id {0} does not exist. (ProductImage)", imageId));
 		}
 	}
 }

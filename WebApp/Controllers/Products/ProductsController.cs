@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using WebApp.Controllers.Abstract;
 using WebApp.Database.Entities.Products;
+using WebApp.Database.Models;
 using WebApp.Services.Database.Grouping;
 using WebApp.Services.Database.Products;
 using WebApp.Utilities.CustomRequirements.SameAuthor;
@@ -379,7 +380,17 @@ namespace WebApp.Controllers.Products
 					User,
 					async () =>
 					{
+						List<int> images = await
+							_images.GetProductImagesAsync(idToDelete)
+								.ContinueWith(next =>
+									next.Result
+										.Select(e => e.Id)
+										.ToList()
+								);
+
+						await _images.DeleteImagesAsync(idToDelete, images);
 						await _products.DeleteProductAsync(idToDelete);
+
 						return Redirect("/");
 					}
 				),

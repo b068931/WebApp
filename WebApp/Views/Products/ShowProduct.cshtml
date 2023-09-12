@@ -66,16 +66,16 @@
 		<div class="d-flex ms-3 w-50">
 			<div class="align-self-center">
 				<div class="d-flex justify-content-center align-content-center flex-column p-1 pt-0" style="max-width:125px;">
-					@for(int index = 0; (index < 3) && (index < Model.ProductImagesIds.Count); ++index)
+					@for(int index = 0; (index < 3) && (index < Model.ProductImages.Count); ++index)
 					{
-						<img tabindex="0" width="40" height="40" src="/images/image/@Model.ProductImagesIds[index]" class="d-none rounded-1 min-image m-2" role="button"/>
+						<img tabindex="0" width="40" height="40" src="@Model.ProductImages[index].Path" class="d-none rounded-1 min-image m-2" role="button"/>
 					}
 				</div>
 			</div>
 			<div class="flex-fill align-self-start">
 				<div class="col d-flex">
 					<div id="shownImageScrollContainer" class="my-2 mx-auto" style="max-width:27rem;max-height:40rem;">
-						<img id="shownImage" class="d-none rounded-1" src="/images/image/@Model.MainImageId" style="cursor:zoom-in;"/>
+						<img id="shownImage" class="d-none rounded-1" src="@Model.MainImage" style="cursor:zoom-in;"/>
 					</div>
 				</div>
 			</div>
@@ -173,9 +173,9 @@
 	<div class="my-5">
 		<h3>Вся галерея зображень:</h3>
 		<div class="gallery d-flex flex-row flex-wrap justify-content-center w-100 p-4 rounded-1">
-			@for(int index = 0; index < Model.ProductImagesIds.Count; ++index)
+			@for(int index = 0; index < Model.ProductImages.Count; ++index)
 			{
-				<img tabindex="0" width="40" height="40" src="/images/image/@Model.ProductImagesIds[index]" class="rounded-1 min-image m-2" role="button"/>
+				<img tabindex="0" width="40" height="40" src="@Model.ProductImages[index].Path" class="rounded-1 min-image m-2" role="button"/>
 			}
 		</div>
 	</div>
