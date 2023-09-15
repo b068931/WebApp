@@ -127,4 +127,20 @@
         },
         "json"
     );
+
+    $(".rating-star")
+        .on("click", function () {
+            $.post("/products/product/" + location[location.length - 1] + "/rate",
+                {
+                    stars: $(this).data("ratingvalue"),
+                    __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val()
+                }
+            )
+                .done(() => window.location.reload())
+                .fail(function (xhr, status, error) {
+                    $("#ratingError")
+                        .html(xhr.responseText)
+                        .removeClass("d-none");
+                });
+        });
 });

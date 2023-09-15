@@ -48,6 +48,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 	options.SlidingExpiration = true;
 
 	options.ReturnUrlParameter = "return";
+	options.Cookie.HttpOnly = true;
 });
 
 builder.Services.AddAuthorization(options =>

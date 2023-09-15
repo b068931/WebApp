@@ -254,6 +254,26 @@ namespace WebApp.Controllers.Products
 			);
 		}
 
+		[HttpPost("product/{productId}/rate")]
+		[AllowAnonymous]
+		[ValidateAntiForgeryToken]
+		public Task<IActionResult> RateProduct(
+			[FromRoute(Name = "productId")] int productId,
+			[FromForm(Name = "stars")] int stars)
+		{
+			return _performer.PerformActionMessageAsync(
+				async () =>
+				{
+					if (GetUserId() == 0)
+						throw new UserInteractionException("Зареєструйтеся для того, щоб залишити оцінку.");
+
+					await _products.RateProduct(GetUserId(), productId, stars);
+					return Ok();
+				},
+				(message) => BadRequest(message)
+			);
+		}
+
 		[HttpGet("action/create")]
 		public Task<IActionResult> Create()
 		{

@@ -284,15 +284,18 @@ namespace WebApp.Services.Database.Products
 		}
 		public async Task RateProduct(int actionPerformer, int productId, int stars)
 		{
-			if (stars > ProductShow.MaxStarsRating)
-				throw new UserInteractionException("Maximum rating for the product is: " + ProductShow.MaxStarsRating);
+			if (stars <= 0 || stars > ProductShow.MaxStarsRating)
+				throw new UserInteractionException("Оцінка продукту має бути у межах від 0 до " + ProductShow.MaxStarsRating);
+
+			Product foundProduct = await FindProductAsync(productId);
+			if (foundProduct.ProductOwnerId == actionPerformer)
+				throw new UserInteractionException("Ви не можете оцінити свій продукт.");
 
 			bool firstTime =
 				await _interactions.RememberRatedProductAsync(actionPerformer, productId);
 
 			if (firstTime)
 			{
-				Product foundProduct = await FindProductAsync(productId);
 				foundProduct.StarsCount += stars;
 				foundProduct.RatingsCount += 1;
 

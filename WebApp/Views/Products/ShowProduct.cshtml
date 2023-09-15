@@ -102,14 +102,16 @@
 				<div class="prevent-select">
 					@for(int counter = 0; counter < Model.Rating; ++counter)
 					{
-						<span role="button">★</span>
+						<span data-ratingvalue="@(counter + 1)" class="rating-star" role="button">★</span>
 					}
 					@for(int counter = Model.Rating; counter < WebApp.ViewModels.Product.ProductShow.MaxStarsRating; ++counter)
 					{
-						<span role="button">☆</span>
+						<span data-ratingvalue="@(counter + 1)" class="rating-star" role="button">☆</span>
 					}
 					<span class="text-muted">(@Model.ReviewsCount)</span>
+					@Html.AntiForgeryToken()
 				</div>
+				<div id="ratingError" class="text-danger d-none"></div>
 			</p>
 			<p>
 				<span class="fw-bold">Автор: </span>@Model.AuthorName
