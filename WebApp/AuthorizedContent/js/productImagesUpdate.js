@@ -21,7 +21,7 @@ $(function () {
         var myparent = $(this).parent();
         var detachedInteractionButtons = myparent.children().detach();
         var cancelDeleteButton = $("<button>", {
-            class: "btn btn-outline-primary w-100"
+            class: "site-button site-secondary-button w-100"
         })
             .on("click", function () {
                 myparent.children().remove();

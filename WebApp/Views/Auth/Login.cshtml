@@ -24,7 +24,7 @@
 				</a>
 			}
 		</div>
-		<form method="post" action="/auth/login" class="d-flex flex-column pb-3 mb-auto mx-auto">
+		<form method="post" action="/auth/login" class="d-flex flex-column pb-3 mb-auto mx-auto styled-inputs">
 			@Html.AntiForgeryToken()
 			@if(Model.ReturnUrl != null)
 			{
@@ -33,7 +33,7 @@
 			<div class="d-flex flex-column">
 				<div class="d-flex">
 					<label for="logininput" class="me-auto pe-3 my-auto">
-						<h4 class="pt-2">Логін</h4>
+						Логін
 					</label>
 					<input id="logininput" asp-for=Email placeholder="Введіть ім'я" class="form-control" style="width:20rem;height:3rem;" />
 				</div>
@@ -42,14 +42,14 @@
 			<div class="d-flex flex-column">
 				<div class="d-flex mt-3">
 					<label for="passwordinput" class="me-auto pe-3 my-auto">
-						<h4 class="pt-2">Пароль</h4>
+						Пароль
 					</label>
 					<input id="passwordinput" asp-for=Password placeholder="Введіть пароль" class="form-control" style="width:20rem;height:3rem;" />
 				</div>
 				<span class="text-danger mt-1" asp-validation-for=Password></span>
 			</div>
 			<a href="#" class="mt-4 mx-auto link_color">Забули пароль?</a>
-			<input type="submit" value="Увійти" class=" mt-5 btn btn-outline-dark" style="border-radius:1.1rem;"/>
+			<button type="submit" class=" mt-5 btn btn-outline-dark" style="border-radius:1.1rem;">Увійти</button>
 		</form>
 	</div>
 </div>

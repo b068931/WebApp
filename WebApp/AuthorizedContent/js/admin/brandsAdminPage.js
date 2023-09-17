@@ -122,8 +122,8 @@ $(function () {
             me.append(newElement);
         }
 
-        addButton("Update", "btn btn-warning me-2", function () { updateBrand(me); });
-        addButton("Delete", "btn btn-danger", function () { deleteBrand(me); });
+        addButton("Update", "site-button site-warning-button me-2", function () { updateBrand(me); });
+        addButton("Delete", "site-button site-danger-button", function () { deleteBrand(me); });
     });
 
     $("#abort").on("click", function () {

@@ -31,8 +31,8 @@
 					</form>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Відмінити</button>
-					<button form="deleteConfirmationForm" type="submit" class="btn btn-primary">Підтвердити</button>
+					<button type="button" class="site-button site-secondary-button" data-bs-dismiss="modal">Відмінити</button>
+					<button form="deleteConfirmationForm" type="submit" class="site-button site-primary-button">Підтвердити</button>
 				</div>
 			</div>
 		</div>
@@ -43,21 +43,21 @@
 	@if (Model.DisplayEditing)
 	{
 		<div class="d-flex flex-row w-100 border-bottom pb-3">
-			<button id="deleteProductButton" class="btn btn-outline-danger me-auto">Видалити</button>
+			<button id="deleteProductButton" class="site-button site-danger-button me-auto">Видалити</button>
 
 			<form action="/products/action/update" method="get">
 				<input type="hidden" value="@Model.Id" name="id" />
-				<input type="submit" class="btn btn-outline-dark me-3" value="Змінити Головну Сторінку" />
+				<input type="submit" class="site-button site-primary-button me-3" value="Змінити Головну Сторінку" />
 			</form>
 
 			<form action="/product/stocks" method="get">
 				<input type="hidden" value="@Model.Id" name="id" />
-				<input type="submit" class="btn btn-outline-dark mx-3" value="Керувати Наявними" />
+				<input type="submit" class="site-button site-primary-button mx-3" value="Керувати Наявними" />
 			</form>
 
 			<form action="/products/images/action/update" method="get">
 				<input type="hidden" value="@Model.Id" name="id" />
-				<input type="submit" class="btn btn-outline-dark mx-3" value="Керувати Зображеннями" />
+				<input type="submit" class="site-button site-primary-button mx-3" value="Керувати Зображеннями" />
 			</form>
 		</div>
 	}

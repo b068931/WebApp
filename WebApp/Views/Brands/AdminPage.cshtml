@@ -17,16 +17,18 @@
 			<label id="textLabel" for="requestQuery" class="input-group-text">Name:</label>
 			<input id="requestQuery" name="brandName" type="text" class="form-control">
 
-			<input id="confirm" type="submit" value="Confirm" class="btn btn-success d-none" />
-			<input id="abort" type="button" value="Abort" class="btn btn-danger d-none" />
+			<input id="confirm" type="submit" value="Підтвердити" class="site-button site-primary-button d-none" />
+			<input id="abort" type="button" value="Відмінити" class="site-button site-danger-button d-none" />
 		</div>
-		<div id="fileInputContainer" class="input-group">
-			<label for="brandImage" class="form-label">Кнопка загрузки с очень крутым дизайном</label>
+		<div id="fileInputContainer" class="mt-2" role="button">
+			<label for="brandImage" class="site-button site-primary-button">
+				Завантажити фотографію (обов'язково)
+			</label>
 			<input id="brandImage" type="file" name="brandImage" class="d-none" accept="image/*"/>
 		</div>
 	</form>
 	<div class="mt-2 w-100" id="createButtonContainer">
-		<button id="create" class="btn btn-success w-100">Create</button>
+		<button id="create" class="site-button site-primary-button w-100">Створити</button>
 	</div>
 	<hr />
 	<ul id="brandsList" class="list-group">

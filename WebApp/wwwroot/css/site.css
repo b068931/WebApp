@@ -31,6 +31,7 @@ body {
 	font-family: Gilroy, sans-serif;
 	font-size: 1.3rem;
 	color: #444;
+	background: rgba(242, 242, 239, 1);
 }
 
 .link_color {
@@ -215,12 +216,13 @@ body {
 }
 
 .radio-select + label {
+	background: #ffffff;
 	border: 2px solid #f0f0f0;
 	transition: border 0.3s ease;
 }
 
 .radio-select:hover + label {
-	background: #f0f0f0;
+	background: #e0e0e0;
 }
 
 .radio-select:checked + label {
@@ -276,4 +278,63 @@ body {
 	background: #282828;
 
 	padding: 2rem;
+}
+
+.site-button {
+	background: gray;
+	color: white;
+
+	border: none;
+	border-radius: 0.3rem;
+
+	padding-right: 1rem;
+	padding-left: 1rem;
+
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
+
+	font-size:0.9rem;
+	transition: background 0.3s ease;
+}
+
+.site-button:hover {
+	background: rgba(33, 37, 23, 1);
+}
+
+.site-primary-button {
+	background: rgba(66, 87, 8, 1);
+}
+.site-warning-button {
+	background: rgba(176, 132, 12, 1);
+}
+.site-danger-button {
+	background: rgba(140, 13, 23, 1);
+}
+.site-secondary-button {
+	background: rgba(112, 112, 112, 1);
+}
+
+.styled-inputs label {
+	font-weight: bold;
+	color: rgba(33, 37, 23, 1);
+}
+
+.styled-inputs select,
+.styled-inputs textarea,
+.styled-inputs input,
+.styled-inputs textarea::placeholder,
+.styled-inputs input::placeholder,
+.styled-inputs input:focus,
+.styled-inputs textarea:focus,
+.styled-inputs select:focus {
+	color: rgba(117, 146, 66, 1);
+	background: rgba(238, 239, 207, 1);
+}
+
+.styled-inputs input[type="submit"] {
+	color: white;
+}
+
+.styled-inputs input[type="button"] {
+	color: white;
 }

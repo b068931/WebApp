@@ -3,30 +3,39 @@
 <div id="largeImage" class="modal fade" tabindex="-1" aria-labelledby="largeImageLabel" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-scrollable modal-xl">
 		<div class="modal-content">
-		<div class="modal-header">
-			<h5 id="largeImageTitle" class="modal-title">[Title]</h5>
-			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-		</div>
-		<div id="largeImageBody" class="modal-body"></div>
-		<div class="modal-footer">
-			<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-		</div>
+			<div class="modal-header">
+				<h5 id="largeImageTitle" class="modal-title">[Title]</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div id="largeImageBody" class="modal-body"></div>
+			<div class="modal-footer">
+				<button type="button" class="site-button site-primary-button" data-bs-dismiss="modal">Закрити</button>
+			</div>
 		</div>
 	</div>
 </div>
 
 <div class="my-3 mx-2">
-	<form action="/products/action/create" method="post" enctype="multipart/form-data">
+	<div class="mx-3">
+		<h4 class="fw-bold mt-5 mb-4">Завантажте фото</h4>
+		<label for="productImages" role="button" class="form-label mt-2 site-button site-primary-button">
+			Завантажити фотографі
+		</label>
+	</div>
+
+	<div id="selectedImagesContainer" class="mx-3 mt-2 text-center"></div>
+
+	<form action="/products/action/create" method="post" enctype="multipart/form-data" class="styled-inputs mx-3">
+		<h4 class="my-4 fw-bold">Опишіть вашу річ</h4>
 		@Html.AntiForgeryToken()
-		<div class="text-danger" asp-validation-summary="ModelOnly"></div>
 		<div class="mb-3">
-			<label for="productName" class="form-label">Назва товару:</label>
-			<input asp-for=Name class="form-control" id="productName">
+			<label for="productName" class="form-label">Назва (українською мовою):</label>
+			<input asp-for=Name class="form-control" id="productName" placeholder="Наприклад: Помаранчевий джинсовий костюм">
 			<span asp-validation-for=Name class="form-text text-danger"></span>
 		</div>
 		<div class="mb-3">
-			<label for="productDescription" class="form-label">Опис товару:</label>
-			<textarea asp-for=Description class="form-control" id="productDescription"></textarea>
+			<label for="productDescription" class="form-label">Опис (українською мовою):</label>
+			<textarea asp-for=Description class="form-control" id="productDescription" rows="8" placeholder="Наприклад: В цьому костюмі ви будете виглядати, як зірка"></textarea>
 			<span asp-validation-for=Description class="form-text text-danger"></span>
 		</div>
 		<div class="mb-3">
@@ -52,18 +61,15 @@
 			<span asp-validation-for=BrandId class="form-text text-danger"></span>
 		</div>
 		<div class="mb-3">
-			<label for="productImages" class="form-label">Кнопка загрузки фотографий с очень крутым дизайном</label>
 			<span id="filenames"></span>
 			<input asp-for=ProductImages id="productImages" class="d-none" accept="image/*" />
 			<span asp-validation-for=ProductImages class="form-text text-danger"></span>
 		</div>
-		<input type="submit" class="btn btn-success" value="Створити" />
+		<div class="text-danger" asp-validation-summary="ModelOnly"></div>
+		<div class="d-flex">
+			<button type="submit" class="site-button site-primary-button ms-auto px-5 mb-5">Додати товар</button>
+		</div>
 	</form>
-
-	<hr />
-
-	<div class="text-muted mt-2">Попередній перегляд обраних зображень:</div>
-	<div id="selectedImagesContainer" class="mx-3 mt-2 text-center"></div>
 </div>
 
 @section scripts {

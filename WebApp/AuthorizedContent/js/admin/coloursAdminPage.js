@@ -110,7 +110,7 @@ $(function () {
             me.append(newElement);
         }
 
-        addButton("Update", "btn btn-warning me-2", function () { updateColour(me); });
-        addButton("Delete", "btn btn-danger", function () { deleteColour(me); });
+        addButton("Update", "site-button site-warning-button me-2", function () { updateColour(me); });
+        addButton("Delete", "site-button site-danger-button", function () { deleteColour(me); });
     });
 });

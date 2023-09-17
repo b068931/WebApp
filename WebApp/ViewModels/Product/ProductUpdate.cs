@@ -13,6 +13,7 @@ namespace WebApp.ViewModels.Product
 		[StringLength(maximumLength: 100, MinimumLength = 5, ErrorMessage = "Довжина імені товару має бути 5-100 символів.")]
 		public string Name { get; set; } = default!;
 
+		[Required(ErrorMessage = "Будь ласка, вкажіть опис товару.")]
 		[StringLength(maximumLength: 6000, MinimumLength = 0, ErrorMessage = "Максимальна довжина опису товару - 6000 символів.")]
 		public string Description { get; set; } = default!;
 

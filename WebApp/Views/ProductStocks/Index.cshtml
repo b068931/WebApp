@@ -15,8 +15,8 @@
 		  </form>
 	  </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Відмінити</button>
-        <button form="deleteConfirmationForm" type="submit" class="btn btn-primary">Підтвердити</button>
+        <button type="button" class="site-button site-secondary-button" data-bs-dismiss="modal">Відмінити</button>
+        <button form="deleteConfirmationForm" type="submit" class="site-button site-primary-button">Підтвердити</button>
       </div>
     </div>
   </div>
@@ -63,8 +63,8 @@
 		</form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
-        <button form="stockSettingsContainer" type="submit" class="btn btn-primary">Зберегти</button>
+        <button type="button" class="site-button site-secondary-button" data-bs-dismiss="modal">Закрити</button>
+        <button form="stockSettingsContainer" type="submit" class="site-button site-primary-button">Зберегти</button>
       </div>
     </div>
   </div>
@@ -76,7 +76,7 @@
 		<div class="text-danger fw-bold mb-2">Помилка виконання запиту: @Model.ErrorMessage</div>
 	}
 	<a href="/products/product/@Model.ProductId" class="text-black mb-2">Назад на сторінку продукту</a>
-	<button id="create" class="btn btn-outline-success w-100">Створити</button>
+	<button id="create" class="site-button site-primary-button w-100">Створити</button>
 	<table class="table table-striped table-hover border-top pt-2 mt-3">
         <thead>
             <tr>
@@ -89,7 +89,7 @@
 		<tbody>
 			@foreach(var stock in Model.Stocks)
 			{
-				<tr>
+				<tr class="bg-white">
 					<td class="p-3 ps-1">
 						<div class="d-flex border border-2 rounded-pill p-1">
 							<div class="rounded-circle my-auto ms-3 me-auto" style="width:30px;height:30px;background:@stock.Colour.HexCode"></div>
@@ -108,8 +108,8 @@
 					</td>
 					<td class="p-3 ps-1">
 						<div class="d-flex mt-1">
-							<button data-stockid="@stock.Id" data-selectedcolour="@stock.Colour.Id" data-selectedsize="@stock.Size.Id" data-stocksize="@stock.ProductAmount" class="change-stock-btn btn btn-warning my-auto me-1 flex-fill">Змінити</button>
-							<button data-stockid="@stock.Id" class="delete-stock-btn btn btn-danger my-auto flex-fill">Видалити</button>
+							<button data-stockid="@stock.Id" data-selectedcolour="@stock.Colour.Id" data-selectedsize="@stock.Size.Id" data-stocksize="@stock.ProductAmount" class="change-stock-btn site-button site-warning-button my-auto me-1 flex-fill">Змінити</button>
+							<button data-stockid="@stock.Id" class="delete-stock-btn site-button site-danger-button my-auto flex-fill">Видалити</button>
 						</div>
 					</td>
 				</tr>
