@@ -40,27 +40,33 @@
 			<textarea asp-for=Description class="form-control" id="productDescription" rows="8" placeholder="Наприклад: В цьому костюмі ви будете виглядати, як зірка"></textarea>
 			<span asp-validation-for=Description class="form-text text-danger"></span>
 		</div>
-		<div class="mb-3">
-			<label for="productPrice" class="form-label">Ціна:</label>
-			<input asp-for=Price class="form-control" id="productPrice">
-			<span asp-validation-for=Price class="form-text text-danger"></span>
-		</div>
-		<div class="mb-3">
-			<label for="productDiscount" class="form-label">Знижка:</label>
-			<input asp-for=Discount class="form-control" id="productDiscount">
-			<span asp-validation-for=Discount class="form-text text-danger"></span>
-		</div>
-		<div class="mb-3">
-			<label for="productCategory" class="form-label">Оберіть категорію, до якої відноситься цей товар:</label>
-			<select asp-for=CategoryId asp-items=@Model.AvailableCategories class="form-control" id="productCategory"></select>
-			<span asp-validation-for=CategoryId class="form-text text-danger"></span>
-		</div>
-		<div class="mb-3">
-			<label for="productBrand" class="form-label">Оберіть бренд цього товару:</label>
-			<select asp-for=BrandId asp-items=@Model.AvailableBrands class="form-control" id="productBrand">
-				<option value="0">Немає</option>
-			</select>
-			<span asp-validation-for=BrandId class="form-text text-danger"></span>
+		<div class="container-fluid">
+			<div class="row">
+				<div class="mb-3 col p-0 me-4">
+					<label for="productPrice" class="form-label">Ціна:</label>
+					<input asp-for=Price class="form-control" id="productPrice">
+					<span asp-validation-for=Price class="form-text text-danger"></span>
+				</div>
+				<div class="mb-3 col p-0">
+					<label for="productDiscount" class="form-label">Знижка:</label>
+					<input asp-for=Discount class="form-control" id="productDiscount">
+					<span asp-validation-for=Discount class="form-text text-danger"></span>
+				</div>
+			</div>
+			<div class="row">
+				<div class="mb-3 col p-0 me-4">
+					<label for="productCategory" class="form-label">Оберіть категорію, до якої відноситься цей товар:</label>
+					<select asp-for=CategoryId asp-items=@Model.AvailableCategories class="form-control" id="productCategory"></select>
+					<span asp-validation-for=CategoryId class="form-text text-danger"></span>
+				</div>
+				<div class="mb-3 col p-0">
+					<label for="productBrand" class="form-label">Оберіть бренд цього товару:</label>
+					<select asp-for=BrandId asp-items=@Model.AvailableBrands class="form-control" id="productBrand">
+						<option value="0">Немає</option>
+					</select>
+					<span asp-validation-for=BrandId class="form-text text-danger"></span>
+				</div>
+			</div>
 		</div>
 		<div class="mb-3">
 			<span id="filenames"></span>
