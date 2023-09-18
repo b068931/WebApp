@@ -338,3 +338,12 @@ body {
 .styled-inputs input[type="button"] {
 	color: white;
 }
+
+.image-preview-border {
+	border: 2px dotted black;
+	border-radius: 0.3rem;
+}
+
+.image-preview-border img {
+	border-radius: 0.3rem;
+}

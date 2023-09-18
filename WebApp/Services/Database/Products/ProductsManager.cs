@@ -210,6 +210,7 @@ namespace WebApp.Services.Database.Products
 				Discount = foundProduct.Discount,
 				BrandId = foundProduct.BrandId ?? 0,
 				CategoryId = foundProduct.CategoryId,
+				AvailableImagesCount = ProductImagesManager.MaxImagesCount - await _images.GetProductImagesCountAsync(productId),
 				AvailableCategories =
 					await _categories.GetSelectListWithSelectedIdAsync(foundProduct.CategoryId),
 				AvailableBrands = foundProduct.BrandId == null

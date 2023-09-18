@@ -22,10 +22,12 @@
 		<label for="productImages" role="button" class="form-label mt-2 site-button site-primary-button">
 			Завантажити фотографі
 		</label>
+		@if(Model.AvailableImagesCount == 0)
+		{
+			<div class="text-danger">Ви досягли максимальної кількості зображень для одного продукту.</div>
+		}
 	</div>
-
 	<div id="selectedImagesContainer" class="mx-3 mt-2 text-center"></div>
-
 	<form action="/products/action/update" method="post" enctype="multipart/form-data" class="styled-inputs mx-3">
 		<h4 class="my-4 fw-bold">Опишіть вашу річ</h4>
 		@Html.AntiForgeryToken()
@@ -81,5 +83,5 @@
 </div>
 
 @section scripts {
-	<script type="text/javascript" src="~/authorized/js/imagePreview.js"></script>
+	<script id="previewImagesScript" type="text/javascript" src="~/authorized/js/imagePreview.js" data-placeholders="@Model.AvailableImagesCount"></script>
 }

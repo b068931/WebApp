@@ -8,6 +8,7 @@ namespace WebApp.Services.Database.Products
 {
 	public class ProductImagesManager
 	{
+		public const int MaxImagesCount = 8;
 		private const int MaxFileSize = 4194304;
 		private const string ImagesStorageRelativePath = "images/";
 
@@ -73,6 +74,15 @@ namespace WebApp.Services.Database.Products
 
 		public async Task<List<ProductImage>> AddImagesToProductAsync(int productId, List<IFormFile> images)
 		{
+			int imagesCount = await GetProductImagesCountAsync(productId) + images.Count;
+			if (imagesCount > MaxImagesCount)
+				throw new UserInteractionException(
+					string.Format(
+						"Максимальна кількість зображень для одного продукту: {0}.",
+						MaxImagesCount
+					)
+				);
+
 			List<ProductImage> loadedImages = await CreateImageEntitiesAsync(productId, images);
 
 			_database.ProductImages.AddRange(loadedImages);
@@ -108,6 +118,14 @@ namespace WebApp.Services.Database.Products
 					Path = e.StorageRelativeLocation
 				})
 				.ToListAsync();
+		}
+		public Task<int> GetProductImagesCountAsync(int productId)
+		{
+			return _database.Products
+				.Include(e => e.Images)
+				.Where(e => e.Id == productId)
+				.Select(e => e.Images.Count)
+				.FirstAsync();
 		}
 	}
 }

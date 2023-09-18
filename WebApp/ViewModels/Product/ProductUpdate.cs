@@ -31,6 +31,9 @@ namespace WebApp.ViewModels.Product
 		public List<IFormFile>? ProductImages { get; set; }
 
 		[ValidateNever]
+		public int AvailableImagesCount { get; set; }
+
+		[ValidateNever]
 		public List<SelectListItem> AvailableCategories { get; set; } = default!;
 
 		[ValidateNever]
