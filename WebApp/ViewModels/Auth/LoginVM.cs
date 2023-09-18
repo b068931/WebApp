@@ -6,7 +6,7 @@ namespace WebApp.ViewModels.Auth
 	{
 		[Required(ErrorMessage = "Будь ласка, вкажіть ваш логін")]
 		[DataType(DataType.Text)]
-		public string Email { get; set; } = default!;
+		public string UserName { get; set; } = default!;
 
 		[Required(ErrorMessage = "Будь ласка, вкажіть ваш пароль")]
 		[DataType(DataType.Password)]

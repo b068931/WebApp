@@ -6,6 +6,8 @@ using WebApp.Database.Entities.Auth;
 using WebApp.ProjectConfiguration.Initializers;
 using WebApp.ProjectConfiguration.Options;
 using WebApp.ProjectConfiguration.Options.Auth;
+using WebApp.ProjectConfiguration.Options.Email;
+using WebApp.Services.Actions;
 using WebApp.Services.Background;
 using WebApp.Services.Database.Grouping;
 using WebApp.Services.Database.Maintenance;
@@ -35,7 +37,8 @@ builder.Services
 		options.Password.RequireLowercase = false;
 		options.Password.RequireUppercase = false;
 	})
-	.AddEntityFrameworkStores<DatabaseContext>();
+	.AddEntityFrameworkStores<DatabaseContext>()
+	.AddDefaultTokenProviders();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -87,8 +90,17 @@ builder.Services.Configure<UserInteractionOptions>(
 	builder.Configuration.GetSection(UserInteractionOptions.FieldName)
 );
 
+builder.Services.Configure<SMTPCredentialsOptions>(
+	builder.Configuration.GetSection(SMTPCredentialsOptions.FieldName)
+);
+
+builder.Services.Configure<EmailConnectionInformationOptions>(
+	builder.Configuration.GetSection(EmailConnectionInformationOptions.FieldName)
+);
+
 //Add custom services.
 builder.Services
+	.AddTransient<EmailSender>()
 	.AddScoped<BrandsManager>()
 	.AddScoped<CategoriesManager>()
 	.AddScoped<ProductImagesManager>()

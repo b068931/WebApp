@@ -1,0 +1,22 @@
+﻿@model WebApp.ViewModels.Auth.EmailConfirmationFinishVM
+
+<div class="m-2">
+	@if(Model.Error != null)
+	{
+		<p class="text-danger fw-bold">Не редагуйте посилання, що вам надіслали(якщо ви цього не робили, то це помилка сервера). Помилка підтвердження: @Model.Error</p>
+	}
+	else if(Model.ReturnUrl != null)
+	{
+		<h2>Ваш email успішно підтверджено!</h2>
+		<p>
+			Перейдіть за <a href="/auth/login?return=@Model.ReturnUrl" class="text-black text-decoration-underline">цим посиланням</a> щоб авторизуватися. Або ви може використати вже відкрите вікно, якщо воно ще є.
+		</p>
+	}
+	else
+	{
+		<h2>Ваш email успішно підтверджено!</h2>
+		<p>
+			Перейдіть за <a href="/auth/login" class="text-black text-decoration-underline">цим посиланням</a> щоб авторизуватися. Або ви може використати вже відкрите вікно, якщо воно ще є.
+		</p>
+	}
+</div>
