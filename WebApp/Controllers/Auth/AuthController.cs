@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.WebUtilities;
 using MimeKit;
 using NuGet.Common;
@@ -41,6 +42,27 @@ namespace WebApp.Controllers.Auth
 			};
 
 			await sender.SendMessage(emailConfirmationMessage);
+		}
+
+		private async Task SendPasswordResetMessage(
+			EmailSender sender,
+			string receiver,
+			PasswordResetVM model)
+		{
+			MimeMessage passwordResetMessage = sender.GetMessage();
+
+			passwordResetMessage.To.Add(new MailboxAddress("User to be restored", receiver));
+			passwordResetMessage.Subject = "Відновлення пароля";
+			passwordResetMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+			{
+				Text = await RenderViewAsync(
+					"_PasswordResetEmailMessage",
+					model,
+					true
+				)
+			};
+
+			await sender.SendMessage(passwordResetMessage);
 		}
 
 		public AuthController(
@@ -165,13 +187,13 @@ namespace WebApp.Controllers.Auth
 						}
 						else
 						{
-							ModelState.AddModelError("Password", "Помилка створення вашого акаунта.");
+							ModelState.AddModelError("PasswordRepeat", "Помилка створення вашого акаунта.");
 						}
 					}
 
 					return View("Register", registerVM);
 				},
-				(message) => ModelState.AddModelError("Password", message.Message),
+				(message) => ModelState.AddModelError("PasswordRepeat", message.Message),
 				() =>
 				{
 					ModelState.AddModelError(string.Empty, "Помилка створення вашого акаунта.");
@@ -193,9 +215,8 @@ namespace WebApp.Controllers.Auth
 					if (string.IsNullOrEmpty(confirmationToken))
 						throw new UserInteractionException("Ви не вказали токен для підтвердження.");
 
-					ApplicationUser foundUser = await _users.FindByIdAsync(userId.ToString());
-					if (foundUser == null)
-						throw new UserInteractionException("Такий користувач не існує.");
+					ApplicationUser foundUser = await _users.FindByIdAsync(userId.ToString())
+						?? throw new UserInteractionException("Такий користувач не існує.");
 
 					var result = await _users.ConfirmEmailAsync(foundUser, confirmationToken);
 					if (!result.Succeeded)
@@ -212,6 +233,137 @@ namespace WebApp.Controllers.Auth
 					{
 						Error = message
 					})
+			);
+		}
+
+		[AllowAnonymous]
+		[HttpGet("reset/password")]
+		public IActionResult ForgotPassword(
+			[FromQuery(Name = "return")] string? returnUrl)
+		{
+			return View("ForgotPassword", new ForgotPasswordVM()
+			{
+				ReturnUrl = returnUrl
+			});
+		}
+
+		[AllowAnonymous]
+		[HttpPost("reset/password")]
+		[ValidateAntiForgeryToken]
+		public Task<IActionResult> ForgotPassword(
+			ForgotPasswordVM forgotVM,
+			[FromServices] EmailSender sender)
+		{
+			return _performer.PerformActionAsync(
+				async () =>
+				{
+					if(ModelState.IsValid)
+					{
+						ApplicationUser foundUser =
+							await _users.FindByEmailAsync(forgotVM.Email)
+								?? throw new UserInteractionException("Такого акаунта не існує.");
+
+						if (!await _users.IsEmailConfirmedAsync(foundUser))
+							throw new UserInteractionException("На жаль, ви не підтвердили вашу пошту, а тому відновити акаунт неможливо.");
+
+						string encodedToken = HttpUtility.UrlEncode(
+							await _users.GeneratePasswordResetTokenAsync(foundUser)
+						);
+
+						await SendPasswordResetMessage(
+							sender,
+							foundUser.Email,
+							new PasswordResetVM()
+							{
+								SiteBaseAddress = $"{Request.Scheme}://{Request.Host}",
+								UserId = foundUser.Id,
+								Token = encodedToken,
+								ReturnUrl = forgotVM.ReturnUrl
+							}
+						);
+
+						ModelState.AddModelError("Password", "Відновіть пароль, щоб увійти у ваш акаунт.");
+						return View("Login", new LoginVM()
+						{
+							ReturnUrl = forgotVM.ReturnUrl
+						});
+					}
+
+					return View("ForgotPassword", forgotVM);
+				},
+				(message) => ModelState.AddModelError(string.Empty, message.Message),
+				() =>
+				{
+					ModelState.AddModelError(string.Empty, "Помилка виконання запиту на відновлення пароля.");
+					return View("ForgotPassword", forgotVM);
+				}
+			);
+		}
+
+		[AllowAnonymous]
+		[HttpGet("reset/newpassword")]
+		public IActionResult ResetPassword(
+			[FromQuery(Name = "token")] string resetToken,
+			[FromQuery(Name = "user")] int userId,
+			[FromQuery(Name = "return")] string returnUrl)
+		{
+			return View("ResetPassword", new PasswordResetFinishVM()
+			{
+				ReturnUrl = returnUrl,
+				UserId = userId,
+				Token = resetToken
+			});
+		}
+
+		[AllowAnonymous]
+		[HttpPost("reset/newpassword")]
+		[ValidateAntiForgeryToken]
+		public Task<IActionResult> ResetPassword(
+			PasswordResetFinishVM resetVM)
+		{
+			return _performer.PerformActionAsync(
+				async () =>
+				{
+					if(ModelState.IsValid)
+					{
+						ApplicationUser foundUser = await _users.FindByIdAsync(resetVM.UserId.ToString())
+							?? throw new UserInteractionException("Вказаний користувач не існує.");
+
+						var result = 
+							await _users.ResetPasswordAsync(foundUser, resetVM.Token, resetVM.Password);
+
+						if(result.Succeeded)
+						{
+							return View("Login", new LoginVM()
+							{
+								UserName = foundUser.UserName,
+								ReturnUrl = resetVM.ReturnUrl
+							});
+						}
+						else
+						{
+							ModelState.AddModelError("PasswordRepeat", "Помилка зміни пароля вашого акаунта.");
+						}
+					}
+
+					return View("ResetPassword", new PasswordResetFinishVM()
+					{
+						ReturnUrl = resetVM.ReturnUrl,
+						UserId = resetVM.UserId,
+						Token = resetVM.Token
+					});
+				},
+				(message) => ModelState.AddModelError("PasswordRepeat", message.Message),
+				() =>
+				{
+					ModelState.AddModelError(string.Empty, "Помилка зміни пароля вашого акаунта.");
+					return View("ResetPassword", new PasswordResetFinishVM()
+					{
+						ReturnUrl = resetVM.ReturnUrl,
+						UserId = resetVM.UserId,
+						Token = resetVM.Token
+					});
+				}
 			);
 		}
 	}

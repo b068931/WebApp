@@ -2,24 +2,24 @@
 
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-	</head>
-	<body>
-		<center>
-			<b>Підтвердження вашого Email</b>
-		</center>
-		@if(Model.ReturnUrl == null)
-		{
-			<p>
-				Перейдіть за <a href="@Model.SiteBaseAddress/auth/confirmation/email?token=@Model.Token&user=@Model.UserId">посиланням</a> для того, щоб підтвердити ваш email.
-			</p>
-		}
-		else
-		{
-			<p>
-				Перейдіть за <a href="@Model.SiteBaseAddress/auth/confirmation/email?token=@Model.Token&user=@Model.UserId&return=@Model.ReturnUrl">посиланням</a> для того, щоб підтвердити ваш email.
-			</p>
-		}
+<head>
+	<meta charset="utf-8" />
+</head>
+<body>
+	<center>
+		<b>Підтвердження вашого Email</b>
+	</center>
+	@if(Model.ReturnUrl == null)
+	{
+		<p>
+			Перейдіть за <a href="@Model.SiteBaseAddress/auth/confirmation/email?token=@Model.Token&user=@Model.UserId">посиланням</a> для того, щоб підтвердити ваш email.
+		</p>
+	}
+	else
+	{
+		<p>
+			Перейдіть за <a href="@Model.SiteBaseAddress/auth/confirmation/email?token=@Model.Token&user=@Model.UserId&return=@Model.ReturnUrl">посиланням</a> для того, щоб підтвердити ваш email.
+		</p>
+	}
 </body>
 </html>

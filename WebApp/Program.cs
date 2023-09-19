@@ -52,6 +52,11 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 	options.ReturnUrlParameter = "return";
 	options.Cookie.HttpOnly = true;
+
+	//https://github.com/dotnet/aspnetcore/issues/13632.
+	//Due to the SameSite attribute of the antiforgery cookie you can not reset password on one page
+	//and login on another, you'll just get a 400(badrequest) because antiforgery token on the first
+	//page will not match the antiforgery cookie (that has been changed by the second page).
 });
 
 builder.Services.AddAuthorization(options =>

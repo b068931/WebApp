@@ -8,7 +8,7 @@
 	<img src="/resources/womanongrass.png" class="h-100" style="width:37.5%;"/>
 	<div class="d-flex flex-column flex-fill">
 		<img src="/resources/brandbig.svg" class="mx-auto mt-auto" style="width:180px;height:133px;"/>
-		<span class="mx-auto" style="color:rgba(33, 37, 23, 1);">Приєднуйся до нашої великої родини</span>
+		<span class="mx-auto" style="color:rgba(33, 37, 23, 1);">Вхід до існуючого акаунта</span>
 		<div class="d-flex my-4 mx-auto">
 			<h4 class="prevent-select me-4">Вхід</h4>
 			@if(Model.ReturnUrl != null)
@@ -48,7 +48,14 @@
 				</div>
 				<span class="text-danger mt-1" asp-validation-for=Password></span>
 			</div>
-			<a href="#" class="mt-4 mx-auto link_color">Забули пароль?</a>
+			@if(Model.ReturnUrl != null)
+			{
+				<a href="/auth/reset/password?return=@Model.ReturnUrl" class="mt-4 mx-auto link_color">Забули пароль?</a>
+			}
+			else
+			{
+				<a href="/auth/reset/password" class="mt-4 mx-auto link_color">Забули пароль?</a>
+			}
 			<button type="submit" class=" mt-5 btn btn-outline-dark" style="border-radius:1.1rem;">Увійти</button>
 		</form>
 	</div>
