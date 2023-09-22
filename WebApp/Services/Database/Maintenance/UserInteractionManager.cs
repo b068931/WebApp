@@ -64,7 +64,9 @@ namespace WebApp.Services.Database.Maintenance
 			return _database.SaveChangesAsync(stoppingToken);
 		}
 
-		public UserInteractionManager(DatabaseContext database, IOptions<UserInteractionOptions> options)
+		public UserInteractionManager(
+			DatabaseContext database, 
+			IOptions<UserInteractionOptions> options)
 		{
 			_database = database;
 			_options = options.Value;

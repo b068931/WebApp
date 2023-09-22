@@ -25,6 +25,8 @@ namespace WebApp.Controllers.Products
 	[Authorize(Policy = "PublicContentPolicy")]
 	public class ProductsController : ExtendedController
 	{
+		private const int ProductsPageSize = 8;
+
 		private readonly ProductFiltersFactory _filtersFactory;
 		private readonly ProductOrderFactory _ordersFactory;
 
@@ -216,8 +218,8 @@ namespace WebApp.Controllers.Products
 					IOrdering<Product> paginator =
 						_ordersFactory.CreateOrdering(maxId, searchParameters);
 
-					List<Database.Models.ProductPreview> searchResult =
-						await _products.SearchAsync(filters, paginator);
+					List<ProductPreview> searchResult =
+						await _products.SearchAsync(filters, paginator, ProductsPageSize);
 
 					string html = await RenderViewAsync(
 						"_ProductSearchPreview",

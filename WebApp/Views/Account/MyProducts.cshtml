@@ -1,0 +1,30 @@
+﻿@model WebApp.ViewModels.Account.MyProductsVM
+
+<div class="d-flex flex-row justify-content-between m-3">
+	<div class="flex-fill">
+		<h4>Мої товари</h4>
+		@if(Model.ProductsList.Count != 0)
+		{
+			<div class="d-flex flex-row justify-content-center flex-wrap">
+				<partial name="~/Views/Products/_ProductSearchPreview.cshtml" model="Model.ProductsList" />
+			</div>
+		}
+		else
+		{
+			<div class="d-flex">
+				<div class="d-flex flex-column mx-auto mt-5">
+					<p class="mx-auto">Ви не додали жодної речі</p>
+					<form method="get" action="/products/action/create" class="mx-auto">
+						<button type="submit" class="site-button site-primary-button px-5">Додати товар</button>
+					</form>
+				</div>
+			</div>
+		}
+	</div>
+	<div class="prevent-select">
+		<p class="lh-lg">
+			<a href="/account" class="link_color">Сторінка мого акаунта</a>
+		</p>
+		<p>Мої продукти</p>
+	</div>
+</div>

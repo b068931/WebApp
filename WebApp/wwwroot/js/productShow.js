@@ -98,6 +98,9 @@
     $.get("/product/stocks/json?productId=" + location[location.length - 1],
         function (data, status) {
             if (status === "success") {
+                if (data.length === 0)
+                    $("#notShownInSearch").removeClass("d-none");
+
                 loadedProductStocksInformation = data;
                 $(".stock-information-select")
                     .on("change", function () {

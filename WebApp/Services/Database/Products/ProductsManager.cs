@@ -12,6 +12,8 @@ namespace WebApp.Services.Database.Products
 {
 	public class ProductsManager
 	{
+		public const int MaxProductsPerUser = 12;
+
 		private readonly DatabaseContext _database;
 		private readonly ProductImagesManager _images;
 		private readonly BrandsManager _brands;
@@ -61,65 +63,6 @@ namespace WebApp.Services.Database.Products
 			updateProduct.BrandId = vm.BrandId == 0 ? null : vm.BrandId;
 
 			await _database.SaveChangesAsync();
-		}
-
-		private Task<List<ProductPreview>> PerformSearchAsync(
-			List<IFilter<Product>> filters,
-			IOrdering<Product> paginator,
-			int pageSize)
-		{
-			IQueryable<Product> request = _database.Products
-				.AsNoTracking()
-				.Include(e => e.MainImage)
-				.Include(e => e.Stocks)
-					.ThenInclude(e => e.Colour)
-				.Include(e => e.Stocks)
-					.ThenInclude(e => e.Size)
-				.Where(e => e.Stocks.Count > 0);
-
-			request = paginator.Apply(request);
-			foreach (IFilter<Product> filter in filters)
-			{
-				request = filter.Apply(request);
-			}
-
-			//Mapping Product to ProductShowLightWeight is done in memory. Here we take only pageSize elements from database (and all their stocks information) I don't think that this result would take up THAT much memory.
-			return request
-				.Take(pageSize)
-				.ToListAsync()
-				.ContinueWith(next =>
-					next.Result
-						.Select(e => new ProductPreview()
-						{
-							Id = e.Id,
-							Name = e.Name,
-							Price = Math.Round(e.Price, 2),
-							Discount = e.Discount,
-							TruePrice = Math.Round(e.TruePrice, 2),
-							TrueRating = e.TrueRating,
-							ViewsCount = e.ViewsCount,
-							MainImage = e.MainImage?.StorageRelativeLocation ?? "",
-							Date = e.Created,
-							AvailableColours = e.Stocks
-								.DistinctBy(e => e.ColourId)
-								.Select(e => new ColourModel()
-								{
-									Id = e.Colour.Id,
-									Name = e.Colour.Name,
-									HexCode = e.Colour.HexCode
-								})
-								.ToList(),
-							AvailableSizes = e.Stocks
-								.DistinctBy(e => e.SizeId)
-								.Select(e => new SizeModel()
-								{
-									Id = e.Size.Id,
-									Name = e.Size.SizeName
-								})
-								.ToList()
-						})
-						.ToList()
-			);
 		}
 
 		public ProductsManager(
@@ -229,9 +172,64 @@ namespace WebApp.Services.Database.Products
 
 		public Task<List<ProductPreview>> SearchAsync(
 			List<IFilter<Product>> filters,
-			IOrdering<Product> paginator)
+			IOrdering<Product> paginator,
+			int pageSize,
+			bool includeOnlyAvailable = true)
 		{
-			return PerformSearchAsync(filters, paginator, 8);
+			IQueryable<Product> request = _database.Products
+				.AsNoTracking()
+				.Include(e => e.MainImage)
+				.Include(e => e.Stocks)
+					.ThenInclude(e => e.Colour)
+				.Include(e => e.Stocks)
+					.ThenInclude(e => e.Size);
+
+			if(includeOnlyAvailable)
+				request = request.Where(e => e.Stocks.Count > 0);
+
+			request = paginator.Apply(request);
+			foreach (IFilter<Product> filter in filters)
+			{
+				request = filter.Apply(request);
+			}
+
+			//Mapping Product to ProductShowLightWeight is done in memory. Here we take only pageSize elements from database (and all their stocks information) I don't think that this result would take up THAT much memory.
+			return request
+				.Take(pageSize)
+				.ToListAsync()
+				.ContinueWith(next =>
+					next.Result
+						.Select(e => new ProductPreview()
+						{
+							Id = e.Id,
+							Name = e.Name,
+							Price = Math.Round(e.Price, 2),
+							Discount = e.Discount,
+							TruePrice = Math.Round(e.TruePrice, 2),
+							TrueRating = e.TrueRating,
+							ViewsCount = e.ViewsCount,
+							MainImage = e.MainImage?.StorageRelativeLocation ?? "",
+							Date = e.Created,
+							AvailableColours = e.Stocks
+								.DistinctBy(e => e.ColourId)
+								.Select(e => new ColourModel()
+								{
+									Id = e.Colour.Id,
+									Name = e.Colour.Name,
+									HexCode = e.Colour.HexCode
+								})
+								.ToList(),
+							AvailableSizes = e.Stocks
+								.DistinctBy(e => e.SizeId)
+								.Select(e => new SizeModel()
+								{
+									Id = e.Size.Id,
+									Name = e.Size.SizeName
+								})
+								.ToList()
+						})
+						.ToList()
+			);
 		}
 
 		public async Task<Product> CreateProductAsync(int ownerId, ProductCreate vm)
