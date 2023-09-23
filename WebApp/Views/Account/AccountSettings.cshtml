@@ -1,0 +1,35 @@
+﻿<div class="d-flex flex-row justify-content-between m-3">
+	<div class="flex-fill">
+		<h4>Налаштування акаунта</h4>
+		<div class="text-danger mt-4" asp-validation-summary=All></div>
+		<div class="mt-4 mb-2">
+			<form method="post" action="/account/change/name" class="styled-inputs px-4">
+				@Html.AntiForgeryToken()
+
+				<label for="newUserName" class="form-label">Нове ім'я користувача (зміни з'являться тільки після того, як ви перезайдете у свій акаунт)</label>
+				<input id="newUserName" type="text" name="UserName" placeholder="Введіть нове ім'я для цього користувача" class="form-control"/>
+
+				<button type="submit" class="site-button site-primary-button mt-2 w-100">Змінити</button>
+			</form>
+			<form method="post" action="/account/change/password" class="styled-inputs px-4 mt-5">
+				@Html.AntiForgeryToken()
+
+				<label for="oldPassword" class="form-label">Зміна пароля</label>
+				<input id="oldPassword" type="password" name="OldPassword" placeholder="Введіть старий пароль" class="form-control" />
+				<input type="password" name="NewPassword" placeholder="Введіть новий пароль" class="form-control mt-1" />
+				<input type="password" name="NewPasswordRepeat" placeholder="Повторіть новий пароль" class="form-control mt-1" />
+
+				<button type="submit" class="site-button site-primary-button mt-2 w-100">Змінити</button>
+			</form>
+		</div>
+	</div>
+	<div class="lh-sm prevent-select">
+		<p>
+			<a href="/account" class="link_color">Сторінка мого акаунта</a>
+		</p>
+		<p>
+			<a href="/account/products" class="link_color">Мої продукти</a>
+		</p>
+		<p class="text-muted">Налаштування</p>
+	</div>
+</div>

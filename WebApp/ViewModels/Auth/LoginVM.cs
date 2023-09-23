@@ -6,6 +6,8 @@ namespace WebApp.ViewModels.Auth
 	{
 		[Required(ErrorMessage = "Будь ласка, вкажіть ваш логін")]
 		[DataType(DataType.Text)]
+		[MinLength(2, ErrorMessage = "Мінімальна довжина: 2 символи")]
+		[MaxLength(25, ErrorMessage = "Максимальна довжина: 25 символів")]
 		public string UserName { get; set; } = default!;
 
 		[Required(ErrorMessage = "Будь ласка, вкажіть ваш пароль")]
