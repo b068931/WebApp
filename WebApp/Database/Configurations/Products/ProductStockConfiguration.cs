@@ -9,7 +9,7 @@ namespace WebApp.Database.Configurations.Products
 		public void Configure(EntityTypeBuilder<ProductStock> builder)
 		{
 			builder
-				.ToTable("ProductStock")
+				.ToTable("ProductStocks")
 				.HasKey(e => e.Id);
 
 			builder

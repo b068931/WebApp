@@ -49,6 +49,14 @@ namespace WebApp.Database.Configurations.Products
 				.HasPrecision(10, 2);
 
 			builder
+				.Property(e => e.Name)
+				.HasMaxLength(100);
+
+			builder
+				.Property(e => e.Description)
+				.HasMaxLength(1700);
+
+			builder
 				.Property(e => e.TruePrice)
 				.HasComputedColumnSql("[Price] - ([Discount] * [Price] / 100)", stored: true);
 

@@ -15,6 +15,10 @@ namespace WebApp.Database.Configurations.Products
 			builder
 				.HasIndex(e => new { e.Name, e.HexCode })
 				.IsUnique(true);
+
+			builder
+				.Property(e => e.Name)
+				.HasMaxLength(50);
 		}
 	}
 }

@@ -11,12 +11,12 @@ namespace WebApp.ViewModels.Product
 		public string Name { get; set; } = default!;
 
 		[Required(ErrorMessage = "Будь ласка, вкажіть опис товару.")]
-		[StringLength(maximumLength: 6000, MinimumLength = 0, ErrorMessage = "Максимальна довжина опису товару - 6000 символів.")]
+		[StringLength(maximumLength: 1700, MinimumLength = 0, ErrorMessage = "Максимальна довжина опису товару - 1700 символів.")]
 		public string Description { get; set; } = default!;
 
 		public decimal Price { get; set; }
 
-		[Range(0, 100, ErrorMessage = "Знижка не може бути більшою за 100% (Можливо, ви хочете віддати ваш товар безкоштовно?)")]
+		[Range(0, 100, ErrorMessage = "Знижка не може бути більшою за 100%")]
 		public int Discount { get; set; }
 
 		[Required]

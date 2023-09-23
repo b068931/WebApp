@@ -17,6 +17,10 @@ namespace WebApp.Database.Configurations.Products
 				.WithMany(e => e.Images)
 				.HasForeignKey(e => e.ProductId)
 				.OnDelete(DeleteBehavior.Restrict);
+
+			builder
+				.Property(e => e.StorageRelativeLocation)
+				.HasMaxLength(256);
 		}
 	}
 }

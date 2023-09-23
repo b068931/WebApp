@@ -11,6 +11,10 @@ namespace WebApp.Database.Configurations.Grouping
 			builder
 				.ToTable("BrandImages")
 				.HasKey(c => c.Id);
+
+			builder
+				.Property(e => e.ContentType)
+				.HasMaxLength(100);
 		}
 	}
 }

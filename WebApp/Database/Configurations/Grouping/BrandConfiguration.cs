@@ -17,6 +17,10 @@ namespace WebApp.Database.Configurations.Grouping
 				.WithOne(e => e.Brand)
 				.HasForeignKey<Brand>(e => e.ImageId)
 				.OnDelete(DeleteBehavior.ClientSetNull);
+
+			builder
+				.Property(e => e.Name)
+				.HasMaxLength(100);
 		}
 	}
 }

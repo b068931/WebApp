@@ -17,6 +17,10 @@ namespace WebApp.Database.Configurations.Grouping
 				.WithMany(e => e.Children)
 				.HasForeignKey(e => e.ParentId)
 				.OnDelete(DeleteBehavior.ClientSetNull);
+
+			builder
+				.Property(e => e.Name)
+				.HasMaxLength(50);
 		}
 	}
 }

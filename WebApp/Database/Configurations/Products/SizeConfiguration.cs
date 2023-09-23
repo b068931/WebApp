@@ -15,6 +15,10 @@ namespace WebApp.Database.Configurations.Products
 			builder
 				.HasIndex(e => e.SizeName)
 				.IsUnique(true);
+
+			builder
+				.Property(e => e.SizeName)
+				.HasMaxLength(10);
 		}
 	}
 }

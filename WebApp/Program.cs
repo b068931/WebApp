@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -40,25 +41,6 @@ builder.Services
 	.AddEntityFrameworkStores<DatabaseContext>()
 	.AddDefaultTokenProviders();
 
-builder.Services.ConfigureApplicationCookie(options =>
-{
-	options.LoginPath = new PathString("/auth/login");
-	options.LogoutPath = new PathString("/auth/logout");
-	options.LogoutPath = new PathString("/auth/logout");
-	options.AccessDeniedPath = new PathString("/auth/noentry");
-
-	options.ExpireTimeSpan = TimeSpan.FromDays(5);
-	options.SlidingExpiration = true;
-
-	options.ReturnUrlParameter = "return";
-	options.Cookie.HttpOnly = true;
-
-	//https://github.com/dotnet/aspnetcore/issues/13632.
-	//Due to the SameSite attribute of the antiforgery cookie you can not reset password on one page
-	//and login on another, you'll just get a 400(badrequest) because antiforgery token on the first
-	//page will not match the antiforgery cookie (that has been changed by the second page).
-});
-
 builder.Services.AddAuthorization(options =>
 {
 	options.AddPolicy("CriticalSiteContentPolicy", policy =>
@@ -90,7 +72,28 @@ builder.Services.AddAuthorization(options =>
 		.Build();
 });
 
-//Add app settings.
+//Change application settings
+builder.Services.ConfigureApplicationCookie(options =>
+{
+	options.LoginPath = new PathString("/auth/login");
+	options.LogoutPath = new PathString("/auth/logout");
+	options.LogoutPath = new PathString("/auth/logout");
+	options.AccessDeniedPath = new PathString("/auth/noentry");
+
+	options.ExpireTimeSpan = TimeSpan.FromDays(5);
+	options.SlidingExpiration = true;
+
+	options.ReturnUrlParameter = "return";
+	options.Cookie.HttpOnly = true;
+
+	options.Cookie.Name = "UserIdentity";
+
+	//https://github.com/dotnet/aspnetcore/issues/13632.
+	//Due to the SameSite attribute of the antiforgery cookie you can not reset password on one page
+	//and login on another, you'll just get a 400(badrequest) because antiforgery token on the first
+	//page will not match the antiforgery cookie (that has been changed by the second page).
+});
+
 builder.Services.Configure<UserInteractionOptions>(
 	builder.Configuration.GetSection(UserInteractionOptions.FieldName)
 );
@@ -102,6 +105,11 @@ builder.Services.Configure<SMTPCredentialsOptions>(
 builder.Services.Configure<EmailConnectionInformationOptions>(
 	builder.Configuration.GetSection(EmailConnectionInformationOptions.FieldName)
 );
+
+builder.Services.Configure<AntiforgeryOptions>(options =>
+{
+	options.Cookie.Name = "AntiForgeryToken";
+});
 
 //Add custom services.
 builder.Services
