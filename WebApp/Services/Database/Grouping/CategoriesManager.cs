@@ -12,6 +12,14 @@ namespace WebApp.Services.Database.Grouping
 	public class CategoriesManager
 	{
 		private readonly DatabaseContext _database;
+		private Task<int> GetProductsCountInCategoryAsync(int categoryId)
+		{
+			return _database.Categories
+				.Include(e => e.Products)
+				.Where(e => e.Id == categoryId)
+				.Select(e => e.Products.Count())
+				.FirstAsync();
+		}
 
 		private async Task<Category> FindCategoryAsync(int categoryId)
 		{
@@ -218,6 +226,9 @@ namespace WebApp.Services.Database.Grouping
 		{
 			if (parentId != null)
 			{
+				if (await GetProductsCountInCategoryAsync(parentId.Value) != 0)
+					throw new UserInteractionException("You can not create child category for category with products.");
+
 				Category parent = await FindCategoryAsync(parentId.Value);
 				parent.IsLast = false;
 			}
