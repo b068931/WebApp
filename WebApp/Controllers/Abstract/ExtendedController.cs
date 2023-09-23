@@ -18,31 +18,29 @@ namespace WebApp.Controllers.Abstract
 
 			ViewData.Model = model;
 
-			using (var writer = new StringWriter())
+			using var writer = new StringWriter();
+			IViewEngine viewEngine =
+				(HttpContext.RequestServices.GetService(typeof(ICompositeViewEngine))
+					as ICompositeViewEngine
+				) ?? throw new ViewRenderException("We are fucked.");
+
+			ViewEngineResult viewResult = viewEngine.FindView(ControllerContext, viewName, !partial);
+			if (viewResult.Success == false)
 			{
-				IViewEngine viewEngine =
-					(HttpContext.RequestServices.GetService(typeof(ICompositeViewEngine))
-						as ICompositeViewEngine
-					) ?? throw new ViewRenderException("We are fucked.");
-
-				ViewEngineResult viewResult = viewEngine.FindView(ControllerContext, viewName, !partial);
-				if (viewResult.Success == false)
-				{
-					throw new ViewRenderException($"View with name {viewName} does not exist.");
-				}
-
-				ViewContext viewContext = new ViewContext(
-					ControllerContext,
-					viewResult.View,
-					ViewData,
-					TempData,
-					writer,
-					new HtmlHelperOptions()
-				);
-
-				await viewResult.View.RenderAsync(viewContext);
-				return writer.GetStringBuilder().ToString();
+				throw new ViewRenderException($"View with name {viewName} does not exist.");
 			}
+
+			ViewContext viewContext = new(
+				ControllerContext,
+				viewResult.View,
+				ViewData,
+				TempData,
+				writer,
+				new HtmlHelperOptions()
+			);
+
+			await viewResult.View.RenderAsync(viewContext);
+			return writer.GetStringBuilder().ToString();
 		}
 
 		protected int GetUserId()

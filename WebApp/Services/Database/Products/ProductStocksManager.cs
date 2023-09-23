@@ -20,7 +20,7 @@ namespace WebApp.Services.Database.Products
 		{
 			ProductStock result = await _database.ProductStocks
 				.FindAsync(stockId) ?? throw new UserInteractionException(
-					string.Format("Product stock with id {0} does not exist", stockId)
+					$"Product stock with id {stockId} does not exist"
 				);
 
 			return result;
@@ -61,7 +61,7 @@ namespace WebApp.Services.Database.Products
 			if (await StockAlreadyExistsAsync(productId, colourId, sizeId))
 				throw new UserInteractionException("Така інформація у наявності цього продукта вже існує.");
 
-			ProductStock newStock = new ProductStock()
+			ProductStock newStock = new()
 			{
 				ProductAmount = stockSize,
 				ProductId = productId,

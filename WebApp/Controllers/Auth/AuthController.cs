@@ -153,7 +153,7 @@ namespace WebApp.Controllers.Auth
 				{
 					if (ModelState.IsValid)
 					{
-						ApplicationUser newUser = new ApplicationUser()
+						ApplicationUser newUser = new()
 						{
 							UserName = registerVM.UserName,
 							Email = registerVM.Email

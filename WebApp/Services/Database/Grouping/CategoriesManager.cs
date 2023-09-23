@@ -16,13 +16,18 @@ namespace WebApp.Services.Database.Grouping
 		private async Task<Category> FindCategoryAsync(int categoryId)
 		{
 			return await _database.Categories.FindAsync(categoryId) ??
-				throw new UserInteractionException(string.Format("Category with id {0} does not exist.", categoryId));
+				throw new UserInteractionException(
+					$"Category with id {categoryId} does not exist."
+				);
 		}
 		private async Task<Category> FindChildWithParentCategoryAsync(int categoryId)
 		{
 			return await _database.Categories
 				.Include(e => e.Parent)
-				.FirstOrDefaultAsync(e => e.Id == categoryId) ?? throw new UserInteractionException(string.Format("Category with id {0} does not exist.", categoryId));
+				.FirstOrDefaultAsync(e => e.Id == categoryId) 
+					?? throw new UserInteractionException(
+						$"Category with id {categoryId} does not exist."
+					);
 		}
 
 		private void LoadCategoryChildren(Category category)
@@ -32,7 +37,7 @@ namespace WebApp.Services.Database.Grouping
 					.Collection(e => e.Children)
 					.Load();
 		}
-		private List<CategoryVM> ConvertChildrenToVM(Category category)
+		private static List<CategoryVM> ConvertChildrenToVM(Category category)
 		{
 			if (!category.Children.TrueForAll(e => e.IsLast))
 				throw new ArgumentException("This function is non recursive. All children must have IsLast == true");
@@ -98,7 +103,7 @@ namespace WebApp.Services.Database.Grouping
 				.Where(e => e.IsLast)
 				.ToListAsync();
 
-			List<SelectListItem> categoriesSelectList = new List<SelectListItem>();
+			List<SelectListItem> categoriesSelectList = new();
 			foreach (var category in categories)
 			{
 				categoriesSelectList.Add(new SelectListItem()
@@ -127,7 +132,7 @@ namespace WebApp.Services.Database.Grouping
 
 		public async Task<Category> GetBaseCategoryAsync()
 		{
-			Category fakeBaseCategoriesCategory = new Category()
+			Category fakeBaseCategoriesCategory = new()
 			{
 				Id = 0,
 				Name = "[Base Categories]",
@@ -161,7 +166,7 @@ namespace WebApp.Services.Database.Grouping
 				.Where(e => e.IsPopular && !e.IsLast)
 				.ToListAsync();
 
-			List<CategoryVM> result = new List<CategoryVM>();
+			List<CategoryVM> result = new();
 			foreach (var category in popularCategories)
 			{
 				result.Add(new CategoryVM()

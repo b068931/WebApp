@@ -25,7 +25,7 @@ namespace WebApp.Controllers.Products
 
 		private async Task<ProductStocksChange> GetViewModelAsync(int productId, string? error = null)
 		{
-			return new ProductStocksChange()
+			return new()
 			{
 				ProductId = productId,
 				ErrorMessage = error,

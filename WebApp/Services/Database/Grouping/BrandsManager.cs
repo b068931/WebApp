@@ -15,19 +15,25 @@ namespace WebApp.Services.Database.Grouping
 
 		private async Task<Brand> FindBrand(int id)
 		{
-			return await _database.Brands.FindAsync(id) ?? throw new ArgumentOutOfRangeException(string.Format("Brand with id {0} does not exist.", id));
+			return await _database.Brands.FindAsync(id) 
+				?? throw new ArgumentOutOfRangeException(
+					$"Brand with id {id} does not exist."
+				);
 		}
-		private async Task<BrandImage> GenerateBrandImageFromFileAsync(IFormFile brandImageFile)
+		private static async Task<BrandImage> GenerateBrandImageFromFileAsync(IFormFile brandImageFile)
 		{
 			if (brandImageFile.Length > MaxImageSize)
 			{
 				throw new UserInteractionException(
-					string.Format("Файл {0} занадто великий. Максимальний розмір файлу - {1}.", brandImageFile.FileName, MaxImageSize)
+					$"Файл {brandImageFile.FileName} занадто великий. Максимальний розмір файлу - {MaxImageSize}."
 				);
 			}
 
-			BrandImage brandImage = new BrandImage();
-			brandImage.ContentType = brandImageFile.ContentType;
+			BrandImage brandImage = new()
+			{
+				ContentType = brandImageFile.ContentType
+			};
+
 			using (var memory = new MemoryStream())
 			{
 				await brandImageFile.CopyToAsync(memory);
@@ -82,8 +88,11 @@ namespace WebApp.Services.Database.Grouping
 
 		public async Task CreateBrandAsync(string newBrandName, IFormFile brandImageFile)
 		{
-			Brand newBrand = new Brand { Name = newBrandName };
-			newBrand.Image = await GenerateBrandImageFromFileAsync(brandImageFile);
+			Brand newBrand = new()
+			{
+				Name = newBrandName,
+				Image = await GenerateBrandImageFromFileAsync(brandImageFile)
+			};
 
 			_database.Brands.Add(newBrand);
 			await _database.SaveChangesAsync();
@@ -91,27 +100,30 @@ namespace WebApp.Services.Database.Grouping
 		public async Task UpdateBrandAsync(int id, string newName, IFormFile? brandImage)
 		{
 			Brand foundBrand = await FindBrand(id);
-			using (var transaction = _database.Database.BeginTransaction())
+			await using var transaction = await _database.Database.BeginTransactionAsync();
+			if (brandImage != null)
 			{
-				if (brandImage != null)
-				{
-					BrandImage newImage = await GenerateBrandImageFromFileAsync(brandImage);
-					_database.BrandImages.Add(newImage);
-					await _database.SaveChangesAsync();
-
-					BrandImage previousImage = new BrandImage() { Id = foundBrand.ImageId ?? throw new ArgumentNullException("This should not happen.") };
-					_database.BrandImages.Attach(previousImage);
-					_database.BrandImages.Remove(previousImage);
-					await _database.SaveChangesAsync();
-
-					foundBrand.ImageId = newImage.Id;
-				}
-
-				foundBrand.Name = newName;
+				BrandImage newImage = await GenerateBrandImageFromFileAsync(brandImage);
+				_database.BrandImages.Add(newImage);
 				await _database.SaveChangesAsync();
 
-				transaction.Commit();
+				BrandImage previousImage = new() 
+				{ 
+					Id = foundBrand.ImageId 
+						?? throw new ArgumentNullException($"Unexpected value null.", nameof(foundBrand.ImageId)) 
+				};
+				
+				_database.BrandImages.Attach(previousImage);
+				_database.BrandImages.Remove(previousImage);
+				await _database.SaveChangesAsync();
+
+				foundBrand.ImageId = newImage.Id;
 			}
+
+			foundBrand.Name = newName;
+			await _database.SaveChangesAsync();
+
+			await transaction.CommitAsync();
 		}
 		public async Task DeleteBrandAsync(int id)
 		{
@@ -125,7 +137,8 @@ namespace WebApp.Services.Database.Grouping
 		{
 			return await _database.BrandImages.FindAsync(brandImageId) ??
 				throw new ArgumentOutOfRangeException(
-					string.Format("Image with id {0} does not exist. (BrandImage)", brandImageId));
+					$"Image with id {brandImageId} does not exist. (BrandImage)"
+				);
 		}
 	}
 }

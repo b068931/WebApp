@@ -14,7 +14,7 @@ namespace WebApp.Services.Database.Products
 		{
 			return await _database.ProductColours.FindAsync(id) ??
 					throw new UserInteractionException(
-						string.Format("Colour with id {0} does not exist.", id)
+						$"Colour with id {id} does not exist."
 					);
 		}
 
@@ -49,7 +49,7 @@ namespace WebApp.Services.Database.Products
 
 		public Task CreateColourAsync(string name, string hexCode)
 		{
-			Colour newColour = new Colour()
+			Colour newColour = new()
 			{
 				Name = name,
 				HexCode = hexCode

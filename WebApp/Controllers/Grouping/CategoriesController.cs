@@ -33,7 +33,7 @@ namespace WebApp.Controllers.Grouping
 					return View(
 						"AdminPage",
 						await GenerateAdminPageModelAsync(
-							string.Format("'{0}' operation success.", operationName)
+							$"'{operationName}' operation success."
 						)
 					);
 				},

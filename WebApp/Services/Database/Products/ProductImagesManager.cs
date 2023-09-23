@@ -8,24 +8,21 @@ namespace WebApp.Services.Database.Products
 {
 	public class ProductImagesManager
 	{
-		public const int MaxImagesCount = 8;
+		public const int MaxImagesCount = 6;
 		private const int MaxFileSize = 4194304;
 		private const string ImagesStorageRelativePath = "images/";
 
 		private readonly DatabaseContext _database;
 		private readonly IWebHostEnvironment _environment;
 
-		private void ValidateImages(List<IFormFile> images)
+		private static void ValidateImages(List<IFormFile> images)
 		{
 			foreach (var imageFile in images)
 			{
 				if (imageFile.Length > MaxFileSize)
 				{
 					throw new UserInteractionException(
-						string.Format(
-							"Файл {0} занадто великий. Максимальний розмір файлу - {1} байт.",
-							imageFile.FileName, MaxFileSize
-						)
+						$"Файл {imageFile.FileName} занадто великий. Максимальний розмір файлу - {MaxFileSize} байт."
 					);
 				}
 			}
@@ -34,7 +31,7 @@ namespace WebApp.Services.Database.Products
 		{
 			ValidateImages(images);
 
-			List<ProductImage> newImages = new List<ProductImage>();
+			List<ProductImage> newImages = new();
 			foreach (var imageFile in images)
 			{
 				string imageName = Path.ChangeExtension(
@@ -42,7 +39,7 @@ namespace WebApp.Services.Database.Products
 					Path.GetExtension(imageFile.FileName)
 				);
 
-				ProductImage newImage = new ProductImage()
+				ProductImage newImage = new()
 				{
 					ProductId = productId,
 					StorageRelativeLocation = "/" + imageName
@@ -77,10 +74,7 @@ namespace WebApp.Services.Database.Products
 			int imagesCount = await GetProductImagesCountAsync(productId) + images.Count;
 			if (imagesCount > MaxImagesCount)
 				throw new UserInteractionException(
-					string.Format(
-						"Максимальна кількість зображень для одного продукту: {0}.",
-						MaxImagesCount
-					)
+					$"Максимальна кількість зображень для одного продукту: {MaxImagesCount}."
 				);
 
 			List<ProductImage> loadedImages = await CreateImageEntitiesAsync(productId, images);

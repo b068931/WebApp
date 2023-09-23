@@ -20,7 +20,7 @@ namespace WebApp.Services.Actions
 
 		public MimeMessage GetMessage()
 		{
-			MimeMessage message = new MimeMessage();
+			MimeMessage message = new();
 			message.From.Add(new MailboxAddress(_credentials.EmailName, _credentials.Email));
 
 			return message;

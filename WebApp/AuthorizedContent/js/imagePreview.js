@@ -52,7 +52,7 @@ $(function () {
             imageContainer.append(newImage);
             $("#selectedImagesContainer").append(imageContainer);
         }
-        for (var index = filesList.length; index < Math.min(8, placeholdersCount); ++index) {
+        for (var index = filesList.length; index < placeholdersCount; ++index) {
             $("#selectedImagesContainer").append(
                 $("<img>", {
                     src: "/resources/imagepreviewplaceholder.svg",

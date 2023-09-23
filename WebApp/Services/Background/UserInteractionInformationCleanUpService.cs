@@ -32,24 +32,22 @@ namespace WebApp.Services.Background
 				_cleanUpPeriodHours
 			);
 
-			using PeriodicTimer timer = new PeriodicTimer(TimeSpan.FromHours(_cleanUpPeriodHours));
+			using PeriodicTimer timer = new(TimeSpan.FromHours(_cleanUpPeriodHours));
 			try
 			{
 				while (await timer.WaitForNextTickAsync(stoppingToken))
 				{
-					using (var scope = _services.CreateScope())
-					{
-						int counter = Interlocked.Increment(ref _counter);
-						_logger.LogInformation(
-							"Performing clean up. (Cleans up performed so far: {counter})",
-							counter
-						);
+					using var scope = _services.CreateScope();
+					int counter = Interlocked.Increment(ref _counter);
+					_logger.LogInformation(
+						"Performing clean up. (Cleans up performed so far: {counter})",
+						counter
+					);
 
-						var interactions =
-							scope.ServiceProvider.GetRequiredService<UserInteractionManager>();
+					var interactions =
+						scope.ServiceProvider.GetRequiredService<UserInteractionManager>();
 
-						await interactions.CleanUpOutdatedDataAsync(stoppingToken);
-					}
+					await interactions.CleanUpOutdatedDataAsync(stoppingToken);
 				}
 			}
 			catch (OperationCanceledException)

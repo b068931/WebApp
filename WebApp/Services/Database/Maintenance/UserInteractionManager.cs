@@ -11,7 +11,7 @@ namespace WebApp.Services.Database.Maintenance
 		private readonly DatabaseContext _database;
 		private readonly UserInteractionOptions _options;
 
-		private DateOnly GetRecentDate(int daysToSubtract)
+		private static DateOnly GetRecentDate(int daysToSubtract)
 		{
 			return DateOnly.FromDateTime(DateTime.Now).AddDays(-daysToSubtract);
 		}
@@ -29,7 +29,7 @@ namespace WebApp.Services.Database.Maintenance
 			}
 			else
 			{
-				T newView = new T()
+				T newView = new()
 				{
 					UserId = userId,
 					ProductId = productId,

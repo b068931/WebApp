@@ -14,7 +14,7 @@ namespace WebApp.Services.Database.Products
 		{
 			return await _database.ProductSizes.FindAsync(id) ??
 				throw new UserInteractionException(
-					string.Format("Size with id {0} does not exist.", id)
+					$"Size with id {id} does not exist."
 				);
 		}
 
@@ -48,7 +48,7 @@ namespace WebApp.Services.Database.Products
 
 		public Task CreateSizeAsync(string sizeName)
 		{
-			Size newSize = new Size()
+			Size newSize = new()
 			{
 				SizeName = sizeName
 			};

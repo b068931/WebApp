@@ -67,7 +67,7 @@ namespace WebApp.Controllers.Products
 			string? minDate,
 			int? minRatingsCount)
 		{
-			ProductsSearchInitializator search = new ProductsSearchInitializator()
+			ProductsSearchInitializator search = new()
 			{
 				Query = query ?? string.Empty,
 				MinDate = minDate ?? string.Empty,

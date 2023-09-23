@@ -28,20 +28,12 @@ namespace WebApp.ProjectConfiguration.Initializers
 
 			string email = _configuration[emailProperty] ??
 				throw new ArgumentNullException(
-					string.Format(
-						"Unable to find property '{0}' it is required in order to create a/an '{1}' account. (check user secrets)",
-						emailProperty,
-						userHandle
-					)
+					$"Unable to find property '{emailProperty}' it is required in order to create a/an '{userHandle}' account. (check user secrets)"
 				);
 
 			string password = _configuration[passwordProperty] ??
 				throw new ArgumentNullException(
-					string.Format(
-						"Unable to find property '{0}' it is required in order to create a/an '{1}' account. (check user secrets)",
-						passwordProperty,
-						userHandle
-					)
+					$"Unable to find property '{passwordProperty}' it is required in order to create a/an '{userHandle}' account. (check user secrets)"
 				);
 
 			if (await _users.FindByEmailAsync(email) == null)

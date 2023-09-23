@@ -6,8 +6,8 @@ namespace WebApp.Controllers.Resources
 	[Route("/authorized")]
 	public class AuthorizedStaticFilesController : Controller
 	{
-		private IWebHostEnvironment _environment;
-		private ILogger<AuthorizedStaticFilesController> _logger;
+		private readonly IWebHostEnvironment _environment;
+		private readonly ILogger<AuthorizedStaticFilesController> _logger;
 
 		private IActionResult GetFile(string fileName, string contentType, params string[] path)
 		{
@@ -29,7 +29,8 @@ namespace WebApp.Controllers.Resources
 			else
 			{
 				_logger.LogWarning(
-					string.Format("Non-existent static file with name '{0}' was accessed.", fileName)
+					"Non-existent static file with name '{fileName}' was accessed.", 
+					fileName
 				);
 
 				return NotFound();

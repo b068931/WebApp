@@ -136,10 +136,10 @@ using (var scope = app.Services.CreateScope())
 {
 	try
 	{
-		AuthConfiguration authConfig = new AuthConfiguration();
+		AuthConfiguration authConfig = new();
 		app.Configuration.GetSection(AuthConfiguration.FieldName).Bind(authConfig);
 
-		DatabaseInitializer initializer = new DatabaseInitializer(
+		DatabaseInitializer initializer = new(
 			scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>(),
 			scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>(),
 			app.Configuration

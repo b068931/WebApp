@@ -33,7 +33,7 @@ namespace WebApp.Services.Database.Products
 		private async Task<Product> CreateProductEntityAsync(int ownerId, ProductCreate vm)
 		{
 			await ValidateCategoryId(vm.CategoryId);
-			Product newProduct = new Product()
+			Product newProduct = new()
 			{
 				ProductOwnerId = ownerId,
 				Name = vm.Name,
@@ -87,7 +87,8 @@ namespace WebApp.Services.Database.Products
 		{
 			return await _database.Products.FindAsync(productId) ??
 				throw new UserInteractionException(
-					string.Format("Product with id {0} does not exist.", productId));
+					$"Product with id {productId} does not exist."
+				);
 		}
 		public async Task<int> GetProductMainImage(int productId)
 		{
@@ -95,7 +96,9 @@ namespace WebApp.Services.Database.Products
 				.Where(e => e.Id == productId)
 				.Select(e => e.MainImageId)
 				.FirstOrDefaultAsync() ?? 
-					throw new UserInteractionException(string.Format("Product with id {0} does not exist.", productId));
+					throw new UserInteractionException(
+						$"Product with id {productId} does not exist."
+					);
 		}
 
 		public async Task<ProductShow> GetProductShowVMAsync(int actionPerformer, int productId)
@@ -104,8 +107,10 @@ namespace WebApp.Services.Database.Products
 				.Include(e => e.Brand)
 				.Include(e => e.MainImage)
 				.Include(e => e.ProductOwner)
-				.FirstOrDefaultAsync(e => e.Id == productId) ?? throw new UserInteractionException(
-					string.Format("Product with id {0} does not exist.", productId));
+				.FirstOrDefaultAsync(e => e.Id == productId) 
+					?? throw new UserInteractionException(
+						$"Product with id {productId} does not exist."
+					);
 
 			if (actionPerformer != 0 && foundProduct.ProductOwnerId != actionPerformer)
 			{
@@ -234,36 +239,33 @@ namespace WebApp.Services.Database.Products
 
 		public async Task<Product> CreateProductAsync(int ownerId, ProductCreate vm)
 		{
-			using (var transaction = _database.Database.BeginTransaction())
+			await using var transaction = await _database.Database.BeginTransactionAsync();
+			Product newProduct = await CreateProductEntityAsync(ownerId, vm);
+			if (vm.ProductImages != null)
 			{
-				Product newProduct = await CreateProductEntityAsync(ownerId, vm);
-				if (vm.ProductImages != null)
-				{
-					List<ProductImage> images =
-						await _images.AddImagesToProductAsync(newProduct.Id, vm.ProductImages);
+				List<ProductImage> images =
+					await _images.AddImagesToProductAsync(newProduct.Id, vm.ProductImages);
 
-					newProduct.MainImageId = newProduct.Images[0].Id;
-					await _database.SaveChangesAsync();
-				}
-				else
-				{
-					throw new UserInteractionException("Для створення нового товару потрібно додати хоча б одне зображення.");
-				}
-
-				transaction.Commit();
-				return newProduct;
+				newProduct.MainImageId = newProduct.Images[0].Id;
+				await _database.SaveChangesAsync();
 			}
+			else
+			{
+				throw new UserInteractionException("Для створення нового товару потрібно додати хоча б одне зображення.");
+			}
+
+			await transaction.CommitAsync();
+			return newProduct;
 		}
 		public async Task UpdateProductAsync(ProductUpdate vm)
 		{
-			using (var transaction = _database.Database.BeginTransaction())
-			{
-				await ChangeProductAsync(vm);
-				if (vm.ProductImages != null)
-					await _images.AddImagesToProductAsync(vm.Id, vm.ProductImages);
+			await using var transaction = await _database.Database.BeginTransactionAsync();
 
-				transaction.Commit();
-			}
+			await ChangeProductAsync(vm);
+			if (vm.ProductImages != null)
+				await _images.AddImagesToProductAsync(vm.Id, vm.ProductImages);
+
+			await transaction.CommitAsync();
 		}
 		public async Task DeleteProductAsync(int productId)
 		{
