@@ -239,6 +239,13 @@ namespace WebApp.Services.Database.Products
 
 		public async Task<Product> CreateProductAsync(int ownerId, ProductCreate vm)
 		{
+			int hasProducts = await _database.Products
+				.Where(e => e.ProductOwnerId == ownerId)
+				.CountAsync();
+
+			if (hasProducts + 1 > MaxProductsPerUser)
+				throw new UserInteractionException($"Ліміт продуктів для одного користувача: {MaxProductsPerUser}");
+
 			await using var transaction = await _database.Database.BeginTransactionAsync();
 			Product newProduct = await CreateProductEntityAsync(ownerId, vm);
 			if (vm.ProductImages != null)

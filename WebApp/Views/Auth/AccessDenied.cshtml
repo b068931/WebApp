@@ -1,0 +1,23 @@
+﻿@model string?
+@{
+	ViewBag.RenderHeader = false;
+	ViewBag.RenderFooter = false;
+}
+
+<div class="d-flex flex-column m-3">
+	<h3 class="mx-auto fw-bold text-danger mt-2">У вас немає доступу до цієї сторінки.</h3>
+	<p class="mx-auto mt-5">
+		Якщо ви тут випадково, то ви можете повернутися до 
+		<a href="/" class="text-black">головної сторінки</a> або ви
+		можете спробувати 
+		@if(Model != null)
+		{
+			<a href="/auth/login?return=@Model" class="text-black">зайти з іншого акаунта</a>
+		}
+		else
+		{
+			<a href="/auth/login" class="text-black">зайти з іншого акаунта</a>
+		}
+		.
+	</p>
+</div>

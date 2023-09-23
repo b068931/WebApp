@@ -131,29 +131,28 @@ builder.Services
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-	app.UseExceptionHandler("/Home/Error");
-
-	// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+	app.UseExceptionHandler("/error");
 	app.UseHsts();
 }
-
-using (var scope = app.Services.CreateScope())
+else
 {
 	try
 	{
 		AuthConfiguration authConfig = new();
 		app.Configuration.GetSection(AuthConfiguration.FieldName).Bind(authConfig);
 
-		DatabaseInitializer initializer = new(
-			scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>(),
-			scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>(),
-			app.Configuration
-		);
+		using (var scope = app.Services.CreateScope())
+		{
+			DatabaseInitializer initializer = new(
+				scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>(),
+				scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>(),
+				app.Configuration
+			);
 
-		await initializer.InitializeAuthAsync(authConfig);
+			await initializer.InitializeAuthAsync(authConfig);
+		}
 	}
 	catch (Exception exc)
 	{

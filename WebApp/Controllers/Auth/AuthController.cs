@@ -366,5 +366,18 @@ namespace WebApp.Controllers.Auth
 				}
 			);
 		}
+
+		[AllowAnonymous]
+		[HttpGet("noentry")]
+		public IActionResult AccessDenied(
+			[FromQuery(Name = "return")] string? triedPath)
+		{
+			if (!string.IsNullOrEmpty(triedPath) && Url.IsLocalUrl(triedPath))
+			{
+				return View("AccessDenied", triedPath);
+			}
+
+			return Redirect("/");
+		}
 	}
 }
