@@ -110,7 +110,7 @@
                             for (var stockInfo of loadedProductStocksInformation) {
                                 if (stockInfo.colour.id == selectedColour.data("myid") && stockInfo.size.id == selectedSize.data("myid")) {
                                     $("#availableContainer")
-                                        .html(stockInfo.productAmount + " одиниць.")
+                                        .html(stockInfo.productAmount + " од.")
                                         .removeClass("text-danger");
                                     return;
                                 }
@@ -146,4 +146,19 @@
                         .removeClass("d-none");
                 });
         });
+
+    $("#topAddToCart").on("click", function () {
+        $("#stocksContainer").slideDown(
+            "fast",
+            () => {
+                $("#stocksMaximizer").html("-");
+                $("html,body").animate(
+                    {
+                        scrollTop: $("#productInfoChooser").offset().top
+                    },
+                    "slow"
+                );
+            }
+        );
+    });
 });
