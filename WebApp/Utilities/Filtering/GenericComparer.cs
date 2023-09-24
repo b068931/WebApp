@@ -5,7 +5,7 @@ namespace WebApp.Utilities.Filtering
 {
 	public class GenericComparer<T> where T : IComparable<T>
 	{
-		bool _isReversed;
+		private readonly bool _isReversed;
 		public GenericComparer(bool isReversed)
 			=> _isReversed = isReversed;
 

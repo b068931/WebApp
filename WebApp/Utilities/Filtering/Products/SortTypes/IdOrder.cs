@@ -4,7 +4,7 @@ namespace WebApp.Utilities.Filtering.Products.OrderTypes
 {
 	public class IdOrder : IOrdering<Product>
 	{
-		private int _maxId;
+		private readonly int _maxId;
 		public IdOrder(int maxId)
 			=> _maxId = maxId;
 

@@ -6,7 +6,7 @@ namespace WebApp.Utilities.Filtering.Products
 {
 	public class ProductFiltersFactory
 	{
-		private Dictionary<string, Func<StringValues, IFilter<Product>>> _factories;
+		private readonly Dictionary<string, Func<StringValues, IFilter<Product>>> _factories;
 		public ProductFiltersFactory(
 			Dictionary<string, Func<StringValues, IFilter<Product>>> factories)
 		{
@@ -15,13 +15,15 @@ namespace WebApp.Utilities.Filtering.Products
 
 		public List<IFilter<Product>> ParseFilters(Dictionary<string, StringValues> filtersInformation)
 		{
-			List<IFilter<Product>> filtersList = new List<IFilter<Product>>();
+			List<IFilter<Product>> filtersList = new();
 			foreach (var filterInformation in filtersInformation)
 			{
 				try
 				{
-					Func<StringValues, IFilter<Product>>? factoryMethod = null;
-					if (_factories.TryGetValue(filterInformation.Key, out factoryMethod))
+					if (
+						_factories.TryGetValue(filterInformation.Key,
+						out Func<StringValues, IFilter<Product>>? factoryMethod)
+					)
 					{
 						filtersList.Add(
 							factoryMethod.Invoke(filterInformation.Value)

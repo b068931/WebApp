@@ -1,4 +1,8 @@
 ﻿@model WebApp.ViewModels.Auth.EmailConfirmationFinishVM
+@{
+	ViewBag.RenderHeader = false;
+	ViewBag.RenderFooter = false;
+}
 
 <div class="m-2">
 	@if(Model.Error != null)

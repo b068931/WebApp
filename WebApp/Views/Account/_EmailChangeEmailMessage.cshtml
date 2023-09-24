@@ -1,0 +1,17 @@
+﻿@model WebApp.ViewModels.Account.ChangeEmailMessageVM
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+</head>
+<body>
+	<center>
+		<b>Зміна вашого Email</b>
+	</center>
+	<p>
+		Перейдіть за <a href="@Model.SiteBaseAddress/account/change/email?token=@Model.Token&user=@Model.UserId&newemail=@Model.NewEmail">посиланням</a> для того, щоб підтвердити новий email. 
+		Зміни з'являться після того, як ви перезайдете у свій акаунт.
+	</p>
+</body>
+</html>

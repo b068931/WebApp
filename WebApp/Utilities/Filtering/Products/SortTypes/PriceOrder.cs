@@ -6,9 +6,9 @@ namespace WebApp.Utilities.Filtering.Products.OrderTypes
 {
 	public class PriceOrder : IOrdering<Product>
 	{
-		private int _maxId;
-		private decimal _maxPrice;
-		private GenericComparer<decimal> _sortDirection;
+		private readonly int _maxId;
+		private readonly decimal _maxPrice;
+		private readonly GenericComparer<decimal> _sortDirection;
 		public PriceOrder(int maxId, decimal maxPrice, GenericComparer<decimal> direction)
 		{
 			_maxId = maxId;

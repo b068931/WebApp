@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using MimeKit;
 using System.Web;
 using WebApp.Controllers.Abstract;
 using WebApp.Database.Entities.Auth;
@@ -18,48 +17,6 @@ namespace WebApp.Controllers.Auth
 		private readonly UserManager<ApplicationUser> _users;
 		private readonly SignInManager<ApplicationUser> _signIn;
 		private readonly Performer<AuthController> _performer;
-
-		private async Task SendEmailConfirmationMessage(
-			EmailSender sender,
-			string receiver,
-			EmailConfirmationVM model)
-		{
-			MimeMessage emailConfirmationMessage = sender.GetMessage();
-
-			emailConfirmationMessage.To.Add(new MailboxAddress("User to be confirmed", receiver));
-			emailConfirmationMessage.Subject = "Підтвердження вашого email";
-			emailConfirmationMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-			{
-				Text = await RenderViewAsync(
-					"_EmailConfirmationEmailMessage",
-					model,
-					true
-				)
-			};
-
-			await sender.SendMessage(emailConfirmationMessage);
-		}
-
-		private async Task SendPasswordResetMessage(
-			EmailSender sender,
-			string receiver,
-			PasswordResetVM model)
-		{
-			MimeMessage passwordResetMessage = sender.GetMessage();
-
-			passwordResetMessage.To.Add(new MailboxAddress("User to be restored", receiver));
-			passwordResetMessage.Subject = "Відновлення пароля";
-			passwordResetMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-			{
-				Text = await RenderViewAsync(
-					"_PasswordResetEmailMessage",
-					model,
-					true
-				)
-			};
-
-			await sender.SendMessage(passwordResetMessage);
-		}
 
 		public AuthController(
 			UserManager<ApplicationUser> users,
@@ -162,16 +119,19 @@ namespace WebApp.Controllers.Auth
 								await _users.GenerateEmailConfirmationTokenAsync(newUser)
 							);
 
-							await SendEmailConfirmationMessage(
-								sender,
+							await sender.ControllerSendEmail(
+								this,
 								registerVM.Email,
+								"Підтвердження вашого email",
+								"_EmailConfirmationEmailMessage",
 								new EmailConfirmationVM()
 								{
-									SiteBaseAddress = $"{Request.Scheme}://{Request.Host}",
+									SiteBaseAddress = SiteBaseAddress,
 									UserId = newUser.Id,
 									Token = encodedToken,
 									ReturnUrl = registerVM.ReturnUrl
-								}
+								},
+								"User to be confirmed"
 							);
 
 							ModelState.AddModelError("UserName", "Підтвердіть ваш email для того, щоб увійти в акаунт.");
@@ -266,16 +226,19 @@ namespace WebApp.Controllers.Auth
 							await _users.GeneratePasswordResetTokenAsync(foundUser)
 						);
 
-						await SendPasswordResetMessage(
-							sender,
+						await sender.ControllerSendEmail(
+							this,
 							foundUser.Email,
+							"Відновлення пароля",
+							"_PasswordResetEmailMessage",
 							new PasswordResetVM()
 							{
-								SiteBaseAddress = $"{Request.Scheme}://{Request.Host}",
+								SiteBaseAddress = SiteBaseAddress,
 								UserId = foundUser.Id,
 								Token = encodedToken,
 								ReturnUrl = forgotVM.ReturnUrl
-							}
+							},
+							"User to be restored"
 						);
 
 						ModelState.AddModelError("Password", "Відновіть пароль, щоб увійти у ваш акаунт.");

@@ -5,9 +5,9 @@ namespace WebApp.Utilities.Filtering.Products.OrderTypes
 {
 	public class ViewsOrder : IOrdering<Product>
 	{
-		private int _maxId;
-		private int _maxViews;
-		private GenericComparer<int> _sortDirection;
+		private readonly int _maxId;
+		private readonly int _maxViews;
+		private readonly GenericComparer<int> _sortDirection;
 		public ViewsOrder(int maxId, int maxViews, GenericComparer<int> direction)
 		{
 			_maxId = maxId;

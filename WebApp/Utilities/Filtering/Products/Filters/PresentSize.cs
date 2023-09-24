@@ -15,7 +15,7 @@ namespace WebApp.Utilities.Filtering.Products.Filters
 			=> new PresentSize(
 				value.Select(
 					e => int.Parse(
-						e ?? throw new ArgumentNullException("Null argument passed to sizess filter")
+						e ?? throw new ArgumentNullException(nameof(value), "Null argument passed to sizess filter")
 					)
 				).ToList()
 			);

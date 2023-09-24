@@ -5,9 +5,9 @@ namespace WebApp.Utilities.Filtering.Products.OrderTypes
 {
 	public class DiscountOrder : IOrdering<Product>
 	{
-		private int _maxId;
-		private int _maxDiscount;
-		private GenericComparer<int> _sortDirection;
+		private readonly int _maxId;
+		private readonly int _maxDiscount;
+		private readonly GenericComparer<int> _sortDirection;
 		public DiscountOrder(int maxId, int maxDiscount, GenericComparer<int> direction)
 		{
 			_maxId = maxId;

@@ -51,7 +51,7 @@ namespace WebApp.Utilities.Other
 
 		public string DrawCategories(Category category)
 		{
-			StringBuilder builder = new StringBuilder("<pre>");
+			StringBuilder builder = new("<pre>");
 			RecursiveDrawCategories(builder, category, _specifiedDepth);
 
 			builder.Append("</pre>");

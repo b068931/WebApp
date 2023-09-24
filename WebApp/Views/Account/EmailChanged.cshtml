@@ -1,0 +1,19 @@
+﻿@model string?
+@{
+	ViewBag.RenderHeader = false;
+	ViewBag.RenderFooter = false;
+}
+
+<div class="m-2">
+	@if (Model != null)
+	{
+		<p class="text-danger fw-bold">Не редагуйте посилання, що вам надіслали(якщо ви цього не робили, то це помилка сервера). Помилка підтвердження: @Model</p>
+	}
+	else
+	{
+		<h2>Ваш email успішно змінено!</h2>
+		<p>
+			Перейдіть за <a href="/account" class="text-black text-decoration-underline">цим посиланням</a>, щоб повернутися на сторінку налаштувань акаунта.
+		</p>
+	}
+</div>

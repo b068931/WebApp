@@ -1,7 +1,13 @@
-﻿<div class="d-flex flex-row justify-content-between m-3">
+﻿@model string?
+
+<div class="d-flex flex-row justify-content-between m-3">
 	<div class="flex-fill">
 		<h4>Налаштування акаунта</h4>
 		<div class="text-danger mt-4" asp-validation-summary=All></div>
+		@if(Model != null)
+		{
+			<div class="text-success mt-4">@Model</div>
+		}
 		<div class="mt-4 mb-2">
 			<form method="post" action="/account/change/name" class="styled-inputs px-4">
 				@Html.AntiForgeryToken()
@@ -18,6 +24,14 @@
 				<input id="oldPassword" type="password" name="OldPassword" placeholder="Введіть старий пароль" class="form-control" />
 				<input type="password" name="NewPassword" placeholder="Введіть новий пароль" class="form-control mt-1" />
 				<input type="password" name="NewPasswordRepeat" placeholder="Повторіть новий пароль" class="form-control mt-1" />
+
+				<button type="submit" class="site-button site-primary-button mt-2 w-100">Змінити</button>
+			</form>
+			<form method="post" action="/account/change/email" class="styled-inputs px-4 mt-5">
+				@Html.AntiForgeryToken()
+
+				<label for="newEmail" class="form-label">Зміна email</label>
+				<input id="newEmail" type="email" name="NewEmail" placeholder="Введіть новий email" class="form-control"/>
 
 				<button type="submit" class="site-button site-primary-button mt-2 w-100">Змінити</button>
 			</form>

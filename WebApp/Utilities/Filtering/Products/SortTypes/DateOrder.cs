@@ -5,9 +5,9 @@ namespace WebApp.Utilities.Filtering.Products.OrderTypes
 {
 	public class DateOrder : IOrdering<Product>
 	{
-		private int _maxId;
-		private DateOnly _maxDate;
-		private GenericComparer<DateOnly> _sortDirection;
+		private readonly int _maxId;
+		private readonly DateOnly _maxDate;
+		private readonly GenericComparer<DateOnly> _sortDirection;
 		public DateOrder(int maxId, DateOnly maxDate, GenericComparer<DateOnly> direction)
 		{
 			_maxId = maxId;

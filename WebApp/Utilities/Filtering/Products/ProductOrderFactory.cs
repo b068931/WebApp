@@ -6,11 +6,10 @@ namespace WebApp.Utilities.Filtering.Products
 {
 	public class ProductOrderFactory
 	{
-		private static bool isReversed(Dictionary<string, StringValues> parameters)
+		private static bool IsReversed(Dictionary<string, StringValues> parameters)
 		{
 			bool isReversed = false;
-			StringValues orderType;
-			if (parameters.TryGetValue("ordertype", out orderType))
+			if (parameters.TryGetValue("ordertype", out StringValues orderType))
 			{
 				isReversed = orderType == "reversed";
 			}
@@ -18,7 +17,7 @@ namespace WebApp.Utilities.Filtering.Products
 			return isReversed;
 		}
 
-		private Dictionary<string, Func<int, StringValues, bool, IOrdering<Product>>> _factories;
+		private readonly Dictionary<string, Func<int, StringValues, bool, IOrdering<Product>>> _factories;
 		public ProductOrderFactory(Dictionary<string, Func<int, StringValues, bool, IOrdering<Product>>> factories)
 			=> _factories = factories;
 
@@ -28,10 +27,9 @@ namespace WebApp.Utilities.Filtering.Products
 		{
 			foreach (var factory in _factories)
 			{
-				StringValues value;
-				if (parameters.TryGetValue(factory.Key, out value))
+				if (parameters.TryGetValue(factory.Key, out StringValues value))
 				{
-					return factory.Value.Invoke(maxId, value, isReversed(parameters));
+					return factory.Value.Invoke(maxId, value, IsReversed(parameters));
 				}
 			}
 

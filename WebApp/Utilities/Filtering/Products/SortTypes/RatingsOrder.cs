@@ -5,9 +5,9 @@ namespace WebApp.Utilities.Filtering.Products.OrderTypes
 {
 	public class RatingsOrder : IOrdering<Product>
 	{
-		private int _maxId;
-		private int _maxRating;
-		private GenericComparer<int> _sortDirection;
+		private readonly int _maxId;
+		private readonly int _maxRating;
+		private readonly GenericComparer<int> _sortDirection;
 		public RatingsOrder(int maxId, int maxRating, GenericComparer<int> direction)
 		{
 			_maxId = maxId;

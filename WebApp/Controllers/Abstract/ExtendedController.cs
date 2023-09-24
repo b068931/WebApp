@@ -9,7 +9,12 @@ namespace WebApp.Controllers.Abstract
 {
 	public abstract class ExtendedController : Controller
 	{
-		protected async Task<string> RenderViewAsync<TModel>(string viewName, TModel model, bool partial = false)
+		public string SiteBaseAddress
+		{
+			get => $"{Request.Scheme}://{Request.Host}";
+		}
+
+		public async Task<string> RenderViewAsync<TModel>(string viewName, TModel model, bool partial = false)
 		{
 			if (string.IsNullOrEmpty(viewName))
 			{
@@ -42,8 +47,7 @@ namespace WebApp.Controllers.Abstract
 			await viewResult.View.RenderAsync(viewContext);
 			return writer.GetStringBuilder().ToString();
 		}
-
-		protected int GetUserId()
+		public int GetUserId()
 		{
 			string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 			if (userId == null)
