@@ -15,7 +15,7 @@ namespace WebApp.Services.Database.Grouping
 
 		private async Task<Brand> FindBrand(int id)
 		{
-			return await _database.Brands.FindAsync(id) 
+			return await _database.Brands.FindAsync(id)
 				?? throw new ArgumentOutOfRangeException(
 					$"Brand with id {id} does not exist."
 				);
@@ -107,12 +107,12 @@ namespace WebApp.Services.Database.Grouping
 				_database.BrandImages.Add(newImage);
 				await _database.SaveChangesAsync();
 
-				BrandImage previousImage = new() 
-				{ 
-					Id = foundBrand.ImageId 
-						?? throw new ArgumentNullException($"Unexpected value null.", nameof(foundBrand.ImageId)) 
+				BrandImage previousImage = new()
+				{
+					Id = foundBrand.ImageId
+						?? throw new ArgumentNullException($"Unexpected value null.", nameof(foundBrand.ImageId))
 				};
-				
+
 				_database.BrandImages.Attach(previousImage);
 				_database.BrandImages.Remove(previousImage);
 				await _database.SaveChangesAsync();

@@ -5,7 +5,6 @@ using System.Security.Claims;
 using WebApp.Controllers.Abstract;
 using WebApp.Database.Entities.Auth;
 using WebApp.Services.Database.Products;
-using WebApp.Utilities.Exceptions;
 using WebApp.Utilities.Filtering.Products.Filters;
 using WebApp.Utilities.Filtering.Products.OrderTypes;
 using WebApp.Utilities.Other;
@@ -64,7 +63,7 @@ namespace WebApp.Controllers.Auth
 		public async Task<IActionResult> ChangeUserPassword(
 			[FromForm] ChangePasswordVM passwordVM)
 		{
-			if(ModelState.IsValid)
+			if (ModelState.IsValid)
 			{
 				ApplicationUser foundUser = await _users.FindByIdAsync(GetUserId().ToString());
 				var result = await _users.ChangePasswordAsync(

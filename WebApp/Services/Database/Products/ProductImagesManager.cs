@@ -62,7 +62,7 @@ namespace WebApp.Services.Database.Products
 		}
 
 		public ProductImagesManager(
-			DatabaseContext database, 
+			DatabaseContext database,
 			IWebHostEnvironment environment)
 		{
 			_database = database;
@@ -91,7 +91,7 @@ namespace WebApp.Services.Database.Products
 				.Where(e => e.ProductId == productId)
 				.ToListAsync();
 
-			foreach(var image in productImages)
+			foreach (var image in productImages)
 			{
 				File.Delete(
 					_environment.WebRootPath + image.StorageRelativeLocation

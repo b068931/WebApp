@@ -5,13 +5,13 @@ using WebApp.ProjectConfiguration.Options.Email;
 
 namespace WebApp.Services.Actions
 {
-    public class EmailSender
+	public class EmailSender
 	{
 		private readonly SMTPCredentialsOptions _credentials;
 		private readonly EmailConnectionInformationOptions _connection;
 
 		public EmailSender(
-			IOptions<SMTPCredentialsOptions> credentials, 
+			IOptions<SMTPCredentialsOptions> credentials,
 			IOptions<EmailConnectionInformationOptions> connection)
 		{
 			_credentials = credentials.Value;

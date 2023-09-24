@@ -1,11 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.WebUtilities;
 using MimeKit;
-using NuGet.Common;
-using System.Text;
 using System.Web;
 using WebApp.Controllers.Abstract;
 using WebApp.Database.Entities.Auth;
@@ -24,12 +20,12 @@ namespace WebApp.Controllers.Auth
 		private readonly Performer<AuthController> _performer;
 
 		private async Task SendEmailConfirmationMessage(
-			EmailSender sender, 
+			EmailSender sender,
 			string receiver,
 			EmailConfirmationVM model)
 		{
 			MimeMessage emailConfirmationMessage = sender.GetMessage();
-			
+
 			emailConfirmationMessage.To.Add(new MailboxAddress("User to be confirmed", receiver));
 			emailConfirmationMessage.Subject = "Підтвердження вашого email";
 			emailConfirmationMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
@@ -95,7 +91,7 @@ namespace WebApp.Controllers.Auth
 			{
 				var result =
 					await _signIn.PasswordSignInAsync(
-						loginVM.UserName, loginVM.Password, true, false
+						loginVM.UserName, loginVM.Password, loginVM.RememberMe, false
 					);
 
 				if (result.Succeeded)
@@ -109,7 +105,7 @@ namespace WebApp.Controllers.Auth
 						return Redirect("/");
 					}
 				}
-				else if(result.IsNotAllowed)
+				else if (result.IsNotAllowed)
 				{
 					ModelState.AddModelError("Password", "Спочатку підтвердіть ваш email.");
 				}
@@ -228,7 +224,7 @@ namespace WebApp.Controllers.Auth
 						ReturnUrl = returnUrl
 					});
 				},
-				(message) => 
+				(message) =>
 					View("EmailConfirmed", new EmailConfirmationFinishVM()
 					{
 						Error = message
@@ -257,7 +253,7 @@ namespace WebApp.Controllers.Auth
 			return _performer.PerformActionAsync(
 				async () =>
 				{
-					if(ModelState.IsValid)
+					if (ModelState.IsValid)
 					{
 						ApplicationUser foundUser =
 							await _users.FindByEmailAsync(forgotVM.Email)
@@ -324,15 +320,15 @@ namespace WebApp.Controllers.Auth
 			return _performer.PerformActionAsync(
 				async () =>
 				{
-					if(ModelState.IsValid)
+					if (ModelState.IsValid)
 					{
 						ApplicationUser foundUser = await _users.FindByIdAsync(resetVM.UserId.ToString())
 							?? throw new UserInteractionException("Вказаний користувач не існує.");
 
-						var result = 
+						var result =
 							await _users.ResetPasswordAsync(foundUser, resetVM.Token, resetVM.Password);
 
-						if(result.Succeeded)
+						if (result.Succeeded)
 						{
 							return View("Login", new LoginVM()
 							{

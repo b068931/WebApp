@@ -29,7 +29,7 @@ namespace WebApp.Controllers.Resources
 			else
 			{
 				_logger.LogWarning(
-					"Non-existent static file with name '{fileName}' was accessed.", 
+					"Non-existent static file with name '{fileName}' was accessed.",
 					fileName
 				);
 

@@ -65,7 +65,7 @@ namespace WebApp.Services.Database.Maintenance
 		}
 
 		public UserInteractionManager(
-			DatabaseContext database, 
+			DatabaseContext database,
 			IOptions<UserInteractionOptions> options)
 		{
 			_database = database;

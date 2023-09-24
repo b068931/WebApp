@@ -1,5 +1,4 @@
 ﻿using WebApp.Database.Models;
-using WebApp.Services.Database.Products;
 
 namespace WebApp.ViewModels.Product
 {

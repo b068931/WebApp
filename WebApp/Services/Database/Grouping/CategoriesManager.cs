@@ -32,7 +32,7 @@ namespace WebApp.Services.Database.Grouping
 		{
 			return await _database.Categories
 				.Include(e => e.Parent)
-				.FirstOrDefaultAsync(e => e.Id == categoryId) 
+				.FirstOrDefaultAsync(e => e.Id == categoryId)
 					?? throw new UserInteractionException(
 						$"Category with id {categoryId} does not exist."
 					);

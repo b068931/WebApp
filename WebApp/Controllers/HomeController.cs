@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 using WebApp.Services.Database.Grouping;
 using WebApp.ViewModels.Other;
 

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApp.Services.Database.Grouping;
-using WebApp.Services.Database.Products;
 using WebApp.Utilities.Other;
 
 namespace WebApp.Controllers.Resources

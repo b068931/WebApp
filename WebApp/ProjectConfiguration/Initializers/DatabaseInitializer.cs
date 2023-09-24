@@ -12,8 +12,8 @@ namespace WebApp.ProjectConfiguration.Initializers
 		private readonly IConfiguration _configuration;
 
 		public DatabaseInitializer(
-			UserManager<ApplicationUser> users, 
-			RoleManager<ApplicationRole> roles, 
+			UserManager<ApplicationUser> users,
+			RoleManager<ApplicationRole> roles,
 			IConfiguration configuration)
 		{
 			_users = users;

@@ -16,6 +16,8 @@ namespace WebApp.ViewModels.Auth
 		[MaxLength(1000, ErrorMessage = "Максимальна довжина: 1000 символів")]
 		public string Password { get; set; } = default!;
 
+		public bool RememberMe { get; set; }
+
 		[MaxLength(1000)]
 		public string? ReturnUrl { get; set; } = default!;
 	}

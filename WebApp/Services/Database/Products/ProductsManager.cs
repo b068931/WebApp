@@ -95,7 +95,7 @@ namespace WebApp.Services.Database.Products
 			return await _database.Products
 				.Where(e => e.Id == productId)
 				.Select(e => e.MainImageId)
-				.FirstOrDefaultAsync() ?? 
+				.FirstOrDefaultAsync() ??
 					throw new UserInteractionException(
 						$"Product with id {productId} does not exist."
 					);
@@ -107,7 +107,7 @@ namespace WebApp.Services.Database.Products
 				.Include(e => e.Brand)
 				.Include(e => e.MainImage)
 				.Include(e => e.ProductOwner)
-				.FirstOrDefaultAsync(e => e.Id == productId) 
+				.FirstOrDefaultAsync(e => e.Id == productId)
 					?? throw new UserInteractionException(
 						$"Product with id {productId} does not exist."
 					);
@@ -189,7 +189,7 @@ namespace WebApp.Services.Database.Products
 				.Include(e => e.Stocks)
 					.ThenInclude(e => e.Size);
 
-			if(includeOnlyAvailable)
+			if (includeOnlyAvailable)
 				request = request.Where(e => e.Stocks.Count > 0);
 
 			request = paginator.Apply(request);
