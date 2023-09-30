@@ -10,6 +10,10 @@ namespace WebApp.Database.Configurations.Auth
 		public void Configure(EntityTypeBuilder<ApplicationUser> builder)
 		{
 			builder
+				.Property(e => e.AccountCreationDate)
+				.HasDefaultValueSql("getdate()");
+
+			builder
 				.HasMany(e => e.ViewedProducts)
 				.WithMany(e => e.ViewedByUsers)
 				.UsingEntity<ViewedProductsInformation>(

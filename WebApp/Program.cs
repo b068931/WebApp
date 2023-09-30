@@ -38,6 +38,7 @@ builder.Services
 		options.Password.RequireLowercase = false;
 		options.Password.RequireUppercase = false;
 	})
+	.AddClaimsPrincipalFactory<ApplicationUserClaimsPrincipalFactory>()
 	.AddEntityFrameworkStores<DatabaseContext>()
 	.AddDefaultTokenProviders();
 

@@ -63,6 +63,17 @@ namespace WebApp.Services.Database.Maintenance
 
 			return _database.SaveChangesAsync(stoppingToken);
 		}
+		private Task RemoveOldUsersWithUnconfirmedEmail(CancellationToken stoppingToken)
+		{
+			DateOnly minCleanUpDate = GetRecentDate(_options.UnconfirmedEmailCleanUpDays);
+			_database.Users.RemoveRange(
+				_database.Users
+					.Where(e => !e.EmailConfirmed)
+					.Where(e => e.AccountCreationDate <= minCleanUpDate)
+			);
+
+			return _database.SaveChangesAsync(stoppingToken);
+		}
 
 		public UserInteractionManager(
 			DatabaseContext database,
@@ -76,6 +87,7 @@ namespace WebApp.Services.Database.Maintenance
 		{
 			await CleanUpProductsViewDataAsync(stoppingToken);
 			await CleanUpProductsRatedDataAsync(stoppingToken);
+			await RemoveOldUsersWithUnconfirmedEmail(stoppingToken);
 		}
 
 		public Task<bool> RememberViewedProductAsync(int userId, int productId)
