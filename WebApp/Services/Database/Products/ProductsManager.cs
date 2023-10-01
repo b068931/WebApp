@@ -29,6 +29,13 @@ namespace WebApp.Services.Database.Products
 				throw new UserInteractionException("Invalid category provided. Reload the page.");
 			}
 		}
+		private async Task<Product> FindProductAsync(int productId)
+		{
+			return await _database.Products.FindAsync(productId) ??
+				throw new UserInteractionException(
+					$"Product with id {productId} does not exist."
+				);
+		}
 
 		private async Task<Product> CreateProductEntityAsync(int ownerId, ProductCreate vm)
 		{
@@ -83,22 +90,22 @@ namespace WebApp.Services.Database.Products
 			_interactions = interactions;
 		}
 
-		public async Task<Product> FindProductAsync(int productId)
-		{
-			return await _database.Products.FindAsync(productId) ??
-				throw new UserInteractionException(
-					$"Product with id {productId} does not exist."
-				);
-		}
-		public async Task<int> GetProductMainImage(int productId)
+		public async Task<int> GetProductMainImageAsync(int productId)
 		{
 			return await _database.Products
 				.Where(e => e.Id == productId)
 				.Select(e => e.MainImageId)
-				.FirstOrDefaultAsync() ??
+				.SingleOrDefaultAsync() ??
 					throw new UserInteractionException(
 						$"Product with id {productId} does not exist."
 					);
+		}
+		public async Task<int> GetProductOwnerAsync(int productId)
+		{
+			return await _database.Products
+				.Where(e => e.Id == productId)
+				.Select(e => e.ProductOwnerId)
+				.SingleAsync();
 		}
 
 		public async Task<ProductShow> GetProductShowVMAsync(int actionPerformer, int productId)
@@ -107,7 +114,7 @@ namespace WebApp.Services.Database.Products
 				.Include(e => e.Brand)
 				.Include(e => e.MainImage)
 				.Include(e => e.ProductOwner)
-				.FirstOrDefaultAsync(e => e.Id == productId)
+				.SingleOrDefaultAsync(e => e.Id == productId)
 					?? throw new UserInteractionException(
 						$"Product with id {productId} does not exist."
 					);
@@ -183,6 +190,7 @@ namespace WebApp.Services.Database.Products
 		{
 			IQueryable<Product> request = _database.Products
 				.AsNoTracking()
+				.AsSplitQuery()
 				.Include(e => e.MainImage)
 				.Include(e => e.Stocks)
 					.ThenInclude(e => e.Colour)
@@ -283,14 +291,21 @@ namespace WebApp.Services.Database.Products
 			await _database.SaveChangesAsync();
 		}
 
-		public async Task ChangeMainImage(int productId, int newMainImageId)
+		public async Task ChangeMainImageAsync(int productId, int newMainImageId)
 		{
 			Product foundProduct = await FindProductAsync(productId);
-			foundProduct.MainImageId = newMainImageId;
+			bool isImageReal = await _database.ProductImages
+				.Where(e => e.ProductId == productId)
+				.Where(e => e.Id == newMainImageId)
+				.AnyAsync();
 
+			if (!isImageReal)
+				throw new UserInteractionException($"Image with id {newMainImageId} does not exist.");
+
+			foundProduct.MainImageId = newMainImageId;
 			await _database.SaveChangesAsync();
 		}
-		public async Task RateProduct(int actionPerformer, int productId, int stars)
+		public async Task RateProductAsync(int actionPerformer, int productId, int stars)
 		{
 			if (stars <= 0 || stars > ProductShow.MaxStarsRating)
 				throw new UserInteractionException("Оцінка продукту має бути у межах від 0 до " + ProductShow.MaxStarsRating);

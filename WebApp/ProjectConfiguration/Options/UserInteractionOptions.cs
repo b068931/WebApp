@@ -7,5 +7,6 @@
 
 		public int StoreViewInformationDays { get; set; }
 		public int StoreRatedInformationDays { get; set; }
+		public int UnconfirmedEmailCleanUpDays { get; set; }
 	}
 }

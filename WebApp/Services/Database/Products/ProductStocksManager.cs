@@ -56,6 +56,20 @@ namespace WebApp.Services.Database.Products
 				})
 				.ToListAsync();
 		}
+		public async Task<ProductStockOwnershipModel> GetProductStockOwnerAsync(int stockId)
+		{
+			return await _database.ProductStocks
+				.Include(e => e.Product)
+				.Where(e => e.Id == stockId)
+				.Select(e => new ProductStockOwnershipModel
+				{ 
+					OwnerId = e.Product.ProductOwnerId, 
+					ProductId = e.ProductId 
+				})
+				.SingleOrDefaultAsync()
+					?? throw new UserInteractionException($"Stock with id {stockId} does not exist.");
+		}
+
 		public async Task CreateProductStocksAsync(int productId, int colourId, int sizeId, int stockSize)
 		{
 			if (await StockAlreadyExistsAsync(productId, colourId, sizeId))

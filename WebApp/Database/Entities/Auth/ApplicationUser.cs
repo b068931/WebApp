@@ -8,6 +8,7 @@ namespace WebApp.Database.Entities.Auth
 	[EntityTypeConfiguration(typeof(ApplicationUserConfiguration))]
 	public class ApplicationUser : IdentityUser<int>
 	{
+		public DateOnly AccountCreationDate { get; set; }
 		public List<Product> UserProducts { get; set; } = default!;
 
 		public List<Product> ViewedProducts { get; set; } = default!;

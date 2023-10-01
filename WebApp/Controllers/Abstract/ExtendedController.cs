@@ -50,7 +50,7 @@ namespace WebApp.Controllers.Abstract
 		}
 
 		[NonAction]
-		protected int GetUserId()
+		public int GetUserId()
 		{
 			string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 			if (userId == null)

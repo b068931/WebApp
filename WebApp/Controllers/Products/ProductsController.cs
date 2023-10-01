@@ -46,7 +46,7 @@ namespace WebApp.Controllers.Products
 		{
 			return new Author()
 			{
-				Id = (await _products.FindProductAsync(productId)).ProductOwnerId
+				Id = await _products.GetProductOwnerAsync(productId)
 			};
 		}
 
@@ -269,7 +269,7 @@ namespace WebApp.Controllers.Products
 					if (GetUserId() == 0)
 						throw new UserInteractionException("Зареєструйтеся для того, щоб залишити оцінку.");
 
-					await _products.RateProduct(GetUserId(), productId, stars);
+					await _products.RateProductAsync(GetUserId(), productId, stars);
 					return Ok();
 				},
 				(message) => BadRequest(message)
@@ -371,14 +371,13 @@ namespace WebApp.Controllers.Products
 					User,
 					async () =>
 					{
-						Product associatedProduct = await _products.FindProductAsync(productId);
 						if (mainImageId != 0)
-							await _products.ChangeMainImage(productId, mainImageId);
+							await _products.ChangeMainImageAsync(productId, mainImageId);
 
-						if (imagesToDelete.Contains(await _products.GetProductMainImage(productId)))
+						if (imagesToDelete.Contains(await _products.GetProductMainImageAsync(productId)))
 							throw new UserInteractionException("Ви не можете видалити головне зображення вашого продукту.");
 						else
-							await _images.DeleteImagesAsync(associatedProduct.Id, imagesToDelete);
+							await _images.DeleteImagesAsync(productId, imagesToDelete);
 
 						return Redirect("/products/product/" + productId);
 					}

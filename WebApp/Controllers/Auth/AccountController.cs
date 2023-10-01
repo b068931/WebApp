@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Web;
 using WebApp.Controllers.Abstract;
 using WebApp.Database.Entities.Auth;
+using WebApp.Extensions;
 using WebApp.Services.Actions;
 using WebApp.Services.Database.Products;
 using WebApp.Utilities.Filtering.Products.Filters;
@@ -162,6 +163,7 @@ namespace WebApp.Controllers.Auth
 			{
 				Name = User.FindFirstValue(ClaimTypes.Name),
 				Email = User.FindFirstValue(ClaimTypes.Email),
+				CreationDateString = User.FindFirstValue(ApplicationClaimTypes.AccountCreationDate),
 				RecentlyViewedProducts = await _products.SearchAsync(
 					new List<Utilities.Filtering.IFilter<Database.Entities.Products.Product>>()
 					{
