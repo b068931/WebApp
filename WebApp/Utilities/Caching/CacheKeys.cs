@@ -1,6 +1,6 @@
 ﻿namespace WebApp.Utilities.Caching
 {
-	public static class CacheKeysCreator
+	public static class CacheKeys
 	{
 		public static string GenerateCategoryCacheKey(int categoryId)
 		{

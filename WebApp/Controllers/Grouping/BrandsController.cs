@@ -83,7 +83,7 @@ namespace WebApp.Controllers.Grouping
 				{
 					await _brands.UpdateBrandAsync(idToUpdate, newName, brandImage);
 					_cache.Remove(
-						CacheKeysCreator.GenerateBrandImageCacheKey(
+						CacheKeys.GenerateBrandImageCacheKey(
 							await _brands.GetBrandImageIdByBrandIdAsync(idToUpdate)
 						)
 					);
@@ -103,7 +103,7 @@ namespace WebApp.Controllers.Grouping
 					await _brands.DeleteBrandAsync(idToDelete);
 
 					_cache.Remove(
-						CacheKeysCreator.GenerateBrandImageCacheKey(brandImageId)
+						CacheKeys.GenerateBrandImageCacheKey(brandImageId)
 					);
 				}
 			);

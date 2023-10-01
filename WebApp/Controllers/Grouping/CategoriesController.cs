@@ -79,7 +79,7 @@ namespace WebApp.Controllers.Grouping
 		public async Task<IActionResult> GetBaseCategories()
 		{
 			string? baseCategoriesJson = await _cache.GetOrCreateAsync(
-				CacheKeysCreator.GenerateCategoryCacheKey(0),
+				CacheKeys.GenerateCategoryCacheKey(0),
 				async cacheEntry =>
 				{
 					ConfigureCacheEntry(cacheEntry);
@@ -99,7 +99,7 @@ namespace WebApp.Controllers.Grouping
 			[FromRoute(Name = "parentId")] int parentId)
 		{
 			string? categoryChildrenJson = await _cache.GetOrCreateAsync(
-				CacheKeysCreator.GenerateCategoryCacheKey(parentId),
+				CacheKeys.GenerateCategoryCacheKey(parentId),
 				async cacheEntry =>
 				{
 					ConfigureCacheEntry(cacheEntry);
@@ -132,7 +132,7 @@ namespace WebApp.Controllers.Grouping
 				{
 					await _categories.CreateCategoryAsync(parentId == 0 ? null : parentId, newCategoryName);
 					_cache.Remove(
-						CacheKeysCreator.GenerateCategoryCacheKey(parentId)
+						CacheKeys.GenerateCategoryCacheKey(parentId)
 					);
 				},
 				"create"
@@ -150,7 +150,7 @@ namespace WebApp.Controllers.Grouping
 				{
 					await _categories.RenameCategoryAsync(categoryId, newName);
 					_cache.Remove(
-						CacheKeysCreator.GenerateCategoryCacheKey(await _categories.GetParentId(categoryId) ?? 0)
+						CacheKeys.GenerateCategoryCacheKey(await _categories.GetParentId(categoryId) ?? 0)
 					);
 				}, 
 				"rename"
@@ -169,11 +169,11 @@ namespace WebApp.Controllers.Grouping
 					await _categories.MoveCategoryAsync(categoryId, parentId);
 
 					_cache.Remove(
-						CacheKeysCreator.GenerateCategoryCacheKey(await _categories.GetParentId(categoryId) ?? 0)
+						CacheKeys.GenerateCategoryCacheKey(await _categories.GetParentId(categoryId) ?? 0)
 					);
 
 					_cache.Remove(
-						CacheKeysCreator.GenerateCategoryCacheKey(parentId)
+						CacheKeys.GenerateCategoryCacheKey(parentId)
 					);
 				},
 				"move"
@@ -202,7 +202,7 @@ namespace WebApp.Controllers.Grouping
 					//Deletion is a recursive operation. Most likely, this won't invalidate all caches.
 					//Either way, they can't be accessed so no one cares.
 					_cache.Remove(
-						CacheKeysCreator.GenerateCategoryCacheKey(await _categories.GetParentId(categoryId) ?? 0)
+						CacheKeys.GenerateCategoryCacheKey(await _categories.GetParentId(categoryId) ?? 0)
 					);
 				},
 				"delete"

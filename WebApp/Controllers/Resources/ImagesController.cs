@@ -36,7 +36,7 @@ namespace WebApp.Controllers.Resources
 		private async Task<IActionResult> GetBrandImageFileResultAsync(int imageToReturn)
 		{
 			BrandImageModel brandImage = await _cache.GetOrCreateAsync(
-				CacheKeysCreator.GenerateBrandImageCacheKey(imageToReturn),
+				CacheKeys.GenerateBrandImageCacheKey(imageToReturn),
 				cacheEntry =>
 				{
 					ConfigureImageCacheEntry(cacheEntry);
