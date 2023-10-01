@@ -203,6 +203,7 @@ namespace WebApp.Services.Database.Grouping
 
 			await _database.SaveChangesAsync();
 		}
+
 		public async Task<string> BackTrackCategoryAsync(int categoryId)
 		{
 			string fullCategoryName = "";
@@ -220,6 +221,13 @@ namespace WebApp.Services.Database.Grouping
 			} while (foundCategory != null);
 
 			return fullCategoryName;
+		}
+		public Task<int?> GetParentId(int categoryId)
+		{
+			return _database.Categories
+				.Where(e => e.Id == categoryId)
+				.Select(e => e.ParentId)
+				.SingleOrDefaultAsync();
 		}
 
 		public async Task CreateCategoryAsync(int? parentId, string newCategoryName)

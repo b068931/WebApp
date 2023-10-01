@@ -13,7 +13,7 @@ namespace WebApp.Services.Database.Grouping
 
 		private readonly DatabaseContext _database;
 
-		private async Task<Brand> FindBrand(int id)
+		private async Task<Brand> FindBrandAsync(int id)
 		{
 			return await _database.Brands.FindAsync(id)
 				?? throw new ArgumentOutOfRangeException(
@@ -99,46 +99,50 @@ namespace WebApp.Services.Database.Grouping
 		}
 		public async Task UpdateBrandAsync(int id, string newName, IFormFile? brandImage)
 		{
-			Brand foundBrand = await FindBrand(id);
-			await using var transaction = await _database.Database.BeginTransactionAsync();
+			Brand foundBrand = await FindBrandAsync(id);
 			if (brandImage != null)
 			{
 				BrandImage newImage = await GenerateBrandImageFromFileAsync(brandImage);
-				_database.BrandImages.Add(newImage);
-				await _database.SaveChangesAsync();
 
-				BrandImage previousImage = new()
-				{
-					Id = foundBrand.ImageId
-						?? throw new ArgumentNullException($"Unexpected value null.", nameof(foundBrand.ImageId))
-				};
+				newImage.Id = foundBrand.ImageId
+					?? throw new ArgumentNullException(nameof(foundBrand.ImageId), "Unexpected null imageId for brand.");
 
-				_database.BrandImages.Attach(previousImage);
-				_database.BrandImages.Remove(previousImage);
-				await _database.SaveChangesAsync();
-
-				foundBrand.ImageId = newImage.Id;
+				_database.BrandImages.Update(newImage);
 			}
 
 			foundBrand.Name = newName;
 			await _database.SaveChangesAsync();
-
-			await transaction.CommitAsync();
 		}
 		public async Task DeleteBrandAsync(int id)
 		{
 			_database.Brands.Remove(
-				await FindBrand(id)
+				await FindBrandAsync(id)
 			);
 
 			await _database.SaveChangesAsync();
 		}
-		public async Task<BrandImage> GetBrandImageAsync(int brandImageId)
+
+		public async Task<BrandImageModel> GetBrandImageAsync(int brandImageId)
 		{
-			return await _database.BrandImages.FindAsync(brandImageId) ??
+			return await _database.BrandImages
+				.Where(e => e.Id == brandImageId)
+				.Select(e => new BrandImageModel()
+				{
+					ContentType = e.ContentType,
+					ImageData = e.Data
+				})
+				.SingleOrDefaultAsync() ??
 				throw new ArgumentOutOfRangeException(
-					$"Image with id {brandImageId} does not exist. (BrandImage)"
+					$"Brand image with id {brandImageId} does not exist."
 				);
+		}
+		public async Task<int> GetBrandImageIdByBrandIdAsync(int brandId)
+		{
+			return await _database.Brands
+				.Where(e => e.Id == brandId)
+				.Select(e => e.ImageId)
+				.SingleOrDefaultAsync()
+					?? throw new UserInteractionException($"Brand with id {brandId} does not exist.");
 		}
 	}
 }

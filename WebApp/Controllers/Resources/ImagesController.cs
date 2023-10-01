@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
+using WebApp.Database.Models;
 using WebApp.Services.Database.Grouping;
+using WebApp.Utilities.Caching;
 using WebApp.Utilities.Other;
 
 namespace WebApp.Controllers.Resources
@@ -10,7 +13,18 @@ namespace WebApp.Controllers.Resources
 	public class ImagesController : Controller
 	{
 		private readonly BrandsManager _brands;
+
+		private readonly IMemoryCache _cache;
 		private readonly Performer<ImagesController> _performer;
+
+		private static void ConfigureImageCacheEntry(ICacheEntry cacheEntry)
+		{
+			cacheEntry.SlidingExpiration = TimeSpan.FromMinutes(10);
+			cacheEntry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
+
+			cacheEntry.Size = 2;
+			cacheEntry.Priority = CacheItemPriority.Normal;
+		}
 
 		private Task<IActionResult> PerformAction(Func<Task<IActionResult>> action)
 		{
@@ -19,19 +33,27 @@ namespace WebApp.Controllers.Resources
 				(message) => BadRequest(message)
 			);
 		}
-		private Task<IActionResult> GetBrandImageFileResultAsync(int imageToReturn)
+		private async Task<IActionResult> GetBrandImageFileResultAsync(int imageToReturn)
 		{
-			return _brands.GetBrandImageAsync(imageToReturn)
-				.ContinueWith<IActionResult>(next =>
-					new FileStreamResult(new MemoryStream(next.Result.Data), next.Result.ContentType)
-				);
+			BrandImageModel brandImage = await _cache.GetOrCreateAsync(
+				CacheKeysCreator.GenerateBrandImageCacheKey(imageToReturn),
+				cacheEntry =>
+				{
+					ConfigureImageCacheEntry(cacheEntry);
+					return _brands.GetBrandImageAsync(imageToReturn);
+				}
+			) ?? throw new NullReferenceException("Completely unexpected null reference from brand image cache.");
+
+			return new FileStreamResult(new MemoryStream(brandImage.ImageData), brandImage.ContentType);
 		}
 
 		public ImagesController(
 			BrandsManager brands,
+			IMemoryCache cache,
 			Performer<ImagesController> performer)
 		{
 			_brands = brands;
+			_cache = cache;
 			_performer = performer;
 		}
 
