@@ -94,9 +94,10 @@ builder.Services.ConfigureApplicationCookie(options =>
 	options.SlidingExpiration = true;
 
 	options.ReturnUrlParameter = "return";
-	options.Cookie.HttpOnly = true;
 
+	options.Cookie.HttpOnly = true;
 	options.Cookie.Name = "UserIdentity";
+	options.Cookie.IsEssential = true;
 
 	//https://github.com/dotnet/aspnetcore/issues/13632.
 	//Due to the SameSite attribute of the antiforgery cookie you can not reset password on one page
@@ -119,6 +120,7 @@ builder.Services.Configure<EmailConnectionInformationOptions>(
 builder.Services.Configure<AntiforgeryOptions>(options =>
 {
 	options.Cookie.Name = "AntiForgeryToken";
+	options.Cookie.IsEssential = true;
 });
 
 //Add custom services.

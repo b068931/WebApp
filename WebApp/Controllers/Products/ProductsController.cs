@@ -8,7 +8,9 @@ using Newtonsoft.Json.Serialization;
 using WebApp.Controllers.Abstract;
 using WebApp.Database.Entities.Products;
 using WebApp.Database.Models;
+using WebApp.Extensions;
 using WebApp.Services.Database.Grouping;
+using WebApp.Services.Database.Maintenance;
 using WebApp.Services.Database.Products;
 using WebApp.Utilities.CustomRequirements.SameAuthor;
 using WebApp.Utilities.Exceptions;
@@ -26,6 +28,10 @@ namespace WebApp.Controllers.Products
 	public class ProductsController : ExtendedController
 	{
 		private const int ProductsPageSize = 8;
+		private const int MaximumViewedProductsInformationCookie = 100;
+		private const int ViewedProductInformationCookieLifetimeDays = 3;
+
+		private readonly UserInteractionManager _interactions;
 
 		private readonly ProductFiltersFactory _filtersFactory;
 		private readonly ProductOrderFactory _ordersFactory;
@@ -146,6 +152,7 @@ namespace WebApp.Controllers.Products
 		}
 
 		public ProductsController(
+			UserInteractionManager interactions,
 			BrandsManager brands,
 			CategoriesManager categories,
 			ProductImagesManager images,
@@ -154,6 +161,7 @@ namespace WebApp.Controllers.Products
 			SizesManager sizes,
 			Performer<ProductsController> performer)
 		{
+			_interactions = interactions;
 			_brands = brands;
 			_categories = categories;
 			_images = images;
@@ -248,10 +256,47 @@ namespace WebApp.Controllers.Products
 			[FromRoute(Name = "productId")] int productId)
 		{
 			return _performer.PerformInertActionAsync(
-				async () => View(
-					"ShowProduct",
-					await _products.GetProductShowVMAsync(GetUserId(), productId)
-				),
+				async () =>
+				{
+					bool firstTime = false;
+					if (GetUserId() != 0)
+					{
+						List<int> recentlyViewedProducts = 
+							Request.Cookies.GetIntsList("ViewedProducts");
+
+						if (!recentlyViewedProducts.Contains(productId))
+						{
+							firstTime = 
+								await _interactions.RememberViewedProductAsync(GetUserId(), productId);
+
+							if (recentlyViewedProducts.Count >= MaximumViewedProductsInformationCookie)
+							{
+								recentlyViewedProducts = recentlyViewedProducts
+									.TakeLast(MaximumViewedProductsInformationCookie / 2)
+									.ToList();
+							}
+
+							recentlyViewedProducts.Add(productId);
+							Response.Cookies.SetIntsList(
+								"ViewedProducts",
+								recentlyViewedProducts,
+								new CookieOptions()
+								{
+									Expires = DateTime.UtcNow.AddDays(ViewedProductInformationCookieLifetimeDays)
+								}
+							);
+						}
+					}
+					
+					return View(
+						"ShowProduct",
+						await _products.GetProductShowVMAsync(
+							firstTime, 
+							GetUserId(), 
+							productId
+						)
+					);
+				},
 				() => Redirect("/")
 			);
 		}
@@ -268,6 +313,9 @@ namespace WebApp.Controllers.Products
 				{
 					if (GetUserId() == 0)
 						throw new UserInteractionException("Зареєструйтеся для того, щоб залишити оцінку.");
+
+					if (!await _interactions.RememberRatedProductAsync(GetUserId(), productId))
+						throw new UserInteractionException("Ви вже оцінювали цей продукт.");
 
 					await _products.RateProductAsync(GetUserId(), productId, stars);
 					return Ok();
