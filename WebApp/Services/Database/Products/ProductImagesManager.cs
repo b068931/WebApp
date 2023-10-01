@@ -119,7 +119,7 @@ namespace WebApp.Services.Database.Products
 				.Include(e => e.Images)
 				.Where(e => e.Id == productId)
 				.Select(e => e.Images.Count)
-				.FirstAsync();
+				.SingleAsync();
 		}
 	}
 }

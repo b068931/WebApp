@@ -17,8 +17,8 @@ namespace WebApp.Services.Database.Grouping
 			return _database.Categories
 				.Include(e => e.Products)
 				.Where(e => e.Id == categoryId)
-				.Select(e => e.Products.Count())
-				.FirstAsync();
+				.Select(e => e.Products.Count)
+				.SingleAsync();
 		}
 
 		private async Task<Category> FindCategoryAsync(int categoryId)
@@ -32,7 +32,7 @@ namespace WebApp.Services.Database.Grouping
 		{
 			return await _database.Categories
 				.Include(e => e.Parent)
-				.FirstOrDefaultAsync(e => e.Id == categoryId)
+				.SingleOrDefaultAsync(e => e.Id == categoryId)
 					?? throw new UserInteractionException(
 						$"Category with id {categoryId} does not exist."
 					);

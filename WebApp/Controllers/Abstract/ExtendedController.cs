@@ -14,6 +14,7 @@ namespace WebApp.Controllers.Abstract
 			get => $"{Request.Scheme}://{Request.Host}";
 		}
 
+		[NonAction]
 		public async Task<string> RenderViewAsync<TModel>(string viewName, TModel model, bool partial = false)
 		{
 			if (string.IsNullOrEmpty(viewName))
@@ -47,6 +48,8 @@ namespace WebApp.Controllers.Abstract
 			await viewResult.View.RenderAsync(viewContext);
 			return writer.GetStringBuilder().ToString();
 		}
+
+		[NonAction]
 		public int GetUserId()
 		{
 			string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

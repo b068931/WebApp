@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using WebApp.Controllers.Abstract;
+using WebApp.Database.Models;
 using WebApp.Services.Database.Products;
 using WebApp.Utilities.CustomRequirements.SameAuthor;
+using WebApp.Utilities.Exceptions;
 using WebApp.Utilities.Other;
 using WebApp.ViewModels.Product;
 
@@ -36,13 +38,33 @@ namespace WebApp.Controllers.Products
 		}
 		private Task<IActionResult> PerformActionAsync(
 			Func<Task> action,
-			int productId)
+			int productId,
+			int? stockId)
 		{
 			return _performer.PerformActionMessageAsync(
 				() => _performer.EnforceSameAuthorWrapperAsync(
-					async () => new Author()
+					async () =>
 					{
-						Id = (await _products.FindProductAsync(productId)).ProductOwnerId
+						int trueAuthorId;
+						if(stockId == null)
+						{
+							trueAuthorId = await _products.GetProductOwnerAsync(productId);
+						}
+						else
+						{
+							ProductStockOwnershipModel productStockOwnership =
+								await _productStocks.GetProductStockOwnerAsync(stockId.Value);
+
+							if (productStockOwnership.ProductId != productId)
+								throw new UserInteractionException("ProductId information mismatch.");
+
+							trueAuthorId = productStockOwnership.OwnerId;
+						}
+
+						return new Author()
+						{
+							Id = trueAuthorId
+						};
 					},
 					User,
 					async () =>
@@ -86,7 +108,8 @@ namespace WebApp.Controllers.Products
 		{
 			return PerformActionAsync(
 				() => _productStocks.CreateProductStocksAsync(productId, colourId, sizeId, stockSize),
-				productId
+				productId,
+				null
 			);
 		}
 
@@ -101,7 +124,8 @@ namespace WebApp.Controllers.Products
 		{
 			return PerformActionAsync(
 				() => _productStocks.UpdateProductStocksAsync(stockId, colourId, sizeId, stockSize),
-				productId
+				productId,
+				stockId
 			);
 		}
 
@@ -113,7 +137,8 @@ namespace WebApp.Controllers.Products
 		{
 			return PerformActionAsync(
 				() => _productStocks.DeleteProductStocksAsync(stockId),
-				productId
+				productId,
+				stockId
 			);
 		}
 
