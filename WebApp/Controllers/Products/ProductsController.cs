@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using WebApp.Controllers.Abstract;
 using WebApp.Database.Entities.Products;
-using WebApp.Database.Models;
+using WebApp.Database.Models.Products;
 using WebApp.Extensions;
 using WebApp.Services.Database.Grouping;
 using WebApp.Services.Database.Maintenance;
@@ -261,12 +261,12 @@ namespace WebApp.Controllers.Products
 					bool firstTime = false;
 					if (GetUserId() != 0)
 					{
-						List<int> recentlyViewedProducts = 
+						List<int> recentlyViewedProducts =
 							Request.Cookies.GetIntsList("ViewedProducts");
 
 						if (!recentlyViewedProducts.Contains(productId))
 						{
-							firstTime = 
+							firstTime =
 								await _interactions.RememberViewedProductAsync(GetUserId(), productId);
 
 							if (recentlyViewedProducts.Count >= MaximumViewedProductsInformationCookie)
@@ -287,12 +287,12 @@ namespace WebApp.Controllers.Products
 							);
 						}
 					}
-					
+
 					return View(
 						"ShowProduct",
 						await _products.GetProductShowVMAsync(
-							firstTime, 
-							GetUserId(), 
+							firstTime,
+							GetUserId(),
 							productId
 						)
 					);

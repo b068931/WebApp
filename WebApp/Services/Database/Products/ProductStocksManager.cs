@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebApp.Database;
 using WebApp.Database.Entities.Products;
-using WebApp.Database.Models;
+using WebApp.Database.Models.Stocks;
 using WebApp.Utilities.Exceptions;
 
 namespace WebApp.Services.Database.Products
@@ -62,9 +62,9 @@ namespace WebApp.Services.Database.Products
 				.Include(e => e.Product)
 				.Where(e => e.Id == stockId)
 				.Select(e => new ProductStockOwnershipModel
-				{ 
-					OwnerId = e.Product.ProductOwnerId, 
-					ProductId = e.ProductId 
+				{
+					OwnerId = e.Product.ProductOwnerId,
+					ProductId = e.ProductId
 				})
 				.SingleOrDefaultAsync()
 					?? throw new UserInteractionException($"Stock with id {stockId} does not exist.");

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WebApp.Database.Models;
+using WebApp.Database.Models.Stocks;
 using WebApp.Services.Database.Products;
 using WebApp.Utilities.Other;
 using WebApp.ViewModels.Other;

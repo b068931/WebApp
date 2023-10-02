@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using WebApp.Database;
 using WebApp.Database.Entities.Grouping;
-using WebApp.Database.Models;
+using WebApp.Database.Models.Grouping;
 using WebApp.Utilities.Exceptions;
 using WebApp.Utilities.Other;
 using WebApp.ViewModels.Categories;

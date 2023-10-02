@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using WebApp.Controllers.Abstract;
-using WebApp.Database.Models;
+using WebApp.Database.Models.Stocks;
 using WebApp.Services.Database.Products;
 using WebApp.Utilities.CustomRequirements.SameAuthor;
 using WebApp.Utilities.Exceptions;
@@ -46,7 +46,7 @@ namespace WebApp.Controllers.Products
 					async () =>
 					{
 						int trueAuthorId;
-						if(stockId == null)
+						if (stockId == null)
 						{
 							trueAuthorId = await _products.GetProductOwnerAsync(productId);
 						}

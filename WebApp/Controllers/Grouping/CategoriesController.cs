@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using System.Text.Json;
 using WebApp.Services.Database.Grouping;
 using WebApp.Utilities.Caching;
 using WebApp.Utilities.Other;
@@ -152,7 +151,7 @@ namespace WebApp.Controllers.Grouping
 					_cache.Remove(
 						CacheKeys.GenerateCategoryCacheKey(await _categories.GetParentId(categoryId) ?? 0)
 					);
-				}, 
+				},
 				"rename"
 			);
 		}
@@ -212,7 +211,7 @@ namespace WebApp.Controllers.Grouping
 		public async Task<IActionResult> Index()
 		{
 			return View(
-				"AdminPage", 
+				"AdminPage",
 				await GenerateAdminPageModelAsync("NOTE: Your actions invalidate cached categories.")
 			);
 		}

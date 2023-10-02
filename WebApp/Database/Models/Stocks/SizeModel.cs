@@ -1,4 +1,4 @@
-﻿namespace WebApp.Database.Models
+﻿namespace WebApp.Database.Models.Stocks
 {
 	public class SizeModel
 	{

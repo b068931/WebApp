@@ -2,7 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using WebApp.Database;
 using WebApp.Database.Entities.Grouping;
-using WebApp.Database.Models;
+using WebApp.Database.Models.Grouping;
+using WebApp.Database.Models.Images;
 using WebApp.Utilities.Exceptions;
 
 namespace WebApp.Services.Database.Grouping

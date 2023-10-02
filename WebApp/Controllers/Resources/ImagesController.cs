@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
-using WebApp.Database.Models;
+using WebApp.Database.Models.Images;
 using WebApp.Services.Database.Grouping;
 using WebApp.Utilities.Caching;
 using WebApp.Utilities.Other;

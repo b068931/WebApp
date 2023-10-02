@@ -9,18 +9,18 @@ namespace WebApp.Utilities.Other
 	public class ApplicationUserClaimsPrincipalFactory : UserClaimsPrincipalFactory<ApplicationUser, ApplicationRole>
 	{
 		public ApplicationUserClaimsPrincipalFactory(
-			UserManager<ApplicationUser> userManager, 
-			RoleManager<ApplicationRole> roleManager, 
+			UserManager<ApplicationUser> userManager,
+			RoleManager<ApplicationRole> roleManager,
 			IOptions<IdentityOptions> options
 		) : base(userManager, roleManager, options)
-		{}
+		{ }
 
 		protected override async Task<ClaimsIdentity> GenerateClaimsAsync(ApplicationUser user)
 		{
 			ClaimsIdentity userIdentity = await base.GenerateClaimsAsync(user);
 			userIdentity.AddClaim(
 				new Claim(
-					ApplicationClaimTypes.AccountCreationDate, 
+					ApplicationClaimTypes.AccountCreationDate,
 					user.AccountCreationDate.ToString()
 				)
 			);

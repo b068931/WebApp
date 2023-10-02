@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using WebApp.Database;
 using WebApp.Database.Entities.Products;
-using WebApp.Database.Models;
+using WebApp.Database.Models.Stocks;
 using WebApp.Utilities.Exceptions;
 
 namespace WebApp.Services.Database.Products

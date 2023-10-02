@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using System.Text.Json;
-using WebApp.Database.Models;
+using WebApp.Database.Models.Grouping;
 using WebApp.Services.Database.Grouping;
 using WebApp.Utilities.Caching;
 using WebApp.Utilities.Exceptions;
@@ -82,7 +82,7 @@ namespace WebApp.Controllers.Grouping
 				async () =>
 				{
 					await _brands.UpdateBrandAsync(idToUpdate, newName, brandImage);
-					if(brandImage != null)
+					if (brandImage != null)
 					{
 						_cache.Remove(
 							CacheKeys.GenerateBrandImageCacheKey(

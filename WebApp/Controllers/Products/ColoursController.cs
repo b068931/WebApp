@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WebApp.Database.Models.Stocks;
 using WebApp.Services.Database.Products;
 using WebApp.Utilities.Other;
 using WebApp.ViewModels.Other;
@@ -13,7 +14,7 @@ namespace WebApp.Controllers.Products
 		private readonly ColoursManager _colours;
 		private readonly Performer<ColoursController> _performer;
 
-		private async Task<ResultWithErrorVM<List<Database.Models.ColourModel>>> GetViewModel(string error = "")
+		private async Task<ResultWithErrorVM<List<ColourModel>>> GetViewModel(string error = "")
 		{
 			return new()
 			{
