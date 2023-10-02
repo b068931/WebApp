@@ -82,11 +82,14 @@ namespace WebApp.Controllers.Grouping
 				async () =>
 				{
 					await _brands.UpdateBrandAsync(idToUpdate, newName, brandImage);
-					_cache.Remove(
-						CacheKeys.GenerateBrandImageCacheKey(
-							await _brands.GetBrandImageIdByBrandIdAsync(idToUpdate)
-						)
-					);
+					if(brandImage != null)
+					{
+						_cache.Remove(
+							CacheKeys.GenerateBrandImageCacheKey(
+								await _brands.GetBrandImageIdByBrandIdAsync(idToUpdate)
+							)
+						);
+					}
 				}
 			);
 		}
