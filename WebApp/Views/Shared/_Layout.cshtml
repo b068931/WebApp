@@ -39,7 +39,7 @@
 								<span role="button" class="language-blob">EN</span>
 							</div>
 
-							@if(User.Identity.IsAuthenticated)
+							@if(User.Identity?.IsAuthenticated ?? false)
 							{
 								<a href="#" class="my-auto">
 									<img id="shoppingCart" src="/resources/shoppingcart.svg"/>
@@ -144,9 +144,13 @@
 		</footer>
 	}
 
+	@if (ViewBag.RenderHeader)
+	{
+		<script src="~/js/header.js"></script>
+	}
+
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-	<script src="~/js/header.js"></script>
 	<script src="~/js/site.js" asp-append-version="true"></script>
 	@await RenderSectionAsync("Scripts", required: false)
 </body>
