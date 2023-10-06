@@ -122,7 +122,7 @@
 			<p>
 				<span class="fw-bold">Короткий опис: </span><span class="text-wrap text-break">@shortDescription</span>
 			</p>
-			<button class="btn btn-outline-dark mt-4 px-5 rounded-5">Додати у кошик</button>
+			<button id="topAddToCart" class="btn btn-outline-dark mt-4 px-5 rounded-5">Додати у кошик</button>
 		</div>
 		@if(Model.BrandInfo != null)
 		{
@@ -144,7 +144,7 @@
 			<h2 id="stocksMaximizer" class="my-auto">+</h2>
 		</div>
 		<div id="stocksContainer" style="display:none;" class="ms-3">
-			<form action="#" style="font-size:0.9rem;">
+			<form id="productInfoChooser" action="#" style="font-size:0.9rem;">
 				<h4>Оберіть колір</h4>
 				<fieldset id="colours" class="d-flex justify-content-start border-top">
 					@foreach(var colour in Model.AvailableColours)
@@ -172,6 +172,7 @@
 				</fieldset>
 			</form>
 			<div class="border-top mt-4 p-2">У наявності: <span id="availableContainer"></span></div>
+			<button form="productInfoChooser" type="submit" class="site-button site-primary-button mt-2">Додати у кошик</button>
 		</div>
 	</div>
 

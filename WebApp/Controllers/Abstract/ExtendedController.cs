@@ -9,7 +9,7 @@ namespace WebApp.Controllers.Abstract
 {
 	public abstract class ExtendedController : Controller
 	{
-		public string SiteBaseAddress
+		protected string SiteBaseAddress
 		{
 			get => $"{Request.Scheme}://{Request.Host}";
 		}
