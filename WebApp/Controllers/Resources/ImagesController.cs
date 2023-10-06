@@ -42,7 +42,7 @@ namespace WebApp.Controllers.Resources
 					ConfigureImageCacheEntry(cacheEntry);
 					return _brands.GetBrandImageAsync(imageToReturn);
 				}
-			) ?? throw new NullReferenceException("Completely unexpected null reference from brand image cache.");
+			) ?? throw new NullReferenceException("Unexpected null reference from brand image cache.");
 
 			return new FileStreamResult(new MemoryStream(brandImage.ImageData), brandImage.ContentType);
 		}

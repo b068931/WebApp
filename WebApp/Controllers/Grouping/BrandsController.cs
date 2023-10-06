@@ -35,6 +35,10 @@ namespace WebApp.Controllers.Grouping
 				async () =>
 				{
 					await callback();
+					_cache.Remove(
+						CacheKeys.AboutUsAllBrands
+					);
+
 					return View("AdminPage", await GetViewModelAsync());
 				},
 				async (message) => View("AdminPage", await GetViewModelAsync(message))

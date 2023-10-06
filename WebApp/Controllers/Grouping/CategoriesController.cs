@@ -36,6 +36,10 @@ namespace WebApp.Controllers.Grouping
 				async () =>
 				{
 					await callback();
+					_cache.Remove(
+						CacheKeys.AboutUsPopularCategories
+					);
+
 					return View(
 						"AdminPage",
 						await GenerateAdminPageModelAsync(
