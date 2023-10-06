@@ -28,7 +28,7 @@
 			@foreach (var brand in Model.Brands)
 			{
 				<a href="/products?brand=@brand.Id" class="brand-rectangle m-3 d-flex" role="button">
-					<img class="m-auto brand-preview-image" src="/images/brandImage/@brand.ImageId" />
+					<img class="m-auto brand-preview-image d-none" src="/images/brandImage/@brand.ImageId" />
 				</a>
 			}
 		</div>
