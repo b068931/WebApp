@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using System.Text.Json;
-using WebApp.Database.Models;
+using WebApp.Database.Models.Grouping;
 using WebApp.Services.Database.Grouping;
+using WebApp.Utilities.Caching;
 using WebApp.Utilities.Exceptions;
 using WebApp.Utilities.Other;
 using WebApp.ViewModels.Other;
@@ -14,6 +16,8 @@ namespace WebApp.Controllers.Grouping
 	public class BrandsController : Controller
 	{
 		private readonly BrandsManager _brands;
+		private readonly IMemoryCache _cache;
+
 		private readonly Performer<BrandsController> _performer;
 		private readonly JsonSerializerOptions _jsonOptions;
 
@@ -39,9 +43,11 @@ namespace WebApp.Controllers.Grouping
 
 		public BrandsController(
 			BrandsManager brands,
+			IMemoryCache cache,
 			Performer<BrandsController> performer)
 		{
 			_brands = brands;
+			_cache = cache;
 			_performer = performer;
 			_jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
 		}
@@ -68,12 +74,23 @@ namespace WebApp.Controllers.Grouping
 		[HttpPost("action/update")]
 		[ValidateAntiForgeryToken]
 		public Task<IActionResult> Update(
-			[FromForm(Name = "brandId")] int idToRename,
+			[FromForm(Name = "brandId")] int idToUpdate,
 			[FromForm(Name = "brandName")] string newName,
 			[FromForm(Name = "brandImage")] IFormFile? brandImage)
 		{
 			return PerformActionAsync(
-				() => _brands.UpdateBrandAsync(idToRename, newName, brandImage)
+				async () =>
+				{
+					await _brands.UpdateBrandAsync(idToUpdate, newName, brandImage);
+					if (brandImage != null)
+					{
+						_cache.Remove(
+							CacheKeys.GenerateBrandImageCacheKey(
+								await _brands.GetBrandImageIdByBrandIdAsync(idToUpdate)
+							)
+						);
+					}
+				}
 			);
 		}
 
@@ -83,7 +100,15 @@ namespace WebApp.Controllers.Grouping
 			[FromForm(Name = "brandId")] int idToDelete)
 		{
 			return PerformActionAsync(
-				() => _brands.DeleteBrandAsync(idToDelete)
+				async () =>
+				{
+					int brandImageId = await _brands.GetBrandImageIdByBrandIdAsync(idToDelete);
+					await _brands.DeleteBrandAsync(idToDelete);
+
+					_cache.Remove(
+						CacheKeys.GenerateBrandImageCacheKey(brandImageId)
+					);
+				}
 			);
 		}
 

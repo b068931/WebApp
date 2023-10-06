@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
+using Microsoft.Extensions.Caching.Memory;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using WebApp.Services.Database.Grouping;
+using WebApp.Utilities.Caching;
 using WebApp.Utilities.Other;
 using WebApp.ViewModels.Other;
 
@@ -12,6 +15,9 @@ namespace WebApp.Controllers.Grouping
 	public class CategoriesController : Controller
 	{
 		private readonly CategoriesManager _categories;
+		private readonly JsonSerializerSettings _jsonSettings;
+
+		private readonly IMemoryCache _cache;
 		private readonly Performer<CategoriesController> _performer;
 
 		private async Task<ResultWithErrorVM<string>> GenerateAdminPageModelAsync(string error)
@@ -41,33 +47,69 @@ namespace WebApp.Controllers.Grouping
 			);
 		}
 
+		private static void ConfigureCacheEntry(ICacheEntry cacheEntry)
+		{
+			cacheEntry.SlidingExpiration = TimeSpan.FromMinutes(10);
+			cacheEntry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
+
+			cacheEntry.Size = 1;
+			cacheEntry.Priority = CacheItemPriority.High;
+		}
+
 		public CategoriesController(
 			CategoriesManager categories,
+			IMemoryCache cache,
 			Performer<CategoriesController> performer)
 		{
 			_categories = categories;
+			_cache = cache;
 			_performer = performer;
+			_jsonSettings = new JsonSerializerSettings()
+			{
+				ContractResolver = new DefaultContractResolver()
+				{
+					NamingStrategy = new CamelCaseNamingStrategy()
+				}
+			};
 		}
 
 		[HttpGet("base")]
 		[AllowAnonymous]
-		public async Task<JsonResult> GetBaseCategories()
+		public async Task<IActionResult> GetBaseCategories()
 		{
-			return Json(
-				await _categories.GetCategoriesOnParentAsync(null),
-				new JsonSerializerOptions(JsonSerializerDefaults.Web)
+			string? baseCategoriesJson = await _cache.GetOrCreateAsync(
+				CacheKeys.GenerateCategoryCacheKey(0),
+				async cacheEntry =>
+				{
+					ConfigureCacheEntry(cacheEntry);
+					return JsonConvert.SerializeObject(
+						await _categories.GetCategoriesOnParentAsync(null),
+						_jsonSettings
+					);
+				}
 			);
+
+			return Content(baseCategoriesJson ?? "", "application/json");
 		}
 
 		[HttpGet("category/{parentId}/children")]
 		[AllowAnonymous]
-		public async Task<JsonResult> GetChildren(
+		public async Task<IActionResult> GetChildren(
 			[FromRoute(Name = "parentId")] int parentId)
 		{
-			return Json(
-				await _categories.GetCategoriesOnParentAsync(parentId),
-				new JsonSerializerOptions(JsonSerializerDefaults.Web)
+			string? categoryChildrenJson = await _cache.GetOrCreateAsync(
+				CacheKeys.GenerateCategoryCacheKey(parentId),
+				async cacheEntry =>
+				{
+					ConfigureCacheEntry(cacheEntry);
+					return JsonConvert.SerializeObject(
+						await _categories.GetCategoriesOnParentAsync(parentId),
+						_jsonSettings
+					);
+				}
 			);
+
+			return Content(categoryChildrenJson ?? "", "application/json");
 		}
 
 		[HttpPost("action/switch")]
@@ -85,7 +127,13 @@ namespace WebApp.Controllers.Grouping
 			[FromForm(Name = "parentId")] int parentId)
 		{
 			return PerformActionAsync(
-				() => _categories.CreateCategoryAsync(parentId == 0 ? null : parentId, newCategoryName),
+				async () =>
+				{
+					await _categories.CreateCategoryAsync(parentId == 0 ? null : parentId, newCategoryName);
+					_cache.Remove(
+						CacheKeys.GenerateCategoryCacheKey(parentId)
+					);
+				},
 				"create"
 			);
 		}
@@ -96,16 +144,39 @@ namespace WebApp.Controllers.Grouping
 			[FromForm(Name = "categoryId")] int categoryId,
 			[FromForm(Name = "categoryName")] string newName)
 		{
-			return PerformActionAsync(() => _categories.RenameCategoryAsync(categoryId, newName), "rename");
+			return PerformActionAsync(
+				async () =>
+				{
+					await _categories.RenameCategoryAsync(categoryId, newName);
+					_cache.Remove(
+						CacheKeys.GenerateCategoryCacheKey(await _categories.GetParentId(categoryId) ?? 0)
+					);
+				},
+				"rename"
+			);
 		}
 
 		[HttpPost("action/move")]
 		[ValidateAntiForgeryToken]
-		public Task<IActionResult> Rename(
+		public Task<IActionResult> Move(
 			[FromForm(Name = "categoryId")] int categoryId,
 			[FromForm(Name = "parentId")] int parentId)
 		{
-			return PerformActionAsync(() => _categories.MoveCategoryAsync(categoryId, parentId), "move");
+			return PerformActionAsync(
+				async () =>
+				{
+					await _categories.MoveCategoryAsync(categoryId, parentId);
+
+					_cache.Remove(
+						CacheKeys.GenerateCategoryCacheKey(await _categories.GetParentId(categoryId) ?? 0)
+					);
+
+					_cache.Remove(
+						CacheKeys.GenerateCategoryCacheKey(parentId)
+					);
+				},
+				"move"
+			);
 		}
 
 		[HttpPost("action/salvage")]
@@ -122,12 +193,27 @@ namespace WebApp.Controllers.Grouping
 		public Task<IActionResult> Delete(
 			[FromForm(Name = "categoryId")] int categoryId)
 		{
-			return PerformActionAsync(() => _categories.DeleteCategoryAsync(categoryId), "delete");
+			return PerformActionAsync(
+				async () =>
+				{
+					await _categories.DeleteCategoryAsync(categoryId);
+
+					//Deletion is a recursive operation. Most likely, this won't invalidate all caches.
+					//Either way, they can't be accessed so no one cares.
+					_cache.Remove(
+						CacheKeys.GenerateCategoryCacheKey(await _categories.GetParentId(categoryId) ?? 0)
+					);
+				},
+				"delete"
+			);
 		}
 
 		public async Task<IActionResult> Index()
 		{
-			return View("AdminPage", await GenerateAdminPageModelAsync("..."));
+			return View(
+				"AdminPage",
+				await GenerateAdminPageModelAsync("NOTE: Your actions invalidate cached categories.")
+			);
 		}
 	}
 }

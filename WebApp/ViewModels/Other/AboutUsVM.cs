@@ -1,4 +1,4 @@
-﻿using WebApp.Database.Models;
+﻿using WebApp.Database.Models.Grouping;
 using WebApp.ViewModels.Categories;
 
 namespace WebApp.ViewModels.Other

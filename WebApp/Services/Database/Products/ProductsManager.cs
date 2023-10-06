@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebApp.Database;
 using WebApp.Database.Entities.Products;
-using WebApp.Database.Models;
+using WebApp.Database.Models.InnerModels;
+using WebApp.Database.Models.Products;
+using WebApp.Database.Models.Stocks;
 using WebApp.Services.Database.Grouping;
-using WebApp.Services.Database.Maintenance;
 using WebApp.Utilities.Exceptions;
 using WebApp.Utilities.Filtering;
 using WebApp.ViewModels.Product;
@@ -109,13 +110,31 @@ namespace WebApp.Services.Database.Products
 
 		public async Task<ProductShow> GetProductShowVMAsync(
 			bool increaseViewsCount,
-			int actionPerformer, 
+			int actionPerformer,
 			int productId)
 		{
-			Product foundProduct = await _database.Products
+			ProductShowIntermediateModel foundProduct = await _database.Products
+				.AsNoTracking()
 				.Include(e => e.Brand)
 				.Include(e => e.MainImage)
 				.Include(e => e.ProductOwner)
+				.Select(e => new ProductShowIntermediateModel()
+				{
+					Id = e.Id,
+					ProductOwnerId = e.ProductOwnerId,
+					AuthorName = e.ProductOwner.UserName,
+					Name = e.Name,
+					Description = e.Description,
+					Price = e.Price,
+					Discount = e.Discount,
+					TruePrice = e.TruePrice,
+					ViewsCount = e.ViewsCount,
+					Rating = e.TrueRating,
+					ReviewsCount = e.RatingsCount,
+					BrandName = (e.Brand == null) ? null : e.Brand.Name,
+					BrandImageId = (e.Brand == null) ? null : e.Brand.ImageId,
+					MainImage = (e.MainImage == null) ? null : e.MainImage.StorageRelativeLocation
+				})
 				.SingleOrDefaultAsync(e => e.Id == productId)
 					?? throw new UserInteractionException(
 						$"Product with id {productId} does not exist."
@@ -131,19 +150,19 @@ namespace WebApp.Services.Database.Products
 			{
 				Id = foundProduct.Id,
 				DisplayEditing = actionPerformer == foundProduct.ProductOwnerId,
-				AuthorName = foundProduct.ProductOwner.UserName,
+				AuthorName = foundProduct.AuthorName,
 				Name = foundProduct.Name,
 				Description = foundProduct.Description,
 				Price = Math.Round(foundProduct.Price, 2),
 				Discount = foundProduct.Discount,
 				TruePrice = Math.Round(foundProduct.TruePrice, 2),
 				ViewsCount = foundProduct.ViewsCount,
-				Rating = foundProduct.TrueRating,
-				ReviewsCount = foundProduct.RatingsCount,
-				BrandInfo = foundProduct.Brand == null
+				Rating = foundProduct.Rating,
+				ReviewsCount = foundProduct.ReviewsCount,
+				BrandInfo = foundProduct.BrandName == null
 					? null
-					: (foundProduct.Brand.Name, foundProduct.Brand.ImageId ?? 0),
-				MainImage = foundProduct.MainImage?.StorageRelativeLocation ?? "",
+					: (foundProduct.BrandName, foundProduct.BrandImageId ?? 0),
+				MainImage = foundProduct.MainImage ?? "",
 				ProductImages = await _images.GetProductImagesAsync(productId),
 				AvailableColours = await _colours.GetAllColoursAsync(),
 				AvailableSizes = await _sizes.GetAllSizesAsync()
@@ -204,6 +223,19 @@ namespace WebApp.Services.Database.Products
 
 			//Mapping Product to ProductShowLightWeight is done in memory. Here we take only pageSize elements from database (and all their stocks information) I don't think that this result would take up THAT much memory.
 			return request
+				.Select(e => new ProductSearchIntermediateModel()
+				{
+					Id = e.Id,
+					Name = e.Name,
+					Price = e.Price,
+					Discount = e.Discount,
+					TruePrice = e.TruePrice,
+					TrueRating = e.TrueRating,
+					ViewsCount = e.ViewsCount,
+					MainImage = (e.MainImage == null) ? null : e.MainImage.StorageRelativeLocation,
+					Created = e.Created,
+					Stocks = e.Stocks
+				})
 				.Take(pageSize)
 				.ToListAsync()
 				.ContinueWith(next =>
@@ -217,7 +249,7 @@ namespace WebApp.Services.Database.Products
 							TruePrice = Math.Round(e.TruePrice, 2),
 							TrueRating = e.TrueRating,
 							ViewsCount = e.ViewsCount,
-							MainImage = e.MainImage?.StorageRelativeLocation ?? "",
+							MainImage = e.MainImage ?? "",
 							Date = e.Created,
 							AvailableColours = e.Stocks
 								.DistinctBy(e => e.ColourId)
@@ -302,8 +334,8 @@ namespace WebApp.Services.Database.Products
 			await _database.SaveChangesAsync();
 		}
 		public async Task RateProductAsync(
-			int actionPerformer, 
-			int productId, 
+			int actionPerformer,
+			int productId,
 			int stars)
 		{
 			if (stars <= 0 || stars > ProductShow.MaxStarsRating)

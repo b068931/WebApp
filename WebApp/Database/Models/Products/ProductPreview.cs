@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
+using WebApp.Database.Models.Stocks;
 
-namespace WebApp.Database.Models
+namespace WebApp.Database.Models.Products
 {
 	public class ProductPreview
 	{

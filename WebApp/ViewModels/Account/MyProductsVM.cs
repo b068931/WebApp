@@ -1,4 +1,4 @@
-﻿using WebApp.Database.Models;
+﻿using WebApp.Database.Models.Products;
 
 namespace WebApp.ViewModels.Account
 {

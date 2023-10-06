@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using WebApp.Database;
 using WebApp.Database.Entities.Grouping;
-using WebApp.Database.Models;
+using WebApp.Database.Models.Grouping;
 using WebApp.Utilities.Exceptions;
 using WebApp.Utilities.Other;
 using WebApp.ViewModels.Categories;
@@ -203,6 +203,7 @@ namespace WebApp.Services.Database.Grouping
 
 			await _database.SaveChangesAsync();
 		}
+
 		public async Task<string> BackTrackCategoryAsync(int categoryId)
 		{
 			string fullCategoryName = "";
@@ -220,6 +221,13 @@ namespace WebApp.Services.Database.Grouping
 			} while (foundCategory != null);
 
 			return fullCategoryName;
+		}
+		public Task<int?> GetParentId(int categoryId)
+		{
+			return _database.Categories
+				.Where(e => e.Id == categoryId)
+				.Select(e => e.ParentId)
+				.SingleOrDefaultAsync();
 		}
 
 		public async Task CreateCategoryAsync(int? parentId, string newCategoryName)

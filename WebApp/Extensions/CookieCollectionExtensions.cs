@@ -8,10 +8,10 @@ namespace WebApp.Extensions
 			this IRequestCookieCollection cookieCollection,
 			string key)
 		{
-			List<int> ints = new List<int>();
-			if(cookieCollection.TryGetValue(key, out string? serializedInts))
+			List<int> ints = new();
+			if (cookieCollection.TryGetValue(key, out string? serializedInts))
 			{
-				ints = JsonConvert.DeserializeObject<List<int>>(serializedInts ?? "") 
+				ints = JsonConvert.DeserializeObject<List<int>>(serializedInts ?? "")
 						?? new List<int>();
 			}
 

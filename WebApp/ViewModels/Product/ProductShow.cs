@@ -1,4 +1,5 @@
-﻿using WebApp.Database.Models;
+﻿using WebApp.Database.Models.Images;
+using WebApp.Database.Models.Stocks;
 
 namespace WebApp.ViewModels.Product
 {

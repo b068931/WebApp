@@ -82,6 +82,11 @@ builder.Services.AddAuthorization(options =>
 		.Build();
 });
 
+builder.Services.AddMemoryCache(options =>
+{
+	options.SizeLimit = 150;
+});
+
 //Change application settings
 builder.Services.ConfigureApplicationCookie(options =>
 {
