@@ -5,7 +5,9 @@ using System.Security.Claims;
 using System.Web;
 using WebApp.Controllers.Abstract;
 using WebApp.Database.Entities.Auth;
+using WebApp.Database.Models.Products;
 using WebApp.Extensions;
+using WebApp.ProjectConfiguration.Constants;
 using WebApp.Services.Actions;
 using WebApp.Services.Database.Products;
 using WebApp.Utilities.Filtering.Products.Filters;
@@ -159,12 +161,29 @@ namespace WebApp.Controllers.Auth
 		[HttpGet]
 		public async Task<IActionResult> Index()
 		{
-			return View("AccountPage", new AccountPageVM()
+			List<int> userClaimedViewedProducts =
+				Request.Cookies.GetIntsList(CookieKeys.ViewedProducts);
+
+			List<ProductPreview> recentlyViewedProducts;
+			if(userClaimedViewedProducts.Count > 0)
 			{
-				Name = User.FindFirstValue(ClaimTypes.Name),
-				Email = User.FindFirstValue(ClaimTypes.Email),
-				CreationDateString = User.FindFirstValue(ApplicationClaimTypes.AccountCreationDate),
-				RecentlyViewedProducts = await _products.SearchAsync(
+				recentlyViewedProducts = await _products.SearchAsync(
+					new List<Utilities.Filtering.IFilter<Database.Entities.Products.Product>>()
+					{
+						new SelectConcreteProducts(
+							userClaimedViewedProducts
+								.TakeLast(RecentlyViewedProductsPageSize)
+								.ToList()
+						)
+					},
+					new IdOrder(0),
+					RecentlyViewedProductsPageSize,
+					false
+				);
+			}
+			else
+			{
+				recentlyViewedProducts = await _products.SearchAsync(
 					new List<Utilities.Filtering.IFilter<Database.Entities.Products.Product>>()
 					{
 						new ViewedByUser(GetUserId())
@@ -172,7 +191,26 @@ namespace WebApp.Controllers.Auth
 					new IdOrder(0),
 					RecentlyViewedProductsPageSize,
 					false
-				)
+				);
+
+				Response.Cookies.SetIntsList(
+					CookieKeys.ViewedProducts,
+					recentlyViewedProducts
+						.Select(e => e.Id)
+						.ToList(),
+					new CookieOptions()
+					{
+						Expires = DateTime.UtcNow.AddDays(CookieKeys.ViewedProductInformationCookieLifetimeDays)
+					}
+				);
+			}
+
+			return View("AccountPage", new AccountPageVM()
+			{
+				Name = User.FindFirstValue(ClaimTypes.Name),
+				Email = User.FindFirstValue(ClaimTypes.Email),
+				CreationDateString = User.FindFirstValue(ApplicationClaimTypes.AccountCreationDate),
+				RecentlyViewedProducts = recentlyViewedProducts
 			});
 		}
 	}

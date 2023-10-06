@@ -9,6 +9,7 @@ using WebApp.Controllers.Abstract;
 using WebApp.Database.Entities.Products;
 using WebApp.Database.Models.Products;
 using WebApp.Extensions;
+using WebApp.ProjectConfiguration.Constants;
 using WebApp.Services.Database.Grouping;
 using WebApp.Services.Database.Maintenance;
 using WebApp.Services.Database.Products;
@@ -28,9 +29,6 @@ namespace WebApp.Controllers.Products
 	public class ProductsController : ExtendedController
 	{
 		private const int ProductsPageSize = 8;
-		private const int MaximumViewedProductsInformationCookie = 100;
-		private const int ViewedProductInformationCookieLifetimeDays = 3;
-
 		private readonly UserInteractionManager _interactions;
 
 		private readonly ProductFiltersFactory _filtersFactory;
@@ -262,27 +260,24 @@ namespace WebApp.Controllers.Products
 					if (GetUserId() != 0)
 					{
 						List<int> recentlyViewedProducts =
-							Request.Cookies.GetIntsList("ViewedProducts");
+							Request.Cookies.GetIntsList(CookieKeys.ViewedProducts);
 
 						if (!recentlyViewedProducts.Contains(productId))
 						{
 							firstTime =
 								await _interactions.RememberViewedProductAsync(GetUserId(), productId);
 
-							if (recentlyViewedProducts.Count >= MaximumViewedProductsInformationCookie)
-							{
-								recentlyViewedProducts = recentlyViewedProducts
-									.TakeLast(MaximumViewedProductsInformationCookie / 2)
-									.ToList();
-							}
+							recentlyViewedProducts = recentlyViewedProducts
+								.TakeLast(CookieKeys.MaximumViewedProductsInformationCookie / 2)
+								.ToList();
 
 							recentlyViewedProducts.Add(productId);
 							Response.Cookies.SetIntsList(
-								"ViewedProducts",
+								CookieKeys.ViewedProducts,
 								recentlyViewedProducts,
 								new CookieOptions()
 								{
-									Expires = DateTime.UtcNow.AddDays(ViewedProductInformationCookieLifetimeDays)
+									Expires = DateTime.UtcNow.AddDays(CookieKeys.ViewedProductInformationCookieLifetimeDays)
 								}
 							);
 						}

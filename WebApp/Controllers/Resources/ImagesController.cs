@@ -2,13 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using WebApp.Database.Models.Images;
+using WebApp.ProjectConfiguration.Constants;
 using WebApp.Services.Database.Grouping;
-using WebApp.Utilities.Caching;
 using WebApp.Utilities.Other;
 
 namespace WebApp.Controllers.Resources
 {
-	[Route("/images")]
+    [Route("/images")]
 	[AllowAnonymous]
 	public class ImagesController : Controller
 	{

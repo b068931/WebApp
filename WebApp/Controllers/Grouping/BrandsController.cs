@@ -3,15 +3,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using System.Text.Json;
 using WebApp.Database.Models.Grouping;
+using WebApp.ProjectConfiguration.Constants;
 using WebApp.Services.Database.Grouping;
-using WebApp.Utilities.Caching;
 using WebApp.Utilities.Exceptions;
 using WebApp.Utilities.Other;
 using WebApp.ViewModels.Other;
 
 namespace WebApp.Controllers.Grouping
 {
-	[Route("/brands")]
+    [Route("/brands")]
 	[Authorize(Policy = "CriticalSiteContentPolicy")]
 	public class BrandsController : Controller
 	{
