@@ -34,7 +34,7 @@
 			@Html.AntiForgeryToken()
 			<input type="hidden" name="productId" value="@Model.ProductId" />
 			<h3>Оберіть колір</h3>
-			<fieldset id="colours" class="d-flex justify-content-center border-top">
+			<fieldset id="colours" class="d-flex justify-content-center flex-wrap border-top">
 				@foreach(var colour in Model.Colours)
 				{
 					<input id="colour-@colour.Id" type="radio" value="@colour.Id" name="stockColour" class="colour-select radio-select d-none" />
@@ -47,7 +47,7 @@
 				}
 			</fieldset>
 			<h3 class="mt-5">Оберіть розмір</h3>
-			<fieldset id="sizes" class="d-flex justify-content-center border-top">
+			<fieldset id="sizes" class="d-flex justify-content-center flex-wrap border-top">
 				@foreach(var size in Model.Sizes)
 				{
 					<input id="size-@size.Id" type="radio" value="@size.Id" name="stockProductsSize" class="size-select radio-select d-none" />
