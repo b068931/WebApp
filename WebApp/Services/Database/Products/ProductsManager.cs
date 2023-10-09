@@ -322,15 +322,23 @@ namespace WebApp.Services.Database.Products
 		public async Task ChangeMainImageAsync(int productId, int newMainImageId)
 		{
 			Product foundProduct = await FindProductAsync(productId);
-			bool isImageReal = await _database.ProductImages
-				.Where(e => e.ProductId == productId)
-				.Where(e => e.Id == newMainImageId)
-				.AnyAsync();
+			if (newMainImageId == 0)
+			{
+				foundProduct.MainImageId = null;
+			}
+			else
+			{
+				bool isImageReal = await _database.ProductImages
+					.Where(e => e.ProductId == productId)
+					.Where(e => e.Id == newMainImageId)
+					.AnyAsync();
 
-			if (!isImageReal)
-				throw new UserInteractionException($"Image with id {newMainImageId} does not exist.");
+				if (!isImageReal)
+					throw new UserInteractionException($"Image with id {newMainImageId} does not exist.");
 
-			foundProduct.MainImageId = newMainImageId;
+				foundProduct.MainImageId = newMainImageId;
+			}
+
 			await _database.SaveChangesAsync();
 		}
 		public async Task RateProductAsync(

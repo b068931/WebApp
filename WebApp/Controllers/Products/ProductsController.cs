@@ -444,6 +444,8 @@ namespace WebApp.Controllers.Products
 					User,
 					async () =>
 					{
+						await _products.ChangeMainImageAsync(idToDelete, 0);
+
 						List<int> images = await
 							_images.GetProductImagesAsync(idToDelete)
 								.ContinueWith(next =>
