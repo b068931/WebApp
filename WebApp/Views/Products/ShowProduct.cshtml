@@ -146,7 +146,7 @@
 		<div id="stocksContainer" style="display:none;" class="ms-3">
 			<form id="productInfoChooser" action="#" style="font-size:0.9rem;">
 				<h4>Оберіть колір</h4>
-				<fieldset id="colours" class="d-flex justify-content-start border-top">
+				<fieldset id="colours" class="d-flex justify-content-start flex-wrap border-top">
 					@foreach(var colour in Model.AvailableColours)
 					{
 						<input id="colour-@colour.Id" data-myid="@colour.Id" type="radio" value="@colour.Id" name="stockColour" class="stock-information-select radio-select d-none" />
@@ -159,7 +159,7 @@
 					}
 				</fieldset>
 				<h4 class="mt-5">Оберіть розмір</h4>
-				<fieldset id="sizes" class="d-flex justify-content-start border-top">
+				<fieldset id="sizes" class="d-flex justify-content-start flex-wrap border-top">
 					@foreach(var size in Model.AvailableSizes)
 					{
 						<input id="size-@size.Id" data-myid="@size.Id" type="radio" value="@size.Id" name="stockProductsSize" class="stock-information-select radio-select d-none" />
