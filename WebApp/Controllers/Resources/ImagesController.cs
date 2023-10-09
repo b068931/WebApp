@@ -8,7 +8,7 @@ using WebApp.Utilities.Other;
 
 namespace WebApp.Controllers.Resources
 {
-    [Route("/images")]
+	[Route("/images")]
 	[AllowAnonymous]
 	public class ImagesController : Controller
 	{

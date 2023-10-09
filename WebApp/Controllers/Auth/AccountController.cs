@@ -165,7 +165,7 @@ namespace WebApp.Controllers.Auth
 				Request.Cookies.GetIntsList(CookieKeys.ViewedProducts);
 
 			List<ProductPreview> recentlyViewedProducts;
-			if(userClaimedViewedProducts.Count > 0)
+			if (userClaimedViewedProducts.Count > 0)
 			{
 				recentlyViewedProducts = await _products.SearchAsync(
 					new List<Utilities.Filtering.IFilter<Database.Entities.Products.Product>>()
