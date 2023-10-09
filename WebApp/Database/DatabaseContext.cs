@@ -4,6 +4,7 @@ using WebApp.Database.Entities.Auth;
 using WebApp.Database.Entities.Grouping;
 using WebApp.Database.Entities.Products;
 using WebApp.Database.Entities.UserInteractions;
+using WebApp.Extensions;
 
 namespace WebApp.Database
 {
@@ -29,6 +30,15 @@ namespace WebApp.Database
 
 		public DbSet<ProductImage> ProductImages { get; set; }
 		public DbSet<BrandImage> BrandImages { get; set; }
+
+		protected override void ConfigureConventions(ModelConfigurationBuilder builder)
+		{
+			builder.Properties<DateOnly>()
+				.HaveConversion<DateOnlyConverter>()
+				.HaveColumnType("Date");
+
+			base.ConfigureConventions(builder);
+		}
 
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
