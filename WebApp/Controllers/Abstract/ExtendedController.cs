@@ -52,7 +52,7 @@ namespace WebApp.Controllers.Abstract
 		[NonAction]
 		public int GetUserId()
 		{
-			string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+			string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 			if (userId == null)
 				return 0;
 

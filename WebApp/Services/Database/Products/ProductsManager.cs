@@ -150,7 +150,7 @@ namespace WebApp.Services.Database.Products
 			{
 				Id = foundProduct.Id,
 				DisplayEditing = actionPerformer == foundProduct.ProductOwnerId,
-				AuthorName = foundProduct.AuthorName,
+				AuthorName = foundProduct.AuthorName ?? throw new ArgumentNullException(nameof(foundProduct.AuthorName), "User with no name"),
 				Name = foundProduct.Name,
 				Description = foundProduct.Description,
 				Price = Math.Round(foundProduct.Price, 2),

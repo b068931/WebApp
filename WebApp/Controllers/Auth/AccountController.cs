@@ -46,7 +46,9 @@ namespace WebApp.Controllers.Auth
 		{
 			if (ModelState.IsValid)
 			{
-				ApplicationUser foundUser = await _users.FindByIdAsync(GetUserId().ToString());
+				ApplicationUser foundUser =
+					await _users.FindByIdAsync(GetUserId().ToString())
+						?? throw new ArgumentException($"User with id {GetUserId()} does not exist.");
 
 				foundUser.UserName = userNameVM.UserName;
 				var result = await _users.UpdateAsync(foundUser);
@@ -70,7 +72,10 @@ namespace WebApp.Controllers.Auth
 		{
 			if (ModelState.IsValid)
 			{
-				ApplicationUser foundUser = await _users.FindByIdAsync(GetUserId().ToString());
+				ApplicationUser foundUser =
+					await _users.FindByIdAsync(GetUserId().ToString())
+						?? throw new ArgumentException($"User with id {GetUserId()} does not exist.");
+
 				var result = await _users.ChangePasswordAsync(
 					foundUser,
 					passwordVM.OldPassword,
@@ -98,7 +103,10 @@ namespace WebApp.Controllers.Auth
 		{
 			if (ModelState.IsValid)
 			{
-				ApplicationUser foundUser = await _users.FindByIdAsync(GetUserId().ToString());
+				ApplicationUser foundUser =
+					await _users.FindByIdAsync(GetUserId().ToString())
+						?? throw new ArgumentException($"User with id {GetUserId()} does not exist.");
+
 				string encodedToken = HttpUtility.UrlEncode(
 					await _users.GenerateChangeEmailTokenAsync(foundUser, emailVM.NewEmail)
 				);
@@ -130,7 +138,7 @@ namespace WebApp.Controllers.Auth
 			[FromQuery(Name = "user")] int userId,
 			[FromQuery(Name = "newemail")] string newEmail)
 		{
-			ApplicationUser foundUser = await _users.FindByIdAsync(userId.ToString());
+			ApplicationUser? foundUser = await _users.FindByIdAsync(userId.ToString());
 			if (foundUser == null)
 				return View("EmailChanged", "Користувач не існує.");
 
@@ -207,9 +215,9 @@ namespace WebApp.Controllers.Auth
 
 			return View("AccountPage", new AccountPageVM()
 			{
-				Name = User.FindFirstValue(ClaimTypes.Name),
-				Email = User.FindFirstValue(ClaimTypes.Email),
-				CreationDateString = User.FindFirstValue(ApplicationClaimTypes.AccountCreationDate),
+				Name = User.FindFirstValue(ClaimTypes.Name) ?? "[NO_USER_NAME]",
+				Email = User.FindFirstValue(ClaimTypes.Email) ?? "[NO_EMAIL]",
+				CreationDateString = User.FindFirstValue(ApplicationClaimTypes.AccountCreationDate) ?? "[NO_ACCOUNT_CREATION_DATE]",
 				RecentlyViewedProducts = recentlyViewedProducts
 			});
 		}

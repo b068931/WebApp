@@ -228,7 +228,7 @@ namespace WebApp.Controllers.Auth
 
 						await sender.ControllerSendEmail(
 							this,
-							foundUser.Email,
+							foundUser.Email ?? throw new ArgumentNullException(nameof(foundUser.Email), "User with no email"),
 							"Відновлення пароля",
 							"_PasswordResetEmailMessage",
 							new PasswordResetVM()
@@ -295,7 +295,7 @@ namespace WebApp.Controllers.Auth
 						{
 							return View("Login", new LoginVM()
 							{
-								UserName = foundUser.UserName,
+								UserName = foundUser.UserName ?? throw new ArgumentNullException(nameof(foundUser.UserName), "User with no name."),
 								ReturnUrl = resetVM.ReturnUrl
 							});
 						}

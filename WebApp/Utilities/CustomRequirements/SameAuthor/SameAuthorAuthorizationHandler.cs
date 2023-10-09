@@ -10,7 +10,7 @@ namespace WebApp.Utilities.CustomRequirements.SameAuthor
 			SameAuthorRequirement requirement,
 			Author trueAuthor)
 		{
-			string userIdentifier = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+			string? userIdentifier = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
 			if (userIdentifier != null)
 			{
 				if (int.Parse(userIdentifier) == trueAuthor.Id)

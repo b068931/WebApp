@@ -5,7 +5,7 @@
 		public int Id { get; set; }
 
 		public int ProductOwnerId { get; set; }
-		public string AuthorName { get; set; } = default!;
+		public string? AuthorName { get; set; } = default!;
 
 		public string Name { get; set; } = default!;
 		public string Description { get; set; } = default!;

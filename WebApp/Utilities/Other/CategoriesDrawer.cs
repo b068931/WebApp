@@ -42,7 +42,7 @@ namespace WebApp.Utilities.Other
 
 			builder.Append(_newLine);
 
-			if(category.Id != 0)
+			if (category.Id != 0)
 				_database.Categories.Entry(category).Collection(e => e.Children).Load();
 
 			foreach (Category childCategory in category.Children)
