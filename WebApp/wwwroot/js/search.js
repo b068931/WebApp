@@ -27,8 +27,9 @@
 			sortstars: "trueRating",
 			sortprice: "truePrice",
 			sortdiscount: "discount"
-		}
+		};
 
+		searchQuery["maxid"] = element.id;
 		for (var mapping in searchPageMappings) {
 			if (Object.prototype.hasOwnProperty.call(searchPageMappings, mapping)) {
 				if (searchQuery[mapping] != undefined) {
@@ -48,12 +49,6 @@
 						onNoProducts();
 						return;
 					}
-
-					data.searchResult.forEach(
-						element => {
-							searchQuery["maxid"] = Math.max(searchQuery["maxid"], element.id);
-						}
-					)
 
 					updateSearchPage(data.searchResult[data.searchResult.length - 1]);
 					addNewProducts(data.html);
