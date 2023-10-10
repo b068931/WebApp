@@ -142,7 +142,9 @@ namespace WebApp.Services.Database.Products
 
 			if (increaseViewsCount && actionPerformer != foundProduct.ProductOwnerId)
 			{
-				foundProduct.ViewsCount += 1;
+				Product productEntity = await FindProductAsync(productId);
+				productEntity.ViewsCount += 1;
+
 				await _database.SaveChangesAsync();
 			}
 
