@@ -146,6 +146,7 @@ namespace WebApp.Services.Database.Products
 				productEntity.ViewsCount += 1;
 
 				await _database.SaveChangesAsync();
+				foundProduct.ViewsCount += 1;
 			}
 
 			return new ProductShow()
