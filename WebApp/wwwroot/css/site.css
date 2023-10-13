@@ -10,12 +10,6 @@
 	}
 }
 
-@media(max-width: 640px) {
-	html {
-		font-size: 12px;
-	}
-}
-
 @font-face {
 	font-family: Gilroy;
 	src: url(/resources/gilroy.ttf);
@@ -27,6 +21,7 @@ html {
 }
 
 body {
+	min-width:1200px;
 	line-height: 1.6;
 	font-family: Gilroy, sans-serif;
 	font-size: 1.3rem;

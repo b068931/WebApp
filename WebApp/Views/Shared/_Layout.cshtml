@@ -13,12 +13,12 @@
 	@if (ViewBag.RenderHeader)
 	{
 		<header>
-			<nav class="header navbar navbar-expand-sm navbar-light">
+			<nav class="header navbar navbar-light">
 				<div class="container-fluid">
 					<a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
 						<img id="brand" src="/resources/brand.svg" alt="" width="85" height="63">
 					</a>
-					<div class="contents collapse navbar-collapse">
+					<div class="contents flex-grow-1">
 						<div class="d-flex flex-row justify-content-between w-100">
 							<form method="get" action="/products" id="headerSearchBar" class="flex-grow-1">
 								<div class="input-group">
