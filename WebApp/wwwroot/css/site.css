@@ -153,6 +153,7 @@ body {
 }
 
 .myfooter {
+	min-width:1200px;
 	font-size: 0.8rem;
 	background: #212517;
 	line-height: 1;
