@@ -4,15 +4,15 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using WebApp.Controllers.Abstract;
 using WebApp.Database.Models.Stocks;
+using WebApp.Services.Actions;
 using WebApp.Services.Database.Products;
 using WebApp.Utilities.CustomRequirements.SameAuthor;
 using WebApp.Utilities.Exceptions;
-using WebApp.Utilities.Other;
 using WebApp.ViewModels.Product;
 
 namespace WebApp.Controllers.Products
 {
-	[Route("/product/stocks")]
+    [Route("/product/stocks")]
 	[Authorize(Policy = "PublicContentPolicy")]
 	public class ProductStocksController : ExtendedController
 	{

@@ -14,7 +14,7 @@ using WebApp.Utilities.Filtering.Products.Filters;
 using WebApp.Utilities.Filtering.Products.OrderTypes;
 using WebApp.ViewModels.Account;
 
-namespace WebApp.Controllers.Auth
+namespace WebApp.Controllers.Users
 {
 	[Route("/account")]
 	[Authorize(Policy = "PublicContentPolicy")]

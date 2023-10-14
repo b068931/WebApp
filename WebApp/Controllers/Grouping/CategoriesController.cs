@@ -4,13 +4,13 @@ using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using WebApp.ProjectConfiguration.Constants;
+using WebApp.Services.Actions;
 using WebApp.Services.Database.Grouping;
-using WebApp.Utilities.Other;
 using WebApp.ViewModels.Other;
 
 namespace WebApp.Controllers.Grouping
 {
-	[Route("/categories")]
+    [Route("/categories")]
 	[Authorize(Policy = "CriticalSiteContentPolicy")]
 	public class CategoriesController : Controller
 	{

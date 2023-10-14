@@ -10,6 +10,7 @@ using WebApp.Database.Entities.Products;
 using WebApp.Database.Models.Products;
 using WebApp.Extensions;
 using WebApp.ProjectConfiguration.Constants;
+using WebApp.Services.Actions;
 using WebApp.Services.Database.Grouping;
 using WebApp.Services.Database.Maintenance;
 using WebApp.Services.Database.Products;
@@ -19,12 +20,11 @@ using WebApp.Utilities.Filtering;
 using WebApp.Utilities.Filtering.Products;
 using WebApp.Utilities.Filtering.Products.Filters;
 using WebApp.Utilities.Filtering.Products.OrderTypes;
-using WebApp.Utilities.Other;
 using WebApp.ViewModels.Product;
 
 namespace WebApp.Controllers.Products
 {
-	[Route("/products")]
+    [Route("/products")]
 	[Authorize(Policy = "PublicContentPolicy")]
 	public class ProductsController : ExtendedController
 	{

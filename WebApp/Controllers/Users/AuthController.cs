@@ -6,12 +6,11 @@ using WebApp.Controllers.Abstract;
 using WebApp.Database.Entities.Auth;
 using WebApp.Services.Actions;
 using WebApp.Utilities.Exceptions;
-using WebApp.Utilities.Other;
 using WebApp.ViewModels.Auth;
 
-namespace WebApp.Controllers.Auth
+namespace WebApp.Controllers.Users
 {
-	[Route("/auth")]
+    [Route("/auth")]
 	public class AuthController : ExtendedController
 	{
 		private readonly UserManager<ApplicationUser> _users;

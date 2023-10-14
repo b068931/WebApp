@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApp.Database.Models.Stocks;
+using WebApp.Services.Actions;
 using WebApp.Services.Database.Products;
-using WebApp.Utilities.Other;
 using WebApp.ViewModels.Other;
 
 namespace WebApp.Controllers.Products
 {
-	[Route("/sizes")]
+    [Route("/sizes")]
 	[Authorize(Policy = "CriticalSiteContentPolicy")]
 	public class SizesController : Controller
 	{
