@@ -13,9 +13,9 @@ using WebApp.Services.Background;
 using WebApp.Services.Database.Grouping;
 using WebApp.Services.Database.Maintenance;
 using WebApp.Services.Database.Products;
+using WebApp.Utilities.CustomIdentityComponents;
 using WebApp.Utilities.CustomRequirements.SameAuthor;
 using WebApp.Utilities.Exceptions;
-using WebApp.Utilities.Other;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,7 +39,7 @@ builder.Services
 		options.SignIn.RequireConfirmedAccount = true;
 
 		options.User.RequireUniqueEmail = true;
-		options.User.AllowedUserNameCharacters = "0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM_ ";
+		options.User.AllowedUserNameCharacters = string.Empty;
 
 		options.Password.RequiredLength = 20; //The only strict requirement is the length of the password. This is to encourage the use of 'passPHRASES' instead of 'passWORDS'
 		options.Password.RequireNonAlphanumeric = false;
@@ -50,6 +50,20 @@ builder.Services
 	.AddClaimsPrincipalFactory<ApplicationUserClaimsPrincipalFactory>()
 	.AddEntityFrameworkStores<DatabaseContext>()
 	.AddDefaultTokenProviders();
+
+builder.Services
+	.AddAuthentication()
+	.AddGoogle(googleAuth =>
+	{
+		googleAuth.ReturnUrlParameter = "return";
+		googleAuth.AccessDeniedPath = new PathString("/auth/noentry");
+
+		googleAuth.ClientId = builder.Configuration["OAuthClientID"]
+			?? throw new ArgumentNullException("OAuthClientID", "Unable to find OAuth client id.");
+
+		googleAuth.ClientSecret = builder.Configuration["OAuthClientSecret"]
+			?? throw new ArgumentNullException("OAuthClientSecret", "Unable to find OAuth client secret.");
+	});
 
 builder.Services.AddAuthorization(options =>
 {

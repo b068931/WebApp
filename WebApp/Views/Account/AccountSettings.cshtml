@@ -1,4 +1,6 @@
-﻿@model string?
+﻿@using System.Security.Claims;
+@using WebApp.Extensions;
+@model string?
 
 <div class="d-flex flex-row justify-content-between m-3">
 	<div class="flex-fill">
@@ -9,21 +11,29 @@
 			<div class="text-success mt-4">@Model</div>
 		}
 		<div class="mt-4 mb-2">
-			<form method="post" action="/account/change/name" class="styled-inputs px-4">
+			@if(User.FindFirstValue(ApplicationClaimTypes.HasPasswordAuthentication) == bool.TrueString)
+			{
+				<form method="post" action="/account/change/password" class="styled-inputs px-4">
+					@Html.AntiForgeryToken()
+
+					<label for="oldPassword" class="form-label">Зміна пароля</label>
+					<input id="oldPassword" type="password" name="OldPassword" placeholder="Введіть старий пароль" class="form-control" />
+					<input type="password" name="NewPassword" placeholder="Введіть новий пароль" class="form-control mt-1" />
+					<input type="password" name="NewPasswordRepeat" placeholder="Повторіть новий пароль" class="form-control mt-1" />
+
+					<button type="submit" class="site-button site-primary-button mt-2 w-100">Змінити</button>
+				</form>
+			}
+			else
+			{
+				<div class="px-4 text-muted">Для вашого акаунта неможливо змінити пароль, бо ви аунтефікуєтеся за допомогою зовнішніх сервісів.</div>
+			}
+
+			<form method="post" action="/account/change/name" class="styled-inputs px-4 mt-5">
 				@Html.AntiForgeryToken()
 
 				<label for="newUserName" class="form-label">Нове ім'я користувача (зміни з'являться тільки після того, як ви перезайдете у свій акаунт)</label>
 				<input id="newUserName" type="text" name="UserName" placeholder="Введіть нове ім'я для цього користувача" class="form-control"/>
-
-				<button type="submit" class="site-button site-primary-button mt-2 w-100">Змінити</button>
-			</form>
-			<form method="post" action="/account/change/password" class="styled-inputs px-4 mt-5">
-				@Html.AntiForgeryToken()
-
-				<label for="oldPassword" class="form-label">Зміна пароля</label>
-				<input id="oldPassword" type="password" name="OldPassword" placeholder="Введіть старий пароль" class="form-control" />
-				<input type="password" name="NewPassword" placeholder="Введіть новий пароль" class="form-control mt-1" />
-				<input type="password" name="NewPasswordRepeat" placeholder="Повторіть новий пароль" class="form-control mt-1" />
 
 				<button type="submit" class="site-button site-primary-button mt-2 w-100">Змінити</button>
 			</form>

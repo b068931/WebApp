@@ -72,6 +72,12 @@ namespace WebApp.Controllers.Users
 		{
 			if (ModelState.IsValid)
 			{
+				if(User.FindFirstValue(ApplicationClaimTypes.HasPasswordAuthentication) == bool.FalseString)
+				{
+					ModelState.AddModelError(string.Empty, "Для вашого акаунта неможливо змінити пароль.");
+					return View("AccountSettings", "Пароль успішно змінено.");
+				}
+
 				ApplicationUser foundUser =
 					await _users.FindByIdAsync(GetUserId().ToString())
 						?? throw new ArgumentException($"User with id {GetUserId()} does not exist.");

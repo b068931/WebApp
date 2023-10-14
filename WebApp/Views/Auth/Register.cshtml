@@ -24,7 +24,7 @@
 			}
 			<h4 class="prevent-select">Реєстрація</h4>
 		</div>
-		<form method="post" action="/auth/register" class="d-flex flex-column pb-3 mb-auto mx-auto styled-inputs">
+		<form method="post" action="/auth/register" class="d-flex flex-column pb-3 px-3 mb-auto mx-auto styled-inputs">
 			@Html.AntiForgeryToken()
 			@if (Model.ReturnUrl != null)
 			{

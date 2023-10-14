@@ -1,4 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 
 namespace WebApp.ViewModels.Auth
 {
@@ -20,5 +23,8 @@ namespace WebApp.ViewModels.Auth
 
 		[MaxLength(1000)]
 		public string? ReturnUrl { get; set; } = default!;
+
+		[ValidateNever]
+		public IEnumerable<AuthenticationScheme> ExternalSchemes { get; set; } = default!;
 	}
 }

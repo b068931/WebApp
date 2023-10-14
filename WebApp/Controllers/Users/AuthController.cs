@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using System.Web;
 using WebApp.Controllers.Abstract;
 using WebApp.Database.Entities.Auth;
@@ -17,6 +18,18 @@ namespace WebApp.Controllers.Users
 		private readonly SignInManager<ApplicationUser> _signIn;
 		private readonly Performer<AuthController> _performer;
 
+		private IActionResult GetReturnUrlResult(string? returnUrl)
+		{
+			if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+			{
+				return Redirect(returnUrl);
+			}
+			else
+			{
+				return Redirect("/");
+			}
+		}
+
 		public AuthController(
 			UserManager<ApplicationUser> users,
 			SignInManager<ApplicationUser> signIn,
@@ -29,12 +42,13 @@ namespace WebApp.Controllers.Users
 
 		[AllowAnonymous]
 		[HttpGet("login")]
-		public IActionResult Login(
+		public async Task<IActionResult> Login(
 			[FromQuery(Name = "return")] string? returnUrl)
 		{
 			return View("Login", new LoginVM()
 			{
-				ReturnUrl = returnUrl
+				ReturnUrl = returnUrl,
+				ExternalSchemes = await _signIn.GetExternalAuthenticationSchemesAsync()
 			});
 		}
 
@@ -52,14 +66,7 @@ namespace WebApp.Controllers.Users
 
 				if (result.Succeeded)
 				{
-					if (!string.IsNullOrEmpty(loginVM.ReturnUrl) && Url.IsLocalUrl(loginVM.ReturnUrl))
-					{
-						return Redirect(loginVM.ReturnUrl);
-					}
-					else
-					{
-						return Redirect("/");
-					}
+					return GetReturnUrlResult(loginVM.ReturnUrl);
 				}
 				else if (result.IsNotAllowed)
 				{
@@ -72,6 +79,93 @@ namespace WebApp.Controllers.Users
 			}
 
 			return View("Login", loginVM);
+		}
+
+		[AllowAnonymous]
+		[HttpPost("external")]
+		[ValidateAntiForgeryToken]
+		public IActionResult LoginExternal(
+			[FromForm(Name = "provider")] string? provider)
+		{
+			if (provider == null)
+				return Redirect("/auth/login");
+
+			var externalSignInProperties =
+				_signIn.ConfigureExternalAuthenticationProperties(
+					provider,
+					"/auth/external/finish"
+				);
+
+			return new ChallengeResult(provider, externalSignInProperties);
+		}
+
+		[AllowAnonymous]
+		[HttpGet("external/finish")]
+		public Task<IActionResult> LoginExternalFinish()
+		{
+			return _performer.PerformActionMessageAsync(
+				async () =>
+				{
+					var externalAccountInformation = await _signIn.GetExternalLoginInfoAsync() ?? 
+						throw new UserInteractionException(
+							"Помилка завантаження інформації зовнішнього акаунта."
+						);
+
+					var externalSignInResult =
+						await _signIn.ExternalLoginSignInAsync(
+							externalAccountInformation.LoginProvider,
+							externalAccountInformation.ProviderKey,
+							true, true
+						);
+
+					if(externalSignInResult.Succeeded)
+					{
+						return Redirect("/");
+					}
+					else
+					{
+						string? email = externalAccountInformation
+							.Principal
+							.FindFirstValue(ClaimTypes.Email) ??
+								throw new UserInteractionException(
+									"Помилка пошуку інформації зовнішнього акаунта."
+								);
+
+						string? name = externalAccountInformation
+							.Principal
+							.FindFirstValue(ClaimTypes.Name) ?? email;
+
+						if (await _users.FindByEmailAsync(email) != null)
+							throw new UserInteractionException("Користувач з вашим email вже існує.");
+
+						ApplicationUser newUser = new()
+						{
+							UserName = name,
+							Email = email,
+							EmailConfirmed = true
+						};
+
+						await _users.CreateAsync(newUser);
+
+						await _users.AddToRoleAsync(newUser, "user");
+						await _users.AddLoginAsync(newUser, externalAccountInformation);
+
+						await _signIn.SignInAsync(newUser, true);
+						return Redirect("/");
+					}
+				},
+				async (message) =>
+				{
+					LoginVM loginVM = new()
+					{
+						ReturnUrl = null,
+						ExternalSchemes = await _signIn.GetExternalAuthenticationSchemesAsync()
+					};
+
+					ModelState.AddModelError("Password", message);
+					return View("Login", loginVM);
+				}
+			);
 		}
 
 		[HttpPost("logout")]
@@ -137,12 +231,13 @@ namespace WebApp.Controllers.Users
 							return View("Login", new LoginVM()
 							{
 								UserName = registerVM.UserName,
-								ReturnUrl = registerVM.ReturnUrl
+								ReturnUrl = registerVM.ReturnUrl,
+								ExternalSchemes = await _signIn.GetExternalAuthenticationSchemesAsync()
 							});
 						}
 						else
 						{
-							ModelState.AddModelError("PasswordRepeat", "Помилка створення вашого акаунта.");
+							ModelState.AddModelError("PasswordRepeat", "Неможливо створити ваш акаунт.");
 						}
 					}
 
@@ -218,6 +313,9 @@ namespace WebApp.Controllers.Users
 							await _users.FindByEmailAsync(forgotVM.Email)
 								?? throw new UserInteractionException("Такого акаунта не існує.");
 
+						if (foundUser.PasswordHash == null)
+							throw new UserInteractionException("Відновлення пароля для вашого акаунта не підтримується, бо ми його не зберігаємо.");
+
 						if (!await _users.IsEmailConfirmedAsync(foundUser))
 							throw new UserInteractionException("На жаль, ви не підтвердили вашу пошту, а тому відновити акаунт неможливо.");
 
@@ -243,7 +341,8 @@ namespace WebApp.Controllers.Users
 						ModelState.AddModelError("Password", "Відновіть пароль, щоб увійти у ваш акаунт.");
 						return View("Login", new LoginVM()
 						{
-							ReturnUrl = forgotVM.ReturnUrl
+							ReturnUrl = forgotVM.ReturnUrl,
+							ExternalSchemes = await _signIn.GetExternalAuthenticationSchemesAsync()
 						});
 					}
 
@@ -295,7 +394,8 @@ namespace WebApp.Controllers.Users
 							return View("Login", new LoginVM()
 							{
 								UserName = foundUser.UserName ?? throw new ArgumentNullException(nameof(foundUser.UserName), "User with no name."),
-								ReturnUrl = resetVM.ReturnUrl
+								ReturnUrl = resetVM.ReturnUrl,
+								ExternalSchemes = await _signIn.GetExternalAuthenticationSchemesAsync()
 							});
 						}
 						else
