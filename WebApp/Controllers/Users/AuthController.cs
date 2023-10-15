@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Security.Claims;
+using System.Text.Encodings.Web;
 using System.Web;
 using WebApp.Controllers.Abstract;
 using WebApp.Database.Entities.Auth;
@@ -85,23 +87,28 @@ namespace WebApp.Controllers.Users
 		[HttpPost("external")]
 		[ValidateAntiForgeryToken]
 		public IActionResult LoginExternal(
-			[FromForm(Name = "provider")] string? provider)
+			[FromForm(Name = "provider")] string? provider,
+			[FromForm(Name = "return")] string? returnUrl)
 		{
 			if (provider == null)
 				return Redirect("/auth/login");
 
-			var externalSignInProperties =
-				_signIn.ConfigureExternalAuthenticationProperties(
-					provider,
-					"/auth/external/finish"
-				);
+			string externalAuthFinisher = "/auth/external/finish";
+			if (returnUrl != null)
+				externalAuthFinisher += $"?return={HttpUtility.UrlEncode(returnUrl)}";
+
+			var externalSignInProperties = _signIn.ConfigureExternalAuthenticationProperties(
+				provider,
+				externalAuthFinisher
+			);
 
 			return new ChallengeResult(provider, externalSignInProperties);
 		}
 
 		[AllowAnonymous]
 		[HttpGet("external/finish")]
-		public Task<IActionResult> LoginExternalFinish()
+		public Task<IActionResult> LoginExternalFinish(
+			[FromQuery(Name = "return")] string? returnUrl)
 		{
 			return _performer.PerformActionMessageAsync(
 				async () =>
@@ -120,7 +127,7 @@ namespace WebApp.Controllers.Users
 
 					if(externalSignInResult.Succeeded)
 					{
-						return Redirect("/");
+						return GetReturnUrlResult(returnUrl);
 					}
 					else
 					{
@@ -135,23 +142,38 @@ namespace WebApp.Controllers.Users
 							.Principal
 							.FindFirstValue(ClaimTypes.Name) ?? email;
 
-						if (await _users.FindByEmailAsync(email) != null)
-							throw new UserInteractionException("Користувач з вашим email вже існує.");
-
-						ApplicationUser newUser = new()
+						ApplicationUser? foundUser = await _users.FindByEmailAsync(email);
+						if (foundUser != null)
 						{
-							UserName = name,
-							Email = email,
-							EmailConfirmed = true
-						};
+							var existingUserLogins = await _users.GetLoginsAsync(foundUser);
+							if(!existingUserLogins
+								.Where(e => e.LoginProvider == externalAccountInformation.LoginProvider)
+								.Any()
+							)
+							{
+								await _users.AddLoginAsync(foundUser, externalAccountInformation);
+							}
 
-						await _users.CreateAsync(newUser);
+							await _signIn.SignInAsync(foundUser, true);
+							return GetReturnUrlResult(returnUrl);
+						}
+						else
+						{
+							ApplicationUser newUser = new()
+							{
+								UserName = name,
+								Email = email,
+								EmailConfirmed = true
+							};
 
-						await _users.AddToRoleAsync(newUser, "user");
-						await _users.AddLoginAsync(newUser, externalAccountInformation);
+							await _users.CreateAsync(newUser);
 
-						await _signIn.SignInAsync(newUser, true);
-						return Redirect("/");
+							await _users.AddToRoleAsync(newUser, "user");
+							await _users.AddLoginAsync(newUser, externalAccountInformation);
+
+							await _signIn.SignInAsync(newUser, true);
+							return GetReturnUrlResult(returnUrl);
+						}
 					}
 				},
 				async (message) =>

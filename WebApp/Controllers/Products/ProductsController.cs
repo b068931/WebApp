@@ -277,7 +277,8 @@ namespace WebApp.Controllers.Products
 								recentlyViewedProducts,
 								new CookieOptions()
 								{
-									Expires = DateTime.UtcNow.AddDays(CookieKeys.ViewedProductInformationCookieLifetimeDays)
+									Expires = DateTime.UtcNow.AddDays(CookieKeys.ViewedProductInformationCookieLifetimeDays),
+									SameSite = SameSiteMode.Lax
 								}
 							);
 						}

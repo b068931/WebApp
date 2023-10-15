@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -55,14 +56,31 @@ builder.Services
 	.AddAuthentication()
 	.AddGoogle(googleAuth =>
 	{
+		googleAuth.CorrelationCookie.Name = "GoogleCorrelationCookie";
+		googleAuth.CallbackPath = new PathString("/auth/login/external/google");
+
 		googleAuth.ReturnUrlParameter = "return";
 		googleAuth.AccessDeniedPath = new PathString("/auth/noentry");
 
-		googleAuth.ClientId = builder.Configuration["OAuthClientID"]
-			?? throw new ArgumentNullException("OAuthClientID", "Unable to find OAuth client id.");
+		googleAuth.ClientId = builder.Configuration["GoogleOAuth:ClientID"]
+			?? throw new ArgumentNullException("GoogleClientID", "Unable to find Google OAuth client id.");
 
-		googleAuth.ClientSecret = builder.Configuration["OAuthClientSecret"]
-			?? throw new ArgumentNullException("OAuthClientSecret", "Unable to find OAuth client secret.");
+		googleAuth.ClientSecret = builder.Configuration["GoogleOAuth:ClientSecret"]
+			?? throw new ArgumentNullException("GoogleClientSecret", "Unable to find Google OAuth client secret.");
+	})
+	.AddMicrosoftAccount(microsoftAuth =>
+	{
+		microsoftAuth.CorrelationCookie.Name = "MicrosoftCorrelationCookie";
+		microsoftAuth.CallbackPath = new PathString("/auth/login/external/microsoft");
+
+		microsoftAuth.ReturnUrlParameter = "return";
+		microsoftAuth.AccessDeniedPath = new PathString("/auth/noentry");
+
+		microsoftAuth.ClientId = builder.Configuration["MicrosoftOAuth:ClientID"]
+			?? throw new ArgumentNullException("MicrosoftClientID", "Unable to find Microsoft OAuth client id.");
+
+		microsoftAuth.ClientSecret = builder.Configuration["MicrosoftOAuth:ClientSecret"]
+			?? throw new ArgumentNullException("MicrosoftClientSecret", "Unable to find Microsoft OAuth client secret.");
 	});
 
 builder.Services.AddAuthorization(options =>
@@ -115,13 +133,30 @@ builder.Services.ConfigureApplicationCookie(options =>
 	options.ReturnUrlParameter = "return";
 
 	options.Cookie.HttpOnly = true;
-	options.Cookie.Name = "UserIdentity";
+	options.Cookie.Name = "ApplicationUserIdentity";
 	options.Cookie.IsEssential = true;
 
 	//https://github.com/dotnet/aspnetcore/issues/13632.
 	//Due to the SameSite attribute of the antiforgery cookie you can not reset password on one page
 	//and login on another, you'll just get a 400(badrequest) because antiforgery token on the first
 	//page will not match the antiforgery cookie (that has been changed by the second page).
+});
+
+builder.Services.ConfigureExternalCookie(options =>
+{
+	options.LoginPath = new PathString("/auth/login");
+	options.LogoutPath = new PathString("/auth/logout");
+	options.LogoutPath = new PathString("/auth/logout");
+	options.AccessDeniedPath = new PathString("/auth/noentry");
+
+	options.ExpireTimeSpan = TimeSpan.FromDays(5);
+	options.SlidingExpiration = true;
+
+	options.ReturnUrlParameter = "return";
+
+	options.Cookie.HttpOnly = true;
+	options.Cookie.Name = "ExternalUserIdentity";
+	options.Cookie.IsEssential = true;
 });
 
 builder.Services.Configure<UserInteractionOptions>(
@@ -140,6 +175,12 @@ builder.Services.Configure<AntiforgeryOptions>(options =>
 {
 	options.Cookie.Name = "AntiForgeryToken";
 	options.Cookie.IsEssential = true;
+});
+
+builder.Services.Configure<MicrosoftAccountOptions>(options =>
+{
+	options.AuthorizationEndpoint = "https://login.microsoftonline.com/common/oauth2/v2.0/authorize";
+	options.TokenEndpoint = "https://login.microsoftonline.com/common/oauth2/v2.0/token";
 });
 
 //Add custom services.

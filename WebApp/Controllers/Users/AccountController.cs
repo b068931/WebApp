@@ -214,7 +214,8 @@ namespace WebApp.Controllers.Users
 						.ToList(),
 					new CookieOptions()
 					{
-						Expires = DateTime.UtcNow.AddDays(CookieKeys.ViewedProductInformationCookieLifetimeDays)
+						Expires = DateTime.UtcNow.AddDays(CookieKeys.ViewedProductInformationCookieLifetimeDays),
+						SameSite = SameSiteMode.Lax
 					}
 				);
 			}

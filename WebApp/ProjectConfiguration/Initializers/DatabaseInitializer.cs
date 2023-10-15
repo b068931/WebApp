@@ -23,8 +23,8 @@ namespace WebApp.ProjectConfiguration.Initializers
 
 		private async Task PopulateUserAsync(string userHandle, string userName, string userRole)
 		{
-			string emailProperty = "Preadded" + userHandle + "Email";
-			string passwordProperty = "Preadded" + userHandle + "Password";
+			string emailProperty = $"Preadded{userHandle}:Email";
+			string passwordProperty = $"Preadded{userHandle}:Password";
 
 			string email = _configuration[emailProperty] ??
 				throw new ArgumentNullException(
