@@ -11,7 +11,7 @@ using WebApp.ViewModels.Other;
 
 namespace WebApp.Controllers.Grouping
 {
-    [Route("/brands")]
+	[Route("/brands")]
 	[Authorize(Policy = "CriticalSiteContentPolicy")]
 	public class BrandsController : Controller
 	{

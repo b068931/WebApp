@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 
-namespace WebApp.Utilities.CustomRequirements.SameAuthor
+namespace WebApp.Utilities.CustomIdentityComponents.Requirements.SameAuthor
 {
 	public class SameAuthorAuthorizationHandler : AuthorizationHandler<SameAuthorRequirement, Author>
 	{

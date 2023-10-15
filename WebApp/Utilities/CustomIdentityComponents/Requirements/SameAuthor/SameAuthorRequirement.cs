@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 
-namespace WebApp.Utilities.CustomRequirements.SameAuthor
+namespace WebApp.Utilities.CustomIdentityComponents.Requirements.SameAuthor
 {
 	public class SameAuthorRequirement : IAuthorizationRequirement
 	{

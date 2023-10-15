@@ -7,7 +7,7 @@ using WebApp.ViewModels.Other;
 
 namespace WebApp.Controllers.Products
 {
-    [Route("/colours")]
+	[Route("/colours")]
 	[Authorize(Policy = "CriticalSiteContentPolicy")]
 	public class ColoursController : Controller
 	{

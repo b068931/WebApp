@@ -22,15 +22,23 @@ namespace WebApp.Controllers.Users
 	{
 		private const int RecentlyViewedProductsPageSize = 12;
 
+		private readonly Performer<AccountController> _performer;
 		private readonly ProductsManager _products;
+
 		private readonly UserManager<ApplicationUser> _users;
+		private readonly SignInManager<ApplicationUser> _signIn;
 
 		public AccountController(
+			Performer<AccountController> performer,
 			ProductsManager products,
-			UserManager<ApplicationUser> users)
+			UserManager<ApplicationUser> users,
+			SignInManager<ApplicationUser> signIn)
 		{
+			_performer = performer;
 			_products = products;
+
 			_users = users;
+			_signIn = signIn;
 		}
 
 		[HttpGet("settings")]
@@ -72,7 +80,7 @@ namespace WebApp.Controllers.Users
 		{
 			if (ModelState.IsValid)
 			{
-				if(User.FindFirstValue(ApplicationClaimTypes.HasPasswordAuthentication) == bool.FalseString)
+				if (User.FindFirstValue(ApplicationClaimTypes.HasPasswordAuthentication) == bool.FalseString)
 				{
 					ModelState.AddModelError(string.Empty, "Для вашого акаунта неможливо змінити пароль.");
 					return View("AccountSettings", "Пароль успішно змінено.");
@@ -153,6 +161,78 @@ namespace WebApp.Controllers.Users
 				return View("EmailChanged", "Неможливо підтвердити користувача");
 
 			return View("EmailChanged");
+		}
+
+		[HttpPost("remove")]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> DeleteMyAccount(
+			[FromServices] EmailSender sender)
+		{
+			ApplicationUser foundUser =
+				await _users.FindByIdAsync(GetUserId().ToString())
+					?? throw new ArgumentException($"User with id {GetUserId()} does not exist.");
+
+			string encodedToken = HttpUtility.UrlEncode(
+				await _users.GenerateUserTokenAsync(
+					foundUser,
+					CustomTokenProviders.DeleteUserAccount,
+					CustomTokenProviders.DeleteUserAccountPurpose
+				)
+			);
+
+			await sender.ControllerSendEmail(
+				this,
+				foundUser.Email ?? throw new ArgumentException($"User {GetUserId()} with no email"),
+				"Видалення вашого акаунта",
+				"_DeleteMyAccountEmailMessage",
+				new DeleteMyAccountEmailMessageVM()
+				{
+					SiteBaseAddress = SiteBaseAddress,
+					UserId = foundUser.Id,
+					Token = encodedToken,
+					UserName = foundUser.UserName ?? foundUser.Email
+				},
+				"User to be deleted"
+			);
+
+			return View("AccountSettings", "На вашу пошту було надіслано повідомлення з підтвердженням видалення акаунта.");
+		}
+
+		[HttpGet("remove")]
+		public async Task<IActionResult> DeleteMyAccount(
+			[FromQuery(Name = "token")] string accountDeletionToken,
+			[FromQuery(Name = "user")] int userId)
+		{
+			ApplicationUser? foundUser = await _users.FindByIdAsync(userId.ToString());
+			if (foundUser == null)
+				return View("AccountDeleted", "Такого користувача не існує.");
+
+			bool result = await _users.VerifyUserTokenAsync(
+				foundUser,
+				CustomTokenProviders.DeleteUserAccount,
+				CustomTokenProviders.DeleteUserAccountPurpose,
+				accountDeletionToken
+			);
+
+			if (!result)
+				return View("AccountDeleted", "Використано неправильний токен видалення акаунта.");
+
+			return await _performer.PerformActionMessageAsync(
+				async () =>
+				{
+					List<int> myProducts =
+						await _products.GetProductsOfOwnerAsync(foundUser.Id);
+
+					foreach (var product in myProducts)
+						await _products.DeleteProductAsync(product);
+
+					await _signIn.SignOutAsync();
+					await _users.DeleteAsync(foundUser);
+
+					return View("AccountDeleted");
+				},
+				(message) => View("AccountDeleted", message)
+			);
 		}
 
 		[HttpGet("products")]

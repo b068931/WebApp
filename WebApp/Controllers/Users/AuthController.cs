@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Security.Claims;
-using System.Text.Encodings.Web;
 using System.Web;
 using WebApp.Controllers.Abstract;
 using WebApp.Database.Entities.Auth;
@@ -13,7 +11,7 @@ using WebApp.ViewModels.Auth;
 
 namespace WebApp.Controllers.Users
 {
-    [Route("/auth")]
+	[Route("/auth")]
 	public class AuthController : ExtendedController
 	{
 		private readonly UserManager<ApplicationUser> _users;
@@ -113,7 +111,7 @@ namespace WebApp.Controllers.Users
 			return _performer.PerformActionMessageAsync(
 				async () =>
 				{
-					var externalAccountInformation = await _signIn.GetExternalLoginInfoAsync() ?? 
+					var externalAccountInformation = await _signIn.GetExternalLoginInfoAsync() ??
 						throw new UserInteractionException(
 							"Помилка завантаження інформації зовнішнього акаунта."
 						);
@@ -125,7 +123,7 @@ namespace WebApp.Controllers.Users
 							true, true
 						);
 
-					if(externalSignInResult.Succeeded)
+					if (externalSignInResult.Succeeded)
 					{
 						return GetReturnUrlResult(returnUrl);
 					}
@@ -146,7 +144,7 @@ namespace WebApp.Controllers.Users
 						if (foundUser != null)
 						{
 							var existingUserLogins = await _users.GetLoginsAsync(foundUser);
-							if(!existingUserLogins
+							if (!existingUserLogins
 								.Where(e => e.LoginProvider == externalAccountInformation.LoginProvider)
 								.Any()
 							)

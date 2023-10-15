@@ -45,6 +45,10 @@
 
 				<button type="submit" class="site-button site-primary-button mt-2 w-100">Змінити</button>
 			</form>
+			<form method="post" action="/account/remove" class="styled-inputs px-4 mt-5">
+				@Html.AntiForgeryToken()
+				<button type="submit" class="site-button site-danger-button mt-2 w-25">Видаліть мій акаунт</button>
+			</form>
 		</div>
 	</div>
 	<div class="lh-sm prevent-select">

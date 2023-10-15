@@ -10,7 +10,7 @@ using WebApp.ViewModels.Other;
 
 namespace WebApp.Controllers.Grouping
 {
-    [Route("/categories")]
+	[Route("/categories")]
 	[Authorize(Policy = "CriticalSiteContentPolicy")]
 	public class CategoriesController : Controller
 	{

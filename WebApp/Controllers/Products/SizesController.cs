@@ -7,7 +7,7 @@ using WebApp.ViewModels.Other;
 
 namespace WebApp.Controllers.Products
 {
-    [Route("/sizes")]
+	[Route("/sizes")]
 	[Authorize(Policy = "CriticalSiteContentPolicy")]
 	public class SizesController : Controller
 	{

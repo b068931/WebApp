@@ -1,0 +1,16 @@
+﻿@model string?
+@{
+	ViewBag.RenderHeader = false;
+	ViewBag.RenderFooter = false;
+}
+
+<div class="m-2">
+	@if (Model != null)
+	{
+		<p class="text-danger fw-bold">Не редагуйте посилання, що вам надіслали(якщо ви цього не робили, то це помилка сервера). Помилка видалення акаунта: @Model</p>
+	}
+	else
+	{
+		<h2>Ваш акаунт успішно видалено!</h2>
+	}
+</div>

@@ -1,0 +1,17 @@
+﻿@model WebApp.ViewModels.Account.DeleteMyAccountEmailMessageVM
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+</head>
+<body>
+	<center>
+		<b>Видалення вашого акаунта (@Model.UserName)</b>
+	</center>
+	<p>
+		Перейдіть за <a href="@Model.SiteBaseAddress/account/remove?token=@Model.Token&user=@Model.UserId">посиланням</a> для того, щоб видалити свій акаунт.
+		Разом з вашим акаунтом видаляється вся інша інформація.
+	</p>
+</body>
+</html>

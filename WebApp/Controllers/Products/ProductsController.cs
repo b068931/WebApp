@@ -14,7 +14,7 @@ using WebApp.Services.Actions;
 using WebApp.Services.Database.Grouping;
 using WebApp.Services.Database.Maintenance;
 using WebApp.Services.Database.Products;
-using WebApp.Utilities.CustomRequirements.SameAuthor;
+using WebApp.Utilities.CustomIdentityComponents.Requirements.SameAuthor;
 using WebApp.Utilities.Exceptions;
 using WebApp.Utilities.Filtering;
 using WebApp.Utilities.Filtering.Products;
@@ -24,7 +24,7 @@ using WebApp.ViewModels.Product;
 
 namespace WebApp.Controllers.Products
 {
-    [Route("/products")]
+	[Route("/products")]
 	[Authorize(Policy = "PublicContentPolicy")]
 	public class ProductsController : ExtendedController
 	{
@@ -445,19 +445,7 @@ namespace WebApp.Controllers.Products
 					User,
 					async () =>
 					{
-						await _products.ChangeMainImageAsync(idToDelete, 0);
-
-						List<int> images = await
-							_images.GetProductImagesAsync(idToDelete)
-								.ContinueWith(next =>
-									next.Result
-										.Select(e => e.Id)
-										.ToList()
-								);
-
-						await _images.DeleteImagesAsync(idToDelete, images);
 						await _products.DeleteProductAsync(idToDelete);
-
 						return Redirect("/");
 					}
 				),

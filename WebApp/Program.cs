@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WebApp.Database;
 using WebApp.Database.Entities.Auth;
+using WebApp.ProjectConfiguration.Constants;
 using WebApp.ProjectConfiguration.Initializers;
 using WebApp.ProjectConfiguration.Options;
 using WebApp.ProjectConfiguration.Options.Auth;
@@ -15,7 +16,7 @@ using WebApp.Services.Database.Grouping;
 using WebApp.Services.Database.Maintenance;
 using WebApp.Services.Database.Products;
 using WebApp.Utilities.CustomIdentityComponents;
-using WebApp.Utilities.CustomRequirements.SameAuthor;
+using WebApp.Utilities.CustomIdentityComponents.Requirements.SameAuthor;
 using WebApp.Utilities.Exceptions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -50,7 +51,8 @@ builder.Services
 	})
 	.AddClaimsPrincipalFactory<ApplicationUserClaimsPrincipalFactory>()
 	.AddEntityFrameworkStores<DatabaseContext>()
-	.AddDefaultTokenProviders();
+	.AddDefaultTokenProviders()
+	.AddTokenProvider<AccountDeletionEmailConfirmationTokenProvider>(CustomTokenProviders.DeleteUserAccount);
 
 builder.Services
 	.AddAuthentication()

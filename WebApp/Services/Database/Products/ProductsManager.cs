@@ -108,6 +108,14 @@ namespace WebApp.Services.Database.Products
 				.SingleAsync();
 		}
 
+		public Task<List<int>> GetProductsOfOwnerAsync(int ownerId)
+		{
+			return _database.Products
+				.Where(e => e.ProductOwnerId == ownerId)
+				.Select(e => e.Id)
+				.ToListAsync();
+		}
+
 		public async Task<ProductShow> GetProductShowVMAsync(
 			bool increaseViewsCount,
 			int actionPerformer,
@@ -313,10 +321,21 @@ namespace WebApp.Services.Database.Products
 
 			await transaction.CommitAsync();
 		}
-		public async Task DeleteProductAsync(int productId)
+		public async Task DeleteProductAsync(int idToDelete)
 		{
+			await ChangeMainImageAsync(idToDelete, 0);
+
+			List<int> images = await
+				_images.GetProductImagesAsync(idToDelete)
+					.ContinueWith(next =>
+						next.Result
+							.Select(e => e.Id)
+							.ToList()
+					);
+
+			await _images.DeleteImagesAsync(idToDelete, images);
 			_database.Products.Remove(
-				await FindProductAsync(productId)
+				await FindProductAsync(idToDelete)
 			);
 
 			await _database.SaveChangesAsync();
